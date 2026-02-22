@@ -1,0 +1,176 @@
+# Model Configuration
+# Configure different LLM models for benchmarking
+# Each model has: name, provider, configuration parameters
+
+models:
+  # OpenAI Models
+  - name: gpt-4
+    provider: openai
+    model_id: gpt-4
+    max_tokens: 512
+    temperature: 0.0
+    enabled: true
+    
+  - name: gpt-3.5-turbo
+    provider: openai
+    model_id: gpt-3.5-turbo
+    max_tokens: 512
+    temperature: 0.0
+    enabled: true
+  
+  # Anthropic Models
+  - name: claude-3-opus
+    provider: anthropic
+    model_id: claude-3-opus-20240229
+    max_tokens: 512
+    temperature: 0.0
+    enabled: true
+    
+  - name: claude-3-sonnet
+    provider: anthropic
+    model_id: claude-3-sonnet-20240229
+    max_tokens: 512
+    temperature: 0.0
+    enabled: true
+  
+  # Open-source Models (HuggingFace) - LOCAL EXECUTION
+  # These models run locally on your machine
+  
+  - name: llama-2-7b-local
+    provider: huggingface_local
+    model_id: meta-llama/Llama-2-7b-chat-hf
+    max_tokens: 512
+    temperature: 0.0
+    device: auto  # auto, cuda, cpu
+    load_in_8bit: false  # Reduce memory usage (requires bitsandbytes)
+    load_in_4bit: false  # Further reduce memory (requires bitsandbytes)
+    torch_dtype: auto  # auto, float16, bfloat16, float32
+    trust_remote_code: false
+    local_model_path: null  # Optional: path to local model files
+    enabled: false
+    
+  - name: mistral-7b-local
+    provider: huggingface_local
+    model_id: mistralai/Mistral-7B-Instruct-v0.2
+    max_tokens: 512
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: false
+    torch_dtype: auto
+    trust_remote_code: false
+    local_model_path: null
+    enabled: false
+    
+  - name: llama-3-8b-local
+    provider: huggingface_local
+    model_id: meta-llama/Meta-Llama-3-8B-Instruct
+    max_tokens: 512
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: false
+    torch_dtype: auto
+    trust_remote_code: false
+    local_model_path: null
+    enabled: false
+  
+  - name: phi-3-mini-local
+    provider: huggingface_local
+    model_id: microsoft/Phi-3-mini-4k-instruct
+    max_tokens: 512
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: false
+    torch_dtype: auto
+    trust_remote_code: true  # Required for Phi models
+    local_model_path: null
+    enabled: false
+  
+  - name: gemma-2b-local
+    provider: huggingface_local
+    model_id: google/gemma-2b-it
+    max_tokens: 512
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: false
+    torch_dtype: auto
+    trust_remote_code: false
+    local_model_path: null
+    enabled: false
+  
+  # GGUF/Quantized Models (for llama.cpp or ctransformers)
+  - name: llama-2-7b-gguf
+    provider: gguf
+    model_id: TheBloke/Llama-2-7B-Chat-GGUF
+    model_file: llama-2-7b-chat.Q4_K_M.gguf  # Specific GGUF file
+    max_tokens: 512
+    temperature: 0.0
+    n_ctx: 2048  # Context window
+    n_gpu_layers: 0  # Number of layers to offload to GPU (0 = CPU only)
+    local_model_path: null  # Optional: path to local GGUF file
+    enabled: false
+  
+  # vLLM for high-performance local serving
+  - name: llama-2-7b-vllm
+    provider: vllm
+    model_id: meta-llama/Llama-2-7b-chat-hf
+    max_tokens: 512
+    temperature: 0.0
+    tensor_parallel_size: 1
+    gpu_memory_utilization: 0.9
+    local_model_path: null
+    enabled: false
+    
+  # Google Models
+  - name: gemini-pro
+    provider: google
+    model_id: gemini-pro
+    max_tokens: 512
+    temperature: 0.0
+    enabled: false
+
+# Global model settings
+global_settings:
+  default_batch_size: 8
+  use_cache: true
+  cache_dir: "./cache"
+  max_retries: 3
+  retry_delay: 2
+  
+  # Local model settings
+  local_models:
+    # Default device for local models
+    default_device: auto  # auto, cuda, cpu, mps
+    
+    # Memory optimization
+    enable_8bit_by_default: false
+    enable_4bit_by_default: false
+    
+    # Model download/cache directory
+    hf_cache_dir: null  # null uses HuggingFace default (~/.cache/huggingface)
+    
+    # Offline mode (use only cached models)
+    offline_mode: false
+    
+    # GPU settings
+    gpu_memory_fraction: 0.9  # Fraction of GPU memory to use
+    max_memory: null  # Dict of max memory per device, e.g., {0: "10GiB", "cpu": "30GiB"}
+    
+    # Performance settings
+    use_flash_attention: false  # Requires flash-attn library
+    compile_model: false  # Use torch.compile for speedup (PyTorch 2.0+)
+    
+  # vLLM settings (for high-performance serving)
+  vllm:
+    enable: false
+    host: "localhost"
+    port: 8000
+    
+  # GGUF/llama.cpp settings
+  gguf:
+    enable: false
+    n_threads: 4  # CPU threads for computation
+    use_mlock: false  # Lock model in RAM

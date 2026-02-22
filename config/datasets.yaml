@@ -1,0 +1,87 @@
+# Dataset Configuration
+# Configure benchmarking datasets for evaluation
+# Supports both built-in PromptBench datasets and custom datasets
+
+datasets:
+  # PromptBench built-in datasets
+  - name: sst2
+    type: promptbench
+    dataset_name: sst-2
+    task_type: classification
+    num_samples: 1000  # Set to null to use all samples
+    enabled: true
+    
+  - name: mnli
+    type: promptbench
+    dataset_name: mnli
+    task_type: classification
+    num_samples: 1000
+    enabled: false
+    
+  - name: qqp
+    type: promptbench
+    dataset_name: qqp
+    task_type: classification
+    num_samples: 1000
+    enabled: false
+  
+  # Custom datasets from files
+  - name: custom_classification
+    type: custom
+    file_path: "./datasets/data/custom_classification.jsonl"
+    task_type: classification
+    format: jsonl
+    fields:
+      text: "input"
+      label: "label"
+    num_samples: null
+    enabled: false
+    
+  - name: custom_qa
+    type: custom
+    file_path: "./datasets/data/custom_qa.csv"
+    task_type: qa
+    format: csv
+    fields:
+      question: "question"
+      answer: "answer"
+      context: "context"
+    num_samples: null
+    enabled: false
+    
+  - name: custom_generation
+    type: custom
+    file_path: "./datasets/data/custom_generation.json"
+    task_type: generation
+    format: json
+    fields:
+      prompt: "prompt"
+      reference: "reference"
+    num_samples: null
+    enabled: false
+  
+  # HuggingFace datasets
+  - name: squad
+    type: huggingface
+    dataset_name: squad
+    subset: null
+    split: validation
+    task_type: qa
+    num_samples: 500
+    enabled: false
+    
+  - name: gsm8k
+    type: huggingface
+    dataset_name: gsm8k
+    subset: main
+    split: test
+    task_type: reasoning
+    num_samples: 500
+    enabled: false
+
+# Global dataset settings
+global_settings:
+  data_dir: "./datasets/data"
+  cache_dir: "./cache/datasets"
+  seed: 42
+  shuffle: true

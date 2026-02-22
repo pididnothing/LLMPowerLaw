@@ -1,0 +1,201 @@
+# Prompting Techniques Configuration
+# Configure different prompting strategies for benchmarking
+# Supports both PromptBench built-in techniques and custom prompts
+
+prompting_techniques:
+  # PromptBench Built-in Techniques
+  
+  - name: zero_shot
+    type: promptbench
+    technique: zero_shot
+    description: "Direct question without examples"
+    enabled: true
+    params:
+      # No additional parameters for zero-shot
+  
+  - name: few_shot
+    type: promptbench
+    technique: few_shot
+    description: "Provide examples before the question"
+    enabled: true
+    params:
+      num_examples: 3  # Number of examples to include
+      example_separator: "\n\n"
+  
+  - name: cot
+    type: promptbench
+    technique: cot
+    description: "Chain-of-Thought prompting"
+    enabled: true
+    params:
+      cot_trigger: "Let's think step by step."
+  
+  - name: role_prompting
+    type: promptbench
+    technique: role
+    description: "Assign a role to the model"
+    enabled: false
+    params:
+      role: "You are an expert AI assistant specialized in this task."
+  
+  - name: emotion_prompting
+    type: promptbench
+    technique: emotion
+    description: "Add emotional appeal to the prompt"
+    enabled: false
+    params:
+      emotion_phrase: "This is very important to me."
+  
+  - name: expert_prompting
+    type: promptbench
+    technique: expert
+    description: "Invoke expert persona"
+    enabled: false
+    params:
+      expert_type: "domain expert"
+  
+  # Custom Prompting Techniques
+  
+  - name: custom_instructive
+    type: custom
+    description: "Custom instructive prompting"
+    enabled: false
+    template: |
+      Instructions: {instructions}
+      
+      Task: {task}
+      
+      Input: {input}
+      
+      Output:
+    fields:
+      instructions: "Carefully analyze the input and provide an accurate response."
+      task: "classification"  # Will be filled from dataset config
+  
+  - name: custom_structured
+    type: custom
+    description: "Structured output prompting"
+    enabled: false
+    template: |
+      ### Task Description ###
+      {task_description}
+      
+      ### Input ###
+      {input}
+      
+      ### Expected Output Format ###
+      {output_format}
+      
+      ### Your Response ###
+    fields:
+      task_description: "Analyze the sentiment of the text"
+      output_format: "Provide your answer as a single word: positive, negative, or neutral"
+  
+  - name: custom_conversational
+    type: custom
+    description: "Conversational style prompting"
+    enabled: false
+    template: |
+      Hi! I need your help with something.
+      
+      {input}
+      
+      Can you help me understand this?
+    fields: {}
+  
+  - name: custom_cot_detailed
+    type: custom
+    description: "Detailed chain-of-thought"
+    enabled: false
+    template: |
+      Question: {input}
+      
+      Let me break this down step by step:
+      
+      Step 1: Understand the question
+      Step 2: Identify key information
+      Step 3: Apply reasoning
+      Step 4: Provide the answer
+      
+      My reasoning:
+    fields: {}
+  
+  - name: persona_prompting
+    type: custom
+    description: "Persona-based prompting"
+    enabled: false
+    template: |
+      You are a {persona} with expertise in {domain}.
+      
+      Task: {input}
+      
+      Based on your expertise, provide a {output_style} response.
+    fields:
+      persona: "professional analyst"
+      domain: "text analysis"
+      output_style: "concise and accurate"
+  
+  - name: self_consistency
+    type: custom
+    description: "Self-consistency prompting (majority vote)"
+    enabled: false
+    template: |
+      {input}
+      
+      Let's approach this from multiple angles and reason carefully.
+    fields:
+      num_samples: 3  # Generate multiple responses and take majority
+  
+  - name: analogical_prompting
+    type: custom
+    description: "Use analogies to explain"
+    enabled: false
+    template: |
+      Think of this task like: {analogy}
+      
+      Now, apply the same reasoning here:
+      {input}
+    fields:
+      analogy: "sorting items into categories based on their characteristics"
+
+# Prompting technique combinations (apply multiple techniques)
+technique_combinations:
+  - name: role_plus_cot
+    description: "Role prompting combined with Chain-of-Thought"
+    techniques:
+      - role_prompting
+      - cot
+    enabled: false
+  
+  - name: few_shot_cot
+    description: "Few-shot examples with Chain-of-Thought"
+    techniques:
+      - few_shot
+      - cot
+    enabled: false
+
+# Global prompting settings
+global_settings:
+  # Default technique if none specified
+  default_technique: zero_shot
+  
+  # Whether to apply prompting techniques to all datasets
+  apply_to_all: false
+  
+  # Per-dataset technique mapping
+  dataset_technique_mapping:
+    sst2: [zero_shot, few_shot, cot]
+    mnli: [zero_shot, few_shot]
+    custom_classification: [zero_shot, custom_instructive]
+  
+  # Few-shot example selection strategy
+  few_shot_strategy: random  # random, similar, diverse
+  
+  # Cache prompts to avoid regeneration
+  cache_prompts: true
+  
+  # Maximum prompt length (tokens)
+  max_prompt_length: 2048
+  
+  # Temperature for self-consistency
+  self_consistency_temperature: 0.7
