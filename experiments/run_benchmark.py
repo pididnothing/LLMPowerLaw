@@ -18,7 +18,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 from experiments.experiment_config import ExperimentConfig, ModelConfig, DatasetConfig
 from experiments.prompt_manager import PromptManager, PromptTechnique
 from experiments.local_model_handler import LocalModelHandler
-from datasets.custom_loader import DatasetLoader
+from data_loaders.custom_loader import DatasetLoader
 from utils.logger import ExperimentLogger
 from utils.metrics import MetricsCalculator
 

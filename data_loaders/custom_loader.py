@@ -138,7 +138,7 @@ class DatasetLoader:
     @staticmethod
     def create_example_datasets():
         """Create example dataset files for reference"""
-        data_dir = Path("./datasets/data")
+        data_dir = Path("./data_loaders/data")
         data_dir.mkdir(parents=True, exist_ok=True)
         
         # Example classification dataset (JSONL)
@@ -193,7 +193,7 @@ if __name__ == "__main__":
     loader = DatasetLoader()
     dataset = loader.load_custom_dataset(
         name="test_classification",
-        file_path="./datasets/data/custom_classification.jsonl",
+        file_path="./data_loaders/data/custom_classification.jsonl",
         task_type="classification",
         format="jsonl",
         fields={"text": "input", "label": "label"}

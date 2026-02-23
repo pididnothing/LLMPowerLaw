@@ -9,14 +9,14 @@ models:
     model_id: gpt-4
     max_tokens: 512
     temperature: 0.0
-    enabled: true
+    enabled: false
     
   - name: gpt-3.5-turbo
     provider: openai
     model_id: gpt-3.5-turbo
     max_tokens: 512
     temperature: 0.0
-    enabled: true
+    enabled: false
   
   # Anthropic Models
   - name: claude-3-opus
@@ -24,14 +24,14 @@ models:
     model_id: claude-3-opus-20240229
     max_tokens: 512
     temperature: 0.0
-    enabled: true
+    enabled: false
     
   - name: claude-3-sonnet
     provider: anthropic
     model_id: claude-3-sonnet-20240229
     max_tokens: 512
     temperature: 0.0
-    enabled: true
+    enabled: false
   
   # Open-source Models (HuggingFace) - LOCAL EXECUTION
   # These models run locally on your machine
@@ -82,11 +82,39 @@ models:
     temperature: 0.0
     device: auto
     load_in_8bit: false
-    load_in_4bit: false
+    load_in_4bit: true  # 4-bit quantization for faster loading
     torch_dtype: auto
     trust_remote_code: true  # Required for Phi models
     local_model_path: null
-    enabled: false
+    enabled: false  # Enable if you want to retry Phi-3
+  
+  # Tiny model for quick testing (~300MB)
+  - name: distilgpt2-local
+    provider: huggingface_local
+    model_id: distilgpt2
+    max_tokens: 256
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: false
+    torch_dtype: auto
+    trust_remote_code: false
+    local_model_path: null
+    enabled: false  # Not suitable for classification
+  
+  # Small instruction-following model (~2.2GB)
+  - name: tinyllama-local
+    provider: huggingface_local
+    model_id: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+    max_tokens: 256
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: false
+    torch_dtype: auto
+    trust_remote_code: false
+    local_model_path: null
+    enabled: true
   
   - name: gemma-2b-local
     provider: huggingface_local

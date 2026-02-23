@@ -124,6 +124,16 @@ Create your own prompting templates:
 
 ## Installation
 
+> **⚠️ Windows Users (Python 3.13)**: If you encounter `sentencepiece` build errors, use the automated installation script instead:
+>
+> ```bash
+> python install_windows.py
+> # OR
+> install_windows.bat
+> ```
+>
+> This handles a known compatibility issue with `sentencepiece` on Windows with Python 3.13.
+
 ### 1. Clone or Navigate to the Project
 
 ```bash
@@ -133,14 +143,32 @@ cd d:\Projects\LLMPowerLaw
 ### 2. Create Virtual Environment (Recommended)
 
 ```bash
-python -m venv venv
-.\venv\Scripts\activate  # Windows
-# source venv/bin/activate  # Linux/Mac
+python -m venv .venv
+.venv\Scripts\activate  # Windows
+# source .venv/bin/activate  # Linux/Mac
 ```
 
 ### 3. Install Dependencies
 
+**Option A: Automated (Recommended for Windows)**
+
 ```bash
+# Python script with detailed output
+python install_windows.py
+
+# OR batch file for quick installation
+install_windows.bat
+```
+
+**Option B: Manual Installation**
+
+```bash
+# Standard installation
+pip install -r requirements.txt
+
+# If you get sentencepiece errors on Windows:
+pip install sentencepiece>=0.2.0
+pip install promptbench --no-deps
 pip install -r requirements.txt
 ```
 

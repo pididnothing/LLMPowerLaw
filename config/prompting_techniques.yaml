@@ -17,7 +17,7 @@ prompting_techniques:
     type: promptbench
     technique: few_shot
     description: "Provide examples before the question"
-    enabled: true
+    enabled: false  # Disabled for quick testing
     params:
       num_examples: 3  # Number of examples to include
       example_separator: "\n\n"
@@ -26,7 +26,7 @@ prompting_techniques:
     type: promptbench
     technique: cot
     description: "Chain-of-Thought prompting"
-    enabled: true
+    enabled: false  # Disabled for quick testing
     params:
       cot_trigger: "Let's think step by step."
   
@@ -184,8 +184,11 @@ global_settings:
   
   # Per-dataset technique mapping
   dataset_technique_mapping:
-    sst2: [zero_shot, few_shot, cot]
-    mnli: [zero_shot, few_shot]
+    squad: [zero_shot, few_shot, cot]  # Test all 3 techniques on question answering
+    qqp: [zero_shot, few_shot]  # Test 2 techniques on paraphrase detection
+    gsm8k: [zero_shot, cot]  # Test zero-shot and CoT on math reasoning
+    sst2: [zero_shot, few_shot, cot]  # Disabled dataset
+    mnli: [zero_shot, few_shot, cot]  # Disabled dataset
     custom_classification: [zero_shot, custom_instructive]
   
   # Few-shot example selection strategy

@@ -8,27 +8,27 @@ datasets:
     type: promptbench
     dataset_name: sst-2
     task_type: classification
-    num_samples: 1000  # Set to null to use all samples
-    enabled: true
+    num_samples: 500  # Reduced for faster testing
+    enabled: false  # Disabled due to PromptBench compatibility issues
     
   - name: mnli
     type: promptbench
     dataset_name: mnli
     task_type: classification
-    num_samples: 1000
-    enabled: false
+    num_samples: 500  # Reduced for faster testing
+    enabled: false  # Disabled due to PromptBench compatibility issues
     
   - name: qqp
     type: promptbench
     dataset_name: qqp
     task_type: classification
-    num_samples: 1000
-    enabled: false
+    num_samples: 10  # Minimal for quick testing
+    enabled: true
   
   # Custom datasets from files
   - name: custom_classification
     type: custom
-    file_path: "./datasets/data/custom_classification.jsonl"
+    file_path: "./data_loaders/data/custom_classification.jsonl"
     task_type: classification
     format: jsonl
     fields:
@@ -39,7 +39,7 @@ datasets:
     
   - name: custom_qa
     type: custom
-    file_path: "./datasets/data/custom_qa.csv"
+    file_path: "./data_loaders/data/custom_qa.csv"
     task_type: qa
     format: csv
     fields:
@@ -51,7 +51,7 @@ datasets:
     
   - name: custom_generation
     type: custom
-    file_path: "./datasets/data/custom_generation.json"
+    file_path: "./data_loaders/data/custom_generation.json"
     task_type: generation
     format: json
     fields:
@@ -67,8 +67,8 @@ datasets:
     subset: null
     split: validation
     task_type: qa
-    num_samples: 500
-    enabled: false
+    num_samples: 10  # Minimal for quick testing
+    enabled: false  # Disable for initial test
     
   - name: gsm8k
     type: huggingface
@@ -76,12 +76,12 @@ datasets:
     subset: main
     split: test
     task_type: reasoning
-    num_samples: 500
-    enabled: false
+    num_samples: 10  # Minimal for quick testing
+    enabled: false  # Disable for initial test
 
 # Global dataset settings
 global_settings:
-  data_dir: "./datasets/data"
+  data_dir: "./data_loaders/data"
   cache_dir: "./cache/datasets"
   seed: 42
   shuffle: true
