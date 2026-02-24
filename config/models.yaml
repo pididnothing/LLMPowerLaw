@@ -92,7 +92,7 @@ models:
   - name: distilgpt2-local
     provider: huggingface_local
     model_id: distilgpt2
-    max_tokens: 50
+    max_tokens: 2
     temperature: 0.0
     device: auto
     load_in_8bit: false
@@ -100,7 +100,7 @@ models:
     torch_dtype: auto
     trust_remote_code: false
     local_model_path: null
-    enabled: false # Not suitable for classification
+    enabled: true # Not suitable for classification
 
   # Small instruction-following model (~2.2GB)
   - name: tinyllama-local
@@ -114,7 +114,7 @@ models:
     torch_dtype: auto
     trust_remote_code: false
     local_model_path: null
-    enabled: true
+    enabled: false
 
   - name: gemma-2b-local
     provider: huggingface_local

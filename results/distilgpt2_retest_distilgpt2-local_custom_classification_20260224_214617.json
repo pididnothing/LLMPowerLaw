@@ -1,0 +1,97 @@
+{
+  "model": "distilgpt2-local",
+  "dataset": "custom_classification",
+  "task_type": "classification",
+  "prompting_technique": "distilgpt2_pattern",
+  "status": "completed",
+  "start_time": "2026-02-24T21:46:10.328065",
+  "predictions": [
+    {
+      "index": 0,
+      "input": "Review: Great | Sentiment: positive\nReview: Bad | Sentiment: negative\nReview: I couldn't even finish watching it. So disappointing. | Sentiment:",
+      "prediction": "positive",
+      "true_label": "negative"
+    },
+    {
+      "index": 1,
+      "input": "Review: Great | Sentiment: positive\nReview: Bad | Sentiment: negative\nReview: Amazing performance by the actors! Highly recommend watching this. | Sentiment:",
+      "prediction": "positive",
+      "true_label": "positive"
+    },
+    {
+      "index": 2,
+      "input": "Review: Great | Sentiment: positive\nReview: Bad | Sentiment: negative\nReview: It was okay, nothing special but not bad either. | Sentiment:",
+      "prediction": "positive",
+      "true_label": "neutral"
+    },
+    {
+      "index": 3,
+      "input": "Review: Great | Sentiment: positive\nReview: Bad | Sentiment: negative\nReview: Pretty average movie. Some good parts, some bad. | Sentiment:",
+      "prediction": "negative",
+      "true_label": "neutral"
+    },
+    {
+      "index": 4,
+      "input": "Review: Great | Sentiment: positive\nReview: Bad | Sentiment: negative\nReview: The plot was decent but the pacing was off. | Sentiment:",
+      "prediction": "positive",
+      "true_label": "neutral"
+    },
+    {
+      "index": 5,
+      "input": "Review: Great | Sentiment: positive\nReview: Bad | Sentiment: negative\nReview: Absolutely brilliant! A masterpiece of cinema. | Sentiment:",
+      "prediction": "positive",
+      "true_label": "positive"
+    },
+    {
+      "index": 6,
+      "input": "Review: Great | Sentiment: positive\nReview: Bad | Sentiment: negative\nReview: Outstanding! This exceeded all my expectations. | Sentiment:",
+      "prediction": "positive",
+      "true_label": "positive"
+    },
+    {
+      "index": 7,
+      "input": "Review: Great | Sentiment: positive\nReview: Bad | Sentiment: negative\nReview: Boring and predictable. Complete waste of time. | Sentiment:",
+      "prediction": "negative",
+      "true_label": "negative"
+    },
+    {
+      "index": 8,
+      "input": "Review: Great | Sentiment: positive\nReview: Bad | Sentiment: negative\nReview: This movie was absolutely fantastic! I loved every minute of it. | Sentiment:",
+      "prediction": "positive",
+      "true_label": "positive"
+    },
+    {
+      "index": 9,
+      "input": "Review: Great | Sentiment: positive\nReview: Bad | Sentiment: negative\nReview: Terrible experience. The worst movie I've ever seen. | Sentiment:",
+      "prediction": "positive",
+      "true_label": "negative"
+    }
+  ],
+  "metrics": {
+    "accuracy": 0.5,
+    "macro_precision": 0.3333333333333333,
+    "macro_recall": 0.4444444444444444,
+    "macro_f1": 0.35555555555555557,
+    "num_samples": 10,
+    "num_correct": 5,
+    "class_metrics": {
+      "negative": {
+        "precision": 0.5,
+        "recall": 0.3333333333333333,
+        "f1": 0.4
+      },
+      "neutral": {
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0
+      },
+      "positive": {
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6666666666666666
+      }
+    }
+  },
+  "num_samples": 10,
+  "end_time": "2026-02-24T21:46:17.574257"
+}

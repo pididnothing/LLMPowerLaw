@@ -74,20 +74,22 @@ prompting_techniques:
 
   - name: classification_simple
     type: custom
-    description: "Few-shot pattern for TinyLlama"
+    description: "Optimized for Phi-3"
     enabled: true
     template: |
-      <|system|>
-      You are a sentiment classifier. Respond with ONLY one word: 'positive', 'negative', or 'neutral'. No explanations.</s>
       <|user|>
-      Text: "I loved this movie, it was great!"
-      Sentiment: positive</s>
-      <|user|>
-      Text: "It was a waste of time and very boring."
-      Sentiment: negative</s>
-      <|user|>
-      Text: "$input"
+      You are a sentiment classifier. 
+      Classify the text: "$input"
+      Options: [positive, negative, neutral]
+      Respond with ONLY the word.
+      <|assistant|>
       Sentiment:
+
+  - name: distilgpt2_pattern
+    type: custom
+    description: "In-line pattern for base models"
+    enabled: true
+    template: "Review: Great | Sentiment: positive\nReview: Bad | Sentiment: negative\nReview: $input | Sentiment:"
 
   - name: custom_conversational
     type: custom
@@ -187,7 +189,8 @@ global_settings:
     gsm8k: [zero_shot, cot] # Test zero-shot and CoT on math reasoning
     sst2: [classification_simple] # Simple classification for sentiment
     mnli: [classification_simple] # Simple classification for entailment
-    custom_classification: [classification_simple] # Simple classification
+    # custom_classification: [classification_simple] # Simple classification
+    custom_classification: [distilgpt2_pattern]
 
   # Few-shot example selection strategy
   few_shot_strategy: random # random, similar, diverse
