@@ -4,7 +4,7 @@
 
 prompting_techniques:
   # PromptBench Built-in Techniques
-  
+
   - name: zero_shot
     type: promptbench
     technique: zero_shot
@@ -12,24 +12,24 @@ prompting_techniques:
     enabled: true
     params:
       # No additional parameters for zero-shot
-  
+
   - name: few_shot
     type: promptbench
     technique: few_shot
     description: "Provide examples before the question"
-    enabled: false  # Disabled for quick testing
+    enabled: false # Disabled for quick testing
     params:
-      num_examples: 3  # Number of examples to include
+      num_examples: 3 # Number of examples to include
       example_separator: "\n\n"
-  
+
   - name: cot
     type: promptbench
     technique: cot
     description: "Chain-of-Thought prompting"
-    enabled: false  # Disabled for quick testing
+    enabled: false # Disabled for quick testing
     params:
       cot_trigger: "Let's think step by step."
-  
+
   - name: role_prompting
     type: promptbench
     technique: role
@@ -37,7 +37,7 @@ prompting_techniques:
     enabled: false
     params:
       role: "You are an expert AI assistant specialized in this task."
-  
+
   - name: emotion_prompting
     type: promptbench
     technique: emotion
@@ -45,7 +45,7 @@ prompting_techniques:
     enabled: false
     params:
       emotion_phrase: "This is very important to me."
-  
+
   - name: expert_prompting
     type: promptbench
     technique: expert
@@ -53,117 +53,104 @@ prompting_techniques:
     enabled: false
     params:
       expert_type: "domain expert"
-  
+
   # Custom Prompting Techniques
-  
+
   - name: custom_instructive
     type: custom
     description: "Custom instructive prompting"
     enabled: false
     template: |
       Instructions: $instructions
-      
+
       Task: $task
-      
+
       Input: $input
-      
+
       Output:
     fields:
       instructions: "Carefully analyze the input and provide an accurate response."
-      task: "classification"  # Will be filled from dataset config
-  
+      task: "classification" # Will be filled from dataset config
+
   - name: classification_simple
     type: custom
-    description: "Simple classification prompt with clear instructions"
+    description: "Few-shot pattern for TinyLlama"
     enabled: true
     template: |
-      Classify the sentiment of the following text as either 'positive', 'negative', or 'neutral'. Only provide one single word as your answer which should be one of the three sentiments 'positive', 'negative', or 'neutral'.
-      
-      Text: $input
-      
+      <|system|>
+      You are a sentiment classifier. Respond with ONLY one word: 'positive', 'negative', or 'neutral'. No explanations.</s>
+      <|user|>
+      Text: "I loved this movie, it was great!"
+      Sentiment: positive</s>
+      <|user|>
+      Text: "It was a waste of time and very boring."
+      Sentiment: negative</s>
+      <|user|>
+      Text: "$input"
       Sentiment:
-  
-  - name: custom_structured
-    type: custom
-    description: "Structured output prompting"
-    enabled: false
-    template: |
-      ### Task Description ###
-      {task_description}
-      
-      ### Input ###
-      {input}
-      
-      ### Expected Output Format ###
-      {output_format}
-      
-      ### Your Response ###
-    fields:
-      task_description: "Analyze the sentiment of the text"
-      output_format: "Provide your answer as a single word: positive, negative, or neutral"
-  
+
   - name: custom_conversational
     type: custom
     description: "Conversational style prompting"
     enabled: false
     template: |
       Hi! I need your help with something.
-      
+
       {input}
-      
+
       Can you help me understand this?
     fields: {}
-  
+
   - name: custom_cot_detailed
     type: custom
     description: "Detailed chain-of-thought"
     enabled: false
     template: |
       Question: {input}
-      
+
       Let me break this down step by step:
-      
+
       Step 1: Understand the question
       Step 2: Identify key information
       Step 3: Apply reasoning
       Step 4: Provide the answer
-      
+
       My reasoning:
     fields: {}
-  
+
   - name: persona_prompting
     type: custom
     description: "Persona-based prompting"
     enabled: false
     template: |
       You are a {persona} with expertise in {domain}.
-      
+
       Task: {input}
-      
+
       Based on your expertise, provide a {output_style} response.
     fields:
       persona: "professional analyst"
       domain: "text analysis"
       output_style: "concise and accurate"
-  
+
   - name: self_consistency
     type: custom
     description: "Self-consistency prompting (majority vote)"
     enabled: false
     template: |
       {input}
-      
+
       Let's approach this from multiple angles and reason carefully.
     fields:
-      num_samples: 3  # Generate multiple responses and take majority
-  
+      num_samples: 3 # Generate multiple responses and take majority
+
   - name: analogical_prompting
     type: custom
     description: "Use analogies to explain"
     enabled: false
     template: |
       Think of this task like: {analogy}
-      
+
       Now, apply the same reasoning here:
       {input}
     fields:
@@ -177,7 +164,7 @@ technique_combinations:
       - role_prompting
       - cot
     enabled: false
-  
+
   - name: few_shot_cot
     description: "Few-shot examples with Chain-of-Thought"
     techniques:
@@ -189,27 +176,27 @@ technique_combinations:
 global_settings:
   # Default technique if none specified
   default_technique: zero_shot
-  
+
   # Whether to apply prompting techniques to all datasets
   apply_to_all: false
-  
+
   # Per-dataset technique mapping
   dataset_technique_mapping:
-    squad: [zero_shot, few_shot, cot]  # Test all 3 techniques on question answering
-    qqp: [classification_simple]  # Simple classification prompt for QQP
-    gsm8k: [zero_shot, cot]  # Test zero-shot and CoT on math reasoning
-    sst2: [classification_simple]  # Simple classification for sentiment
-    mnli: [classification_simple]  # Simple classification for entailment
-    custom_classification: [classification_simple]  # Simple classification
-  
+    squad: [zero_shot, few_shot, cot] # Test all 3 techniques on question answering
+    qqp: [classification_simple] # Simple classification prompt for QQP
+    gsm8k: [zero_shot, cot] # Test zero-shot and CoT on math reasoning
+    sst2: [classification_simple] # Simple classification for sentiment
+    mnli: [classification_simple] # Simple classification for entailment
+    custom_classification: [classification_simple] # Simple classification
+
   # Few-shot example selection strategy
-  few_shot_strategy: random  # random, similar, diverse
-  
+  few_shot_strategy: random # random, similar, diverse
+
   # Cache prompts to avoid regeneration
   cache_prompts: true
-  
+
   # Maximum prompt length (tokens)
   max_prompt_length: 2048
-  
+
   # Temperature for self-consistency
   self_consistency_temperature: 0.7

@@ -1,6 +1,6 @@
 # Core dependencies
 # Note: Install sentencepiece first to avoid build issues on Windows
-sentencepiece>=0.2.0
+# sentencepiece==0.1.99
 torch>=2.0.0
 transformers>=4.30.0
 openai>=1.0.0
@@ -8,7 +8,7 @@ anthropic>=0.18.0
 
 # PromptBench - installed after sentencepiece to avoid version conflicts
 # If you get sentencepiece build errors, install with: pip install promptbench --no-deps
-promptbench>=0.0.1
+# promptbench>=0.0.1
 
 # Data handling
 pandas>=2.0.0

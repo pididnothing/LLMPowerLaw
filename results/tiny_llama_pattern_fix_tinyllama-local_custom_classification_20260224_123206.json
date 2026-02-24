@@ -1,0 +1,112 @@
+{
+  "model": "tinyllama-local",
+  "dataset": "custom_classification",
+  "task_type": "classification",
+  "prompting_technique": "classification_simple",
+  "status": "completed",
+  "start_time": "2026-02-24T12:31:52.025542",
+  "predictions": [
+    {
+      "index": 0,
+      "input": "<|system|>\nYou are a sentiment classifier. Respond with ONLY one word: 'positive', 'negative', or 'neutral'. No explanations.</s>\n<|user|>\nText: \"I loved this movie, it was great!\"\nSentiment: positive</s>\n<|user|>\nText: \"It was a waste of time and very boring.\"\nSentiment: negative</s>\n<|user|>\nText: \"I couldn't even finish watching it. So disappointing.\"\nSentiment:\n",
+      "prediction": "negative",
+      "true_label": "negative"
+    },
+    {
+      "index": 1,
+      "input": "<|system|>\nYou are a sentiment classifier. Respond with ONLY one word: 'positive', 'negative', or 'neutral'. No explanations.</s>\n<|user|>\nText: \"I loved this movie, it was great!\"\nSentiment: positive</s>\n<|user|>\nText: \"It was a waste of time and very boring.\"\nSentiment: negative</s>\n<|user|>\nText: \"Amazing performance by the actors! Highly recommend watching this.\"\nSentiment:\n",
+      "prediction": "Positive: \"pos",
+      "true_label": "positive"
+    },
+    {
+      "index": 2,
+      "input": "<|system|>\nYou are a sentiment classifier. Respond with ONLY one word: 'positive', 'negative', or 'neutral'. No explanations.</s>\n<|user|>\nText: \"I loved this movie, it was great!\"\nSentiment: positive</s>\n<|user|>\nText: \"It was a waste of time and very boring.\"\nSentiment: negative</s>\n<|user|>\nText: \"It was okay, nothing special but not bad either.\"\nSentiment:\n",
+      "prediction": "neutral",
+      "true_label": "neutral"
+    },
+    {
+      "index": 3,
+      "input": "<|system|>\nYou are a sentiment classifier. Respond with ONLY one word: 'positive', 'negative', or 'neutral'. No explanations.</s>\n<|user|>\nText: \"I loved this movie, it was great!\"\nSentiment: positive</s>\n<|user|>\nText: \"It was a waste of time and very boring.\"\nSentiment: negative</s>\n<|user|>\nText: \"Pretty average movie. Some good parts, some bad.\"\nSentiment:\n",
+      "prediction": "negative",
+      "true_label": "neutral"
+    },
+    {
+      "index": 4,
+      "input": "<|system|>\nYou are a sentiment classifier. Respond with ONLY one word: 'positive', 'negative', or 'neutral'. No explanations.</s>\n<|user|>\nText: \"I loved this movie, it was great!\"\nSentiment: positive</s>\n<|user|>\nText: \"It was a waste of time and very boring.\"\nSentiment: negative</s>\n<|user|>\nText: \"The plot was decent but the pacing was off.\"\nSentiment:\n",
+      "prediction": "negative",
+      "true_label": "neutral"
+    },
+    {
+      "index": 5,
+      "input": "<|system|>\nYou are a sentiment classifier. Respond with ONLY one word: 'positive', 'negative', or 'neutral'. No explanations.</s>\n<|user|>\nText: \"I loved this movie, it was great!\"\nSentiment: positive</s>\n<|user|>\nText: \"It was a waste of time and very boring.\"\nSentiment: negative</s>\n<|user|>\nText: \"Absolutely brilliant! A masterpiece of cinema.\"\nSentiment:\n",
+      "prediction": "Positive: \"A",
+      "true_label": "positive"
+    },
+    {
+      "index": 6,
+      "input": "<|system|>\nYou are a sentiment classifier. Respond with ONLY one word: 'positive', 'negative', or 'neutral'. No explanations.</s>\n<|user|>\nText: \"I loved this movie, it was great!\"\nSentiment: positive</s>\n<|user|>\nText: \"It was a waste of time and very boring.\"\nSentiment: negative</s>\n<|user|>\nText: \"Outstanding! This exceeded all my expectations.\"\nSentiment:\n",
+      "prediction": "neutral",
+      "true_label": "positive"
+    },
+    {
+      "index": 7,
+      "input": "<|system|>\nYou are a sentiment classifier. Respond with ONLY one word: 'positive', 'negative', or 'neutral'. No explanations.</s>\n<|user|>\nText: \"I loved this movie, it was great!\"\nSentiment: positive</s>\n<|user|>\nText: \"It was a waste of time and very boring.\"\nSentiment: negative</s>\n<|user|>\nText: \"Boring and predictable. Complete waste of time.\"\nSentiment:\n",
+      "prediction": "negative",
+      "true_label": "negative"
+    },
+    {
+      "index": 8,
+      "input": "<|system|>\nYou are a sentiment classifier. Respond with ONLY one word: 'positive', 'negative', or 'neutral'. No explanations.</s>\n<|user|>\nText: \"I loved this movie, it was great!\"\nSentiment: positive</s>\n<|user|>\nText: \"It was a waste of time and very boring.\"\nSentiment: negative</s>\n<|user|>\nText: \"This movie was absolutely fantastic! I loved every minute of it.\"\nSentiment:\n",
+      "prediction": "Positive: \"I",
+      "true_label": "positive"
+    },
+    {
+      "index": 9,
+      "input": "<|system|>\nYou are a sentiment classifier. Respond with ONLY one word: 'positive', 'negative', or 'neutral'. No explanations.</s>\n<|user|>\nText: \"I loved this movie, it was great!\"\nSentiment: positive</s>\n<|user|>\nText: \"It was a waste of time and very boring.\"\nSentiment: negative</s>\n<|user|>\nText: \"Terrible experience. The worst movie I've ever seen.\"\nSentiment:\n",
+      "prediction": "negative",
+      "true_label": "negative"
+    }
+  ],
+  "metrics": {
+    "accuracy": 0.4,
+    "macro_precision": 0.18333333333333335,
+    "macro_recall": 0.2222222222222222,
+    "macro_f1": 0.19166666666666665,
+    "num_samples": 10,
+    "num_correct": 4,
+    "class_metrics": {
+      "negative": {
+        "precision": 0.6,
+        "recall": 1.0,
+        "f1": 0.7499999999999999
+      },
+      "neutral": {
+        "precision": 0.5,
+        "recall": 0.3333333333333333,
+        "f1": 0.4
+      },
+      "positive": {
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0
+      },
+      "positive: \"a": {
+        "precision": 0.0,
+        "recall": 0,
+        "f1": 0
+      },
+      "positive: \"i": {
+        "precision": 0.0,
+        "recall": 0,
+        "f1": 0
+      },
+      "positive: \"pos": {
+        "precision": 0.0,
+        "recall": 0,
+        "f1": 0
+      }
+    }
+  },
+  "num_samples": 10,
+  "end_time": "2026-02-24T12:32:06.117555"
+}
