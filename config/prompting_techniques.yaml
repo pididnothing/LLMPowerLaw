@@ -91,6 +91,20 @@ prompting_techniques:
     enabled: true
     template: "Review: Great | Sentiment: positive\nReview: Bad | Sentiment: negative\nReview: $input | Sentiment:"
 
+  - name: smollm_strict
+    type: custom
+    description: "Zero-shot Instruction for SmolLM2"
+    enabled: true
+    template: |
+      <|im_start|>system
+      You are a precise sentiment analyzer. You only output one of these three words: positive, negative, neutral.<|im_end|>
+      <|im_start|>user
+      Classify the sentiment of this text: "$input"
+
+      Output exactly one word below.
+      Sentiment:<|im_end|>
+      <|im_start|>assistant
+
   - name: custom_conversational
     type: custom
     description: "Conversational style prompting"
@@ -190,7 +204,8 @@ global_settings:
     sst2: [classification_simple] # Simple classification for sentiment
     mnli: [classification_simple] # Simple classification for entailment
     # custom_classification: [classification_simple] # Simple classification
-    custom_classification: [distilgpt2_pattern]
+    # custom_classification: [distilgpt2_pattern]
+    custom_classification: [smollm_strict]
 
   # Few-shot example selection strategy
   few_shot_strategy: random # random, similar, diverse

@@ -1,0 +1,102 @@
+{
+  "model": "smollm2-local",
+  "dataset": "custom_classification",
+  "task_type": "classification",
+  "prompting_technique": "smollm_strict",
+  "status": "completed",
+  "start_time": "2026-02-24T22:19:14.040657",
+  "predictions": [
+    {
+      "index": 0,
+      "input": "<|im_start|>system\nYou are a precise sentiment analyzer. You only output one of these three words: positive, negative, neutral.<|im_end|>\n<|im_start|>user\nClassify the sentiment of this text: \"I couldn't even finish watching it. So disappointing.\"\n\nOutput exactly one word below.\nSentiment:<|im_end|>\n<|im_start|>assistant\n",
+      "prediction": "negative",
+      "true_label": "negative"
+    },
+    {
+      "index": 1,
+      "input": "<|im_start|>system\nYou are a precise sentiment analyzer. You only output one of these three words: positive, negative, neutral.<|im_end|>\n<|im_start|>user\nClassify the sentiment of this text: \"Amazing performance by the actors! Highly recommend watching this.\"\n\nOutput exactly one word below.\nSentiment:<|im_end|>\n<|im_start|>assistant\n",
+      "prediction": "Ne",
+      "true_label": "positive"
+    },
+    {
+      "index": 2,
+      "input": "<|im_start|>system\nYou are a precise sentiment analyzer. You only output one of these three words: positive, negative, neutral.<|im_end|>\n<|im_start|>user\nClassify the sentiment of this text: \"It was okay, nothing special but not bad either.\"\n\nOutput exactly one word below.\nSentiment:<|im_end|>\n<|im_start|>assistant\n",
+      "prediction": "positive",
+      "true_label": "neutral"
+    },
+    {
+      "index": 3,
+      "input": "<|im_start|>system\nYou are a precise sentiment analyzer. You only output one of these three words: positive, negative, neutral.<|im_end|>\n<|im_start|>user\nClassify the sentiment of this text: \"Pretty average movie. Some good parts, some bad.\"\n\nOutput exactly one word below.\nSentiment:<|im_end|>\n<|im_start|>assistant\n",
+      "prediction": "positive",
+      "true_label": "neutral"
+    },
+    {
+      "index": 4,
+      "input": "<|im_start|>system\nYou are a precise sentiment analyzer. You only output one of these three words: positive, negative, neutral.<|im_end|>\n<|im_start|>user\nClassify the sentiment of this text: \"The plot was decent but the pacing was off.\"\n\nOutput exactly one word below.\nSentiment:<|im_end|>\n<|im_start|>assistant\n",
+      "prediction": "positive",
+      "true_label": "neutral"
+    },
+    {
+      "index": 5,
+      "input": "<|im_start|>system\nYou are a precise sentiment analyzer. You only output one of these three words: positive, negative, neutral.<|im_end|>\n<|im_start|>user\nClassify the sentiment of this text: \"Absolutely brilliant! A masterpiece of cinema.\"\n\nOutput exactly one word below.\nSentiment:<|im_end|>\n<|im_start|>assistant\n",
+      "prediction": "positive",
+      "true_label": "positive"
+    },
+    {
+      "index": 6,
+      "input": "<|im_start|>system\nYou are a precise sentiment analyzer. You only output one of these three words: positive, negative, neutral.<|im_end|>\n<|im_start|>user\nClassify the sentiment of this text: \"Outstanding! This exceeded all my expectations.\"\n\nOutput exactly one word below.\nSentiment:<|im_end|>\n<|im_start|>assistant\n",
+      "prediction": "positive",
+      "true_label": "positive"
+    },
+    {
+      "index": 7,
+      "input": "<|im_start|>system\nYou are a precise sentiment analyzer. You only output one of these three words: positive, negative, neutral.<|im_end|>\n<|im_start|>user\nClassify the sentiment of this text: \"Boring and predictable. Complete waste of time.\"\n\nOutput exactly one word below.\nSentiment:<|im_end|>\n<|im_start|>assistant\n",
+      "prediction": "positive",
+      "true_label": "negative"
+    },
+    {
+      "index": 8,
+      "input": "<|im_start|>system\nYou are a precise sentiment analyzer. You only output one of these three words: positive, negative, neutral.<|im_end|>\n<|im_start|>user\nClassify the sentiment of this text: \"This movie was absolutely fantastic! I loved every minute of it.\"\n\nOutput exactly one word below.\nSentiment:<|im_end|>\n<|im_start|>assistant\n",
+      "prediction": "positive",
+      "true_label": "positive"
+    },
+    {
+      "index": 9,
+      "input": "<|im_start|>system\nYou are a precise sentiment analyzer. You only output one of these three words: positive, negative, neutral.<|im_end|>\n<|im_start|>user\nClassify the sentiment of this text: \"Terrible experience. The worst movie I've ever seen.\"\n\nOutput exactly one word below.\nSentiment:<|im_end|>\n<|im_start|>assistant\n",
+      "prediction": "negative",
+      "true_label": "negative"
+    }
+  ],
+  "metrics": {
+    "accuracy": 0.5,
+    "macro_precision": 0.35714285714285715,
+    "macro_recall": 0.35416666666666663,
+    "macro_f1": 0.33636363636363636,
+    "num_samples": 10,
+    "num_correct": 5,
+    "class_metrics": {
+      "ne": {
+        "precision": 0.0,
+        "recall": 0,
+        "f1": 0
+      },
+      "negative": {
+        "precision": 1.0,
+        "recall": 0.6666666666666666,
+        "f1": 0.8
+      },
+      "neutral": {
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0
+      },
+      "positive": {
+        "precision": 0.42857142857142855,
+        "recall": 0.75,
+        "f1": 0.5454545454545454
+      }
+    }
+  },
+  "num_samples": 10,
+  "end_time": "2026-02-24T22:19:20.769639"
+}

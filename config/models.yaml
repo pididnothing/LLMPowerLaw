@@ -102,6 +102,15 @@ models:
     local_model_path: null
     enabled: true # Not suitable for classification
 
+  - name: smollm2-local
+    provider: huggingface_local
+    model_id: "HuggingFaceTB/SmolLM2-135M-Instruct"
+    max_tokens: 1
+    temperature: 0.0
+    device: auto
+    trust_remote_code: true
+    enabled: true
+
   # Small instruction-following model (~2.2GB)
   - name: tinyllama-local
     provider: huggingface_local
