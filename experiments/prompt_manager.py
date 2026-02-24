@@ -264,15 +264,26 @@ class PromptManager:
     def _format_example(self, example: Dict[str, Any]) -> str:
         """Format a single example for few-shot prompting"""
         # Try to extract input and output from example
-        input_text = example.get('input') or example.get('text') or example.get('question')
+        input_text = example.get('input') or example.get('text') or example.get('question') or example.get('content')
         output_text = example.get('output') or example.get('label') or example.get('answer')
         
-        if input_text and output_text:
-            return f"Input: {input_text}\nOutput: {output_text}"
+        # Handle PromptBench QQP format specifically
+        if isinstance(input_text, dict) and 'content' in input_text:
+            input_text = input_text['content']
+        
+        if input_text and output_text is not None:  # Allow 0 as output
+            # Convert output to string
+            output_str = str(output_text)
+            return f"{input_text}\nLabel: {output_str}"
         elif input_text:
-            return f"Input: {input_text}"
+            return str(input_text)
         else:
-            return str(example)
+            # Last resort: try to find any meaningful text
+            for key in ['sentence', 'premise', 'hypothesis']:
+                if key in example:
+                    return str(example[key])
+            # If still nothing, return empty string instead of dict representation
+            return ""
     
     def apply_technique_combination(
         self,

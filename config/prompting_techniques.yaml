@@ -61,16 +61,27 @@ prompting_techniques:
     description: "Custom instructive prompting"
     enabled: false
     template: |
-      Instructions: {instructions}
+      Instructions: $instructions
       
-      Task: {task}
+      Task: $task
       
-      Input: {input}
+      Input: $input
       
       Output:
     fields:
       instructions: "Carefully analyze the input and provide an accurate response."
       task: "classification"  # Will be filled from dataset config
+  
+  - name: classification_simple
+    type: custom
+    description: "Simple classification prompt with clear instructions"
+    enabled: true
+    template: |
+      Classify the sentiment of the following text as either 'positive', 'negative', or 'neutral'. Only provide one single word as your answer which should be one of the three sentiments 'positive', 'negative', or 'neutral'.
+      
+      Text: $input
+      
+      Sentiment:
   
   - name: custom_structured
     type: custom
@@ -185,11 +196,11 @@ global_settings:
   # Per-dataset technique mapping
   dataset_technique_mapping:
     squad: [zero_shot, few_shot, cot]  # Test all 3 techniques on question answering
-    qqp: [zero_shot, few_shot]  # Test 2 techniques on paraphrase detection
+    qqp: [classification_simple]  # Simple classification prompt for QQP
     gsm8k: [zero_shot, cot]  # Test zero-shot and CoT on math reasoning
-    sst2: [zero_shot, few_shot, cot]  # Disabled dataset
-    mnli: [zero_shot, few_shot, cot]  # Disabled dataset
-    custom_classification: [zero_shot, custom_instructive]
+    sst2: [classification_simple]  # Simple classification for sentiment
+    mnli: [classification_simple]  # Simple classification for entailment
+    custom_classification: [classification_simple]  # Simple classification
   
   # Few-shot example selection strategy
   few_shot_strategy: random  # random, similar, diverse

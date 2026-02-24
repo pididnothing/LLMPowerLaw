@@ -92,7 +92,7 @@ models:
   - name: distilgpt2-local
     provider: huggingface_local
     model_id: distilgpt2
-    max_tokens: 256
+    max_tokens: 50
     temperature: 0.0
     device: auto
     load_in_8bit: false

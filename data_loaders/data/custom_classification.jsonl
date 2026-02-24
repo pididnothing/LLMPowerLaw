@@ -1,0 +1,10 @@
+{"input": "This movie was absolutely fantastic! I loved every minute of it.", "label": "positive"}
+{"input": "Terrible experience. The worst movie I've ever seen.", "label": "negative"}
+{"input": "It was okay, nothing special but not bad either.", "label": "neutral"}
+{"input": "Amazing performance by the actors! Highly recommend watching this.", "label": "positive"}
+{"input": "Boring and predictable. Complete waste of time.", "label": "negative"}
+{"input": "The plot was decent but the pacing was off.", "label": "neutral"}
+{"input": "Absolutely brilliant! A masterpiece of cinema.", "label": "positive"}
+{"input": "I couldn't even finish watching it. So disappointing.", "label": "negative"}
+{"input": "Pretty average movie. Some good parts, some bad.", "label": "neutral"}
+{"input": "Outstanding! This exceeded all my expectations.", "label": "positive"}

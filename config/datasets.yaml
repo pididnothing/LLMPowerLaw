@@ -23,7 +23,7 @@ datasets:
     dataset_name: qqp
     task_type: classification
     num_samples: 10  # Minimal for quick testing
-    enabled: true
+    enabled: false
   
   # Custom datasets from files
   - name: custom_classification
@@ -35,7 +35,7 @@ datasets:
       text: "input"
       label: "label"
     num_samples: null
-    enabled: false
+    enabled: true
     
   - name: custom_qa
     type: custom
