@@ -77,11 +77,9 @@ prompting_techniques:
     description: "Simple classification prompt with clear instructions"
     enabled: true
     template: |
-      Classify the sentiment of the following text as either 'positive', 'negative', or 'neutral'. Only provide one single word as your answer which should be one of the three sentiments 'positive', 'negative', or 'neutral'.
+      Classify the following text into one of the categories: positive, negative, or neutral. DON'T explain your reasoning, just provide the category in a single word.
       
       Text: $input
-      
-      Sentiment:
   
   - name: custom_structured
     type: custom
