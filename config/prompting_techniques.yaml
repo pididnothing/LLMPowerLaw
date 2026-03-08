@@ -77,9 +77,11 @@ prompting_techniques:
     description: "Simple classification prompt with clear instructions"
     enabled: true
     template: |
-      Classify the following text into one of the categories: positive, negative, or neutral. DON'T explain your reasoning, just provide the category in a single word.
+      Classify the following text into one of the categories: positive, negative, or neutral. Response must strictly be "POSITIVE", "NEGATIVE", or "NEUTRAL".
       
       Text: $input
+
+  
   
   - name: custom_structured
     type: custom
