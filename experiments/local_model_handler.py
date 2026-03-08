@@ -308,20 +308,42 @@ class LocalModelHandler:
         generated_tokens = outputs[0][inputs['input_ids'].shape[1]:]
         response = self.tokenizer.decode(generated_tokens, skip_special_tokens=True)
         
-        # Post-process: For classification, extract first line/word
-        if task_type == 'classification':
-            response = self._extract_classification_answer(response)
-        
         return response.strip()
+    
+    def extract_answer(self, response: str, task_type: str) -> dict:
+        """Extract answer from model response based on task type
+        
+        Returns:
+            dict with 'raw' and 'extracted' predictions
+        """
+        raw_response = response.strip()
+        
+        if task_type == 'classification':
+            extracted = self._extract_classification_answer(raw_response)
+        elif task_type == 'qa':
+            extracted = self._extract_qa_answer(raw_response)
+        else:
+            extracted = raw_response
+        
+        return {
+            'raw': raw_response,
+            'extracted': extracted
+        }
     
     def _extract_classification_answer(self, response: str) -> str:
         """Extract clean classification answer from potentially verbose output"""
         # Remove common prefixes
         response = response.strip()
-        prefixes_to_remove = ['### Answer:', 'Answer:', 'Sentiment:', 'Classification:']
+        prefixes_to_remove = ['### Answer:', 'Answer:', 'Sentiment:', 'Classification:', '###']
         for prefix in prefixes_to_remove:
             if response.startswith(prefix):
                 response = response[len(prefix):].strip()
+        
+        # Filter out responses that are just stop sequences
+        stop_sequences = ['###', '\n\n', 'Question:', 'Text:']
+        if response in stop_sequences or not response:
+            # Return empty string for invalid responses
+            return ''
         
         # Take only the first line
         first_line = response.split('\n')[0].strip()
@@ -332,7 +354,29 @@ class LocalModelHandler:
         # Remove common punctuation
         first_word = first_word.rstrip('.,;:!?')
         
+        # Normalize case (lowercase for consistency)
+        first_word = first_word.lower()
+        
         return first_word
+    
+    def _extract_qa_answer(self, response: str) -> str:
+        """Extract answer from QA task response"""
+        # Remove common QA prefixes
+        response = response.strip()
+        prefixes_to_remove = ['Answer:', 'A:', 'The answer is:', 'The answer is']
+        for prefix in prefixes_to_remove:
+            if response.lower().startswith(prefix.lower()):
+                response = response[len(prefix):].strip()
+        
+        # For QA, take the first sentence or line
+        first_line = response.split('\n')[0].strip()
+        
+        # If still too long, take first sentence
+        if '. ' in first_line:
+            first_sentence = first_line.split('. ')[0] + '.'
+            return first_sentence
+        
+        return first_line
     
     def _generate_gguf(
         self,

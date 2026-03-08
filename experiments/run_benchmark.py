@@ -284,12 +284,29 @@ class BenchmarkRunner:
                     )
                 
                 # Get model prediction
-                prediction = self._get_model_prediction(model, input_text, model_config, task_type=dataset_config.task_type)
+                prediction_result = self._get_model_prediction(model, input_text, model_config, task_type=dataset_config.task_type)
+                
+                # Handle both string predictions and dict (with raw/extracted)
+                if isinstance(prediction_result, dict):
+                    raw_prediction = prediction_result.get('raw', '')
+                    extracted_prediction = prediction_result.get('extracted', '')
+                else:
+                    # Fallback for non-local models
+                    raw_prediction = prediction_result
+                    extracted_prediction = prediction_result
+                
+                # Log prediction details for first few samples
+                if i < 3:  # Log first 3 predictions
+                    self.logger.log_info(f"Sample {i}:")
+                    self.logger.log_info(f"  Raw prediction: '{raw_prediction}'")
+                    self.logger.log_info(f"  Extracted: '{extracted_prediction}'")
+                    self.logger.log_info(f"  True label: '{true_label}'")
                 
                 predictions.append({
                     'index': i,
                     'input': input_text,
-                    'prediction': prediction,
+                    'raw_prediction': raw_prediction,
+                    'prediction': extracted_prediction,
                     'true_label': true_label
                 })
                 
@@ -309,11 +326,18 @@ class BenchmarkRunner:
         pbar.close()
         return predictions
     
-    def _get_model_prediction(self, model, input_text: str, model_config: ModelConfig, task_type: str = None) -> str:
-        """Get prediction from model (handles different model types)"""
+    def _get_model_prediction(self, model, input_text: str, model_config: ModelConfig, task_type: str = None):
+        """Get prediction from model (handles different model types)
+        
+        Returns:
+            dict or str: For local models, returns {'raw': str, 'extracted': str}
+                        For other models, returns str
+        """
         # Handle local models
         if isinstance(model, LocalModelHandler):
-            return model.generate(input_text, task_type=task_type)
+            raw_response = model.generate(input_text, task_type=task_type)
+            # Extract answer based on task type
+            return model.extract_answer(raw_response, task_type)
         
         # Handle PromptBench models
         if hasattr(model, 'predict'):
