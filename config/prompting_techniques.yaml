@@ -77,9 +77,12 @@ prompting_techniques:
     description: "Simple classification prompt with clear instructions"
     enabled: true
     template: |
-      Classify the following text into one of the categories: positive, negative, or neutral. Response must strictly be "POSITIVE", "NEGATIVE", or "NEUTRAL".
-      
+      <|user|>
+      Classify the sentiment of the text as POSITIVE, NEGATIVE, or NEUTRAL.
+      Return ONLY the label.
+
       Text: $input
+      <|assistant|>
 
   
   
