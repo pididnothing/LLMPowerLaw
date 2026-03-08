@@ -232,9 +232,14 @@ class LocalModelHandler:
         prompt: str,
         max_tokens: Optional[int] = None,
         temperature: Optional[float] = None,
+        task_type: Optional[str] = None,
         **kwargs
     ) -> str:
         """Generate text from prompt"""
+        # Pass task_type to generation methods for task-specific optimization
+        if task_type:
+            kwargs['task_type'] = task_type
+        
         if self.provider == 'huggingface_local':
             return self._generate_huggingface(prompt, max_tokens, temperature, **kwargs)
         elif self.provider == 'gguf':
@@ -259,14 +264,41 @@ class LocalModelHandler:
         inputs = self.tokenizer(prompt, return_tensors="pt", padding=True)
         inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
         
+        # Get task type hint from kwargs if available
+        task_type = kwargs.pop('task_type', None)
+        
+        # Adjust max_tokens for classification tasks (need fewer tokens)
+        if task_type == 'classification' and max_tokens is None:
+            max_tokens = 20  # Classification usually needs just 1-2 words
+        
+        # Stop sequences to prevent over-generation
+        stop_sequences = kwargs.pop('stop_sequences', None)
+        if stop_sequences is None:
+            # Default stop sequences for classification and short answers
+            stop_sequences = ['\n\n', '###', 'Question:', 'Text:', '\n\nText:', 'Answer:']
+        
+        # Encode stop sequences
+        stop_token_ids = []
+        if stop_sequences:
+            for seq in stop_sequences:
+                tokens = self.tokenizer.encode(seq, add_special_tokens=False)
+                if tokens:
+                    stop_token_ids.append(tokens[0])  # Use first token as stop
+        
         # Generation parameters
         gen_kwargs = {
             'max_new_tokens': max_tokens or self.model_config.get('max_tokens', 512),
             'temperature': temperature if temperature is not None else self.model_config.get('temperature', 0.0),
             'do_sample': temperature is not None and temperature > 0,
             'pad_token_id': self.tokenizer.pad_token_id,
+            'eos_token_id': self.tokenizer.eos_token_id,
             **kwargs
         }
+        
+        # Add stop token IDs if available
+        if stop_token_ids:
+            # Use eos_token_id as base, add stop tokens
+            gen_kwargs['eos_token_id'] = [self.tokenizer.eos_token_id] + stop_token_ids if isinstance(self.tokenizer.eos_token_id, int) else stop_token_ids
         
         # Generate
         with torch.no_grad():
@@ -276,7 +308,31 @@ class LocalModelHandler:
         generated_tokens = outputs[0][inputs['input_ids'].shape[1]:]
         response = self.tokenizer.decode(generated_tokens, skip_special_tokens=True)
         
+        # Post-process: For classification, extract first line/word
+        if task_type == 'classification':
+            response = self._extract_classification_answer(response)
+        
         return response.strip()
+    
+    def _extract_classification_answer(self, response: str) -> str:
+        """Extract clean classification answer from potentially verbose output"""
+        # Remove common prefixes
+        response = response.strip()
+        prefixes_to_remove = ['### Answer:', 'Answer:', 'Sentiment:', 'Classification:']
+        for prefix in prefixes_to_remove:
+            if response.startswith(prefix):
+                response = response[len(prefix):].strip()
+        
+        # Take only the first line
+        first_line = response.split('\n')[0].strip()
+        
+        # Take only the first word if multiple words
+        first_word = first_line.split()[0] if first_line.split() else first_line
+        
+        # Remove common punctuation
+        first_word = first_word.rstrip('.,;:!?')
+        
+        return first_word
     
     def _generate_gguf(
         self,

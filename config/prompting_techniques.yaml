@@ -199,8 +199,10 @@ global_settings:
     qqp: [classification_simple]  # Simple classification prompt for QQP
     gsm8k: [zero_shot, cot]  # Test zero-shot and CoT on math reasoning
     sst2: [classification_simple]  # Simple classification for sentiment
+    sst2_test: [classification_simple]  # Test dataset - use same technique
     mnli: [classification_simple]  # Simple classification for entailment
     custom_classification: [classification_simple]  # Simple classification
+    custom_classification_test: [classification_simple]  # Test dataset - use same technique
   
   # Few-shot example selection strategy
   few_shot_strategy: random  # random, similar, diverse

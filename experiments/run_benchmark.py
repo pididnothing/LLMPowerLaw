@@ -284,7 +284,7 @@ class BenchmarkRunner:
                     )
                 
                 # Get model prediction
-                prediction = self._get_model_prediction(model, input_text, model_config)
+                prediction = self._get_model_prediction(model, input_text, model_config, task_type=dataset_config.task_type)
                 
                 predictions.append({
                     'index': i,
@@ -309,11 +309,11 @@ class BenchmarkRunner:
         pbar.close()
         return predictions
     
-    def _get_model_prediction(self, model, input_text: str, model_config: ModelConfig) -> str:
+    def _get_model_prediction(self, model, input_text: str, model_config: ModelConfig, task_type: str = None) -> str:
         """Get prediction from model (handles different model types)"""
         # Handle local models
         if isinstance(model, LocalModelHandler):
-            return model.generate(input_text)
+            return model.generate(input_text, task_type=task_type)
         
         # Handle PromptBench models
         if hasattr(model, 'predict'):
