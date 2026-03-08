@@ -41,7 +41,7 @@ experiments:
   - id: phi3_sst2_simple
     model: phi-3-mini-4bit
     dataset: sst2
-    prompting_technique: classification_simple
+    prompting_technique: classification_simple_phi_3_mini
     description: "Phi-3 on SST-2 with simple classification"
     enabled: false
   
