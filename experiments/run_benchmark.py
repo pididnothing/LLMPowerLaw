@@ -163,16 +163,19 @@ class BenchmarkRunner:
         self,
         model_config: ModelConfig,
         dataset_config: DatasetConfig,
-        prompt_technique: Optional[PromptTechnique] = None
+        prompt_technique: Optional[PromptTechnique] = None,
+        experiment_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """Run a single experiment (one model on one dataset with optional prompting technique)"""
         prompt_name = prompt_technique.name if prompt_technique else "baseline"
+        exp_id = experiment_id or f"{model_config.name}_{dataset_config.name}_{prompt_name}"
         
         self.logger.log_info(
-            f"Starting experiment: {model_config.name} on {dataset_config.name} with {prompt_name}"
+            f"Starting experiment [{exp_id}]: {model_config.name} on {dataset_config.name} with {prompt_name}"
         )
         
         results = {
+            'experiment_id': exp_id,
             'model': model_config.name,
             'dataset': dataset_config.name,
             'task_type': dataset_config.task_type,
@@ -375,15 +378,96 @@ class BenchmarkRunner:
             return self.metrics_calculator.basic_metrics(valid_predictions)
     
     def run_all_experiments(self) -> Dict[str, Any]:
-        """Run all enabled experiments"""
+        """Run all enabled experiments - uses triplet mode if experiments.yaml exists, otherwise auto-combination mode"""
+        # Check if using experiment triplet mode
+        if self.config.use_experiment_mode():
+            return self._run_experiment_triplets()
+        else:
+            return self._run_auto_combinations()
+    
+    def _run_experiment_triplets(self) -> Dict[str, Any]:
+        """Run experiments specified as explicit triplets in experiments.yaml"""
+        enabled_experiments = self.config.get_enabled_experiments()
+        
+        self.logger.log_info(f"Starting benchmark suite (TRIPLET MODE): {self.experiment_name}")
+        self.logger.log_info(f"Experiments: {len(enabled_experiments)}")
+        
+        all_results = {
+            'experiment_name': self.experiment_name,
+            'mode': 'triplet',
+            'start_time': datetime.now().isoformat(),
+            'config': {
+                'experiments': [e.id for e in enabled_experiments]
+            },
+            'experiments': []
+        }
+        
+        # Progress bar for overall experiments
+        experiment_pbar = tqdm(total=len(enabled_experiments), desc="Overall Progress", 
+                              position=0, leave=True, unit="exp")
+        
+        # Run each specified experiment
+        for exp_triplet in enabled_experiments:
+            # Lookup model and dataset configurations
+            model_config = self.config.get_model_by_name(exp_triplet.model)
+            dataset_config = self.config.get_dataset_by_name(exp_triplet.dataset)
+            
+            if not model_config:
+                self.logger.log_warning(f"Model '{exp_triplet.model}' not found, skipping experiment {exp_triplet.id}")
+                experiment_pbar.update(1)
+                continue
+            
+            if not dataset_config:
+                self.logger.log_warning(f"Dataset '{exp_triplet.dataset}' not found, skipping experiment {exp_triplet.id}")
+                experiment_pbar.update(1)
+                continue
+            
+            # Lookup prompting technique
+            technique = None
+            if exp_triplet.prompting_technique and self.prompt_manager:
+                technique = self.prompt_manager.get_technique_by_name(exp_triplet.prompting_technique)
+                if not technique:
+                    self.logger.log_warning(f"Technique '{exp_triplet.prompting_technique}' not found, running without prompting")
+            
+            # Run experiment
+            experiment_pbar.set_description(f"[{exp_triplet.id}] {exp_triplet.model}/{exp_triplet.dataset}")
+            result = self.run_single_experiment(
+                model_config,
+                dataset_config,
+                technique,
+                experiment_id=exp_triplet.id
+            )
+            all_results['experiments'].append(result)
+            experiment_pbar.update(1)
+        
+        experiment_pbar.close()
+        all_results['end_time'] = datetime.now().isoformat()
+        
+        # Clean up loaded models
+        self._cleanup_models()
+        
+        # Save summary
+        summary_path = self.output_dir / f"{self.experiment_name}_summary.json"
+        with open(summary_path, 'w', encoding='utf-8') as f:
+            json.dump(all_results, f, indent=2)
+        
+        self.logger.log_info(f"All experiments completed. Summary saved to {summary_path}")
+        
+        return all_results
+    
+    def _run_auto_combinations(self) -> Dict[str, Any]:
+        """Run all combinations of enabled models and datasets (legacy mode)"""
+    def _run_auto_combinations(self) -> Dict[str, Any]:
+        """Run all combinations of enabled models and datasets (legacy mode)"""
         enabled_models = self.config.get_enabled_models()
         enabled_datasets = self.config.get_enabled_datasets()
         
-        self.logger.log_info(f"Starting benchmark suite: {self.experiment_name}")
+        self.logger.log_info(f"Starting benchmark suite (AUTO-COMBINATION MODE): {self.experiment_name}")
         self.logger.log_info(f"Models: {len(enabled_models)}, Datasets: {len(enabled_datasets)}")
         
         all_results = {
             'experiment_name': self.experiment_name,
+            'mode': 'auto_combination',
             'start_time': datetime.now().isoformat(),
             'config': {
                 'models': [m.name for m in enabled_models],

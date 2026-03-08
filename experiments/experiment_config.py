@@ -80,6 +80,29 @@ class DatasetConfig:
         )
 
 
+@dataclass
+class ExperimentTriplet:
+    """Configuration for a single experiment triplet (model-dataset-technique)"""
+    id: str
+    model: str
+    dataset: str
+    prompting_technique: str
+    description: str = ""
+    enabled: bool = True
+    
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'ExperimentTriplet':
+        """Create ExperimentTriplet from dictionary"""
+        return cls(
+            id=data['id'],
+            model=data['model'],
+            dataset=data['dataset'],
+            prompting_technique=data['prompting_technique'],
+            description=data.get('description', ''),
+            enabled=data.get('enabled', True)
+        )
+
+
 class ExperimentConfig:
     """Main configuration manager for experiments"""
     
@@ -87,8 +110,10 @@ class ExperimentConfig:
         self.config_dir = Path(config_dir)
         self.models: List[ModelConfig] = []
         self.datasets: List[DatasetConfig] = []
+        self.experiments: List[ExperimentTriplet] = []
         self.global_model_settings: Dict[str, Any] = {}
         self.global_dataset_settings: Dict[str, Any] = {}
+        self.global_experiment_settings: Dict[str, Any] = {}
         
         # Load environment variables
         load_dotenv()
@@ -97,6 +122,7 @@ class ExperimentConfig:
         """Load all configuration files"""
         self.load_model_config()
         self.load_dataset_config()
+        self.load_experiment_config()
         
     def load_model_config(self):
         """Load model configuration"""
@@ -132,6 +158,24 @@ class ExperimentConfig:
         
         self.global_dataset_settings = config.get('global_settings', {})
     
+    def load_experiment_config(self):
+        """Load experiment triplet configuration"""
+        config_path = self.config_dir / "experiments.yaml"
+        
+        # Experiments config is optional
+        if not config_path.exists():
+            return
+        
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = yaml.safe_load(f)
+        
+        self.experiments = [
+            ExperimentTriplet.from_dict(exp_data)
+            for exp_data in config.get('experiments', [])
+        ]
+        
+        self.global_experiment_settings = config.get('global_settings', {})
+    
     def get_enabled_models(self) -> List[ModelConfig]:
         """Get list of enabled models"""
         return [m for m in self.models if m.enabled]
@@ -153,6 +197,21 @@ class ExperimentConfig:
             if dataset.name == name:
                 return dataset
         return None
+    
+    def get_enabled_experiments(self) -> List[ExperimentTriplet]:
+        """Get list of enabled experiment triplets"""
+        return [e for e in self.experiments if e.enabled]
+    
+    def get_experiment_by_id(self, exp_id: str) -> Optional[ExperimentTriplet]:
+        """Get experiment by ID"""
+        for exp in self.experiments:
+            if exp.id == exp_id:
+                return exp
+        return None
+    
+    def use_experiment_mode(self) -> bool:
+        """Check if experiment triplet mode should be used"""
+        return len(self.get_enabled_experiments()) > 0
     
     def validate_api_keys(self) -> Dict[str, bool]:
         """Validate that required API keys are present"""
@@ -177,21 +236,34 @@ class ExperimentConfig:
         """Generate a summary of the current configuration"""
         enabled_models = self.get_enabled_models()
         enabled_datasets = self.get_enabled_datasets()
+        enabled_experiments = self.get_enabled_experiments()
         
         summary = []
         summary.append("=" * 60)
         summary.append("EXPERIMENT CONFIGURATION SUMMARY")
         summary.append("=" * 60)
-        summary.append(f"\nEnabled Models ({len(enabled_models)}):")
-        for model in enabled_models:
-            summary.append(f"  - {model.name} ({model.provider})")
         
-        summary.append(f"\nEnabled Datasets ({len(enabled_datasets)}):")
-        for dataset in enabled_datasets:
-            samples = dataset.num_samples or "all"
-            summary.append(f"  - {dataset.name} ({dataset.type}, {samples} samples)")
-        
-        summary.append(f"\nTotal Experiments: {len(enabled_models) * len(enabled_datasets)}")
+        # Check if using experiment triplet mode
+        if self.use_experiment_mode():
+            summary.append(f"\nMode: EXPERIMENT TRIPLET MODE")
+            summary.append(f"\nEnabled Experiments ({len(enabled_experiments)}):")
+            for exp in enabled_experiments:
+                summary.append(f"  - [{exp.id}] {exp.model} → {exp.dataset} → {exp.prompting_technique}")
+                if exp.description:
+                    summary.append(f"    {exp.description}")
+            summary.append(f"\nTotal Experiments: {len(enabled_experiments)}")
+        else:
+            summary.append(f"\nMode: AUTO-COMBINATION MODE")
+            summary.append(f"\nEnabled Models ({len(enabled_models)}):")
+            for model in enabled_models:
+                summary.append(f"  - {model.name} ({model.provider})")
+            
+            summary.append(f"\nEnabled Datasets ({len(enabled_datasets)}):")
+            for dataset in enabled_datasets:
+                samples = dataset.num_samples or "all"
+                summary.append(f"  - {dataset.name} ({dataset.type}, {samples} samples)")
+            
+            summary.append(f"\nTotal Experiments: {len(enabled_models) * len(enabled_datasets)}")
         
         # API Key validation
         api_validation = self.validate_api_keys()

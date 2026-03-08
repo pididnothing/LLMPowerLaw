@@ -1,0 +1,89 @@
+# Experiment Triplet Configuration
+# Each experiment explicitly specifies: model, dataset, and prompting_technique
+# This allows fine-grained control over which combinations to test
+
+# Global experiment settings
+global_settings:
+  # If true, only run experiments with enabled=true
+  run_only_enabled: true
+  
+  # Continue running other experiments if one fails
+  continue_on_error: true
+  
+  # Maximum number of experiments to run (null = no limit)
+  max_experiments: null
+
+# Experiment definitions - each is a model-dataset-template triplet
+experiments:
+  # Quick test experiments (enabled by default for fast validation)
+  - id: phi3_custom_simple
+    model: phi-3-mini-4bit
+    dataset: custom_classification_test
+    prompting_technique: classification_simple
+    description: "Phi-3 on custom sentiment with simple classification"
+    enabled: true
+  
+  - id: gemma_custom_simple
+    model: gemma-2b-4bit
+    dataset: custom_classification_test
+    prompting_technique: classification_simple
+    description: "Gemma on custom sentiment with simple classification"
+    enabled: true
+  
+  - id: tinyllama_custom_simple
+    model: tinyllama-test
+    dataset: custom_classification_test
+    prompting_technique: classification_simple
+    description: "TinyLlama on custom sentiment with simple classification"
+    enabled: true
+  
+  # Full experiments (disabled by default - enable as needed)
+  - id: phi3_sst2_simple
+    model: phi-3-mini-4bit
+    dataset: sst2
+    prompting_technique: classification_simple
+    description: "Phi-3 on SST-2 with simple classification"
+    enabled: false
+  
+  - id: phi3_sst2_cot
+    model: phi-3-mini-4bit
+    dataset: sst2
+    prompting_technique: cot
+    description: "Phi-3 on SST-2 with chain-of-thought"
+    enabled: false
+  
+  - id: llama2_7b_qqp
+    model: llama-2-7b-4bit
+    dataset: qqp
+    prompting_technique: classification_simple
+    description: "Llama-2-7B on QQP paraphrase detection"
+    enabled: false
+  
+  - id: llama2_13b_mnli
+    model: llama-2-13b-4bit
+    dataset: mnli
+    prompting_technique: classification_simple
+    description: "Llama-2-13B on MNLI entailment"
+    enabled: false
+  
+  - id: gemma_squad_fewshot
+    model: gemma-2b-4bit
+    dataset: squad
+    prompting_technique: few_shot
+    description: "Gemma on SQuAD QA with few-shot"
+    enabled: false
+  
+  - id: phi3_gsm8k_cot
+    model: phi-3-mini-4bit
+    dataset: gsm8k
+    prompting_technique: cot
+    description: "Phi-3 on GSM8K math reasoning with CoT"
+    enabled: false
+
+# Notes:
+# - Each experiment ID should be unique
+# - Model name must match a model in config/models.yaml
+# - Dataset name must match a dataset in config/datasets.yaml
+# - Prompting technique must match a technique in config/prompting_techniques.yaml
+# - Set enabled=true for experiments you want to run
+# - Define model-specific chat templates in the prompting technique templates themselves
