@@ -49,3 +49,6 @@ results/*.log
 # Model cache
 models/
 .cache/
+
+# Documentation backups
+docs/old/

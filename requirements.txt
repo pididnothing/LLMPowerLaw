@@ -1,6 +1,7 @@
 # Core dependencies
-# Note: Install sentencepiece first to avoid build issues on Windows
-sentencepiece>=0.2.0
+# Note: On Windows, install pre-built sentencepiece first:
+# pip install sentencepiece --only-binary :all:
+sentencepiece>=0.2.0  # Use pre-built wheels on Windows
 torch>=2.0.0
 transformers>=4.30.0
 openai>=1.0.0

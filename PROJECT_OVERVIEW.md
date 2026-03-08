@@ -1,163 +1,194 @@
 # 🚀 LLM Power Law - Project Overview
 
-Your complete LLM benchmarking framework has been successfully set up!
+A comprehensive LLM benchmarking framework with progress monitoring, memory optimization, and flexible prompting techniques.
+
+## 🎯 Quick Start Options
+
+1. **Google Colab** (Recommended): Open [`LLM_PowerLaw_Colab.ipynb`](LLM_PowerLaw_Colab.ipynb) - zero setup, free GPU
+2. **Local Setup**: Follow [docs/SETUP.md](docs/SETUP.md) for your platform
 
 ## 📁 Project Structure
 
 ```
 LLMPowerLaw/
-├── 📄 README.md                      # Comprehensive documentation
-├── 📄 QUICKSTART.md                  # Quick start instructions
+├── 📄 README.md                      # Main documentation
+├── 📄 LLM_PowerLaw_Colab.ipynb      # 🚀 Start here for Colab!
 ├── 📄 requirements.txt               # Python dependencies
-├── 📄 setup.py                       # Setup verification script
-├── 📄 .env.example                   # Environment variables template
-├── 📄 .gitignore                     # Git ignore rules
 │
-├── 📂 config/                        # Configuration files
+├── 📂 config/                        # Configuration (YAML files)
 │   ├── models.yaml                   # Model configurations
-│   └── datasets.yaml                 # Dataset configurations
+│   ├── datasets.yaml                 # Dataset configurations
+│   └── prompting_techniques.yaml     # Prompting strategies
 │
-├── 📂 datasets/                      # Dataset management
-│   ├── __init__.py
-│   ├── custom_loader.py              # Custom dataset loader
-│   └── data/                         # Your dataset files (created after setup)
+├── 📂 experiments/                   # Core benchmarking code
+│   ├── run_benchmark.py              # Main runner (with progress bars!)
+│   ├── local_model_handler.py        # Local model loading
+│   ├── prompt_manager.py             # Prompting techniques
+│   └── experiment_config.py          # Configuration manager
 │
-├── 📂 experiments/                   # Experiment execution
-│   ├── __init__.py
-│   ├── experiment_config.py          # Configuration manager
-│   └── run_benchmark.py              # Main benchmark runner
+├── 📂 data_loaders/                  # Dataset loaders
+│   ├── custom_loader.py              # Custom dataset support
+│   └── data/                         # Custom dataset files
 │
-├── 📂 utils/                         # Utility functions
-│   ├── __init__.py
-│   ├── logger.py                     # Logging utilities
-│   └── metrics.py                    # Metrics calculation
+├── 📂 utils/                         # Utilities
+│   ├── logger.py                     # Logging with UTF-8 support
+│   └── metrics.py                    # Comprehensive metrics
 │
-├── 📂 notebooks/                     # Jupyter notebooks
-│   └── analysis.ipynb                # Results analysis notebook
+├── 📂 results/                       # Experiment outputs
+│   └── (JSON files, logs, summaries)
 │
-└── 📂 results/                       # Experiment results
-    └── .gitkeep
+├── 📂 docs/                          # Extended documentation
+│   ├── SETUP.md                      # Complete setup guide
+│   ├── DIAGNOSIS_AND_FIXES.md        # Troubleshooting
+│   ├── WINDOWS_INSTALL_FIX.md        # Windows-specific issues
+│   └── old/                          # Archived documentation
+│
+└── 📂 notebooks/                     # Analysis notebooks
+    └── analysis.ipynb                # Results visualization
 ```
 
 ## 🎯 Key Features
 
+### ✅ Progress Monitoring (NEW!)
+
+- **Real-time progress bars** for all operations (tqdm library)
+- Model loading progress (tokenizer + model)
+- Dataset loading progress
+- Per-sample prediction progress
+- Overall experiment tracking
+
+### ✅ Memory Optimization (NEW!)
+
+- **4-bit quantization**: ~75% memory reduction (run 7B on 4GB VRAM!)
+- **8-bit quantization**: ~50% memory reduction
+- **GGUF support**: CPU-friendly quantized models
+- **Auto device mapping**: Intelligent GPU/CPU utilization
+
+### ✅ Prompting Techniques (NEW!)
+
+- **PromptBench techniques**: Zero-shot, few-shot, chain-of-thought, role prompting
+- **Custom templates**: Create your own prompting strategies
+- **Dataset-specific mapping**: Different techniques per dataset
+- **Automatic evaluation**: Compare prompting approaches
+
 ### ✅ Multi-Model Support
 
-- **OpenAI**: GPT-4, GPT-3.5-turbo
-- **Anthropic**: Claude 3 Opus, Claude 3 Sonnet
-- **HuggingFace**: Llama 2, Mistral, Llama 3, and any HF model
-- **Google**: Gemini Pro
+- **Local Models**: HuggingFace Transformers, GGUF, vLLM
+- **API Models**: OpenAI (GPT-4, GPT-3.5), Anthropic (Claude), Google (Gemini)
+- **Quantized Models**: Run large models on consumer hardware
+- **Flexible providers**: Easy to add custom providers
 
 ### ✅ Flexible Dataset Integration
 
-- **PromptBench** built-in datasets (SST-2, MNLI, QQP, etc.)
-- **Custom datasets** (JSON, JSONL, CSV formats)
-- **HuggingFace datasets** (SQuAD, GSM8K, etc.)
+- **PromptBench datasets**: SST-2, MNLI, QQP, SQuAD, etc.
+- **Custom datasets**: JSONL, JSON, CSV formats
+- **HuggingFace datasets**: Direct integration
+- **Test datasets**: 5-sample quick tests for verification
 
 ### ✅ Comprehensive Evaluation
 
-- Classification metrics (Accuracy, Precision, Recall, F1)
-- QA metrics (Exact Match, Token F1)
-- Generation metrics (N-gram overlap)
-- Per-class metrics and confusion analysis
-
-### ✅ Easy Configuration
-
-- YAML-based configuration for models and datasets
-- Environment variable management for API keys
-- Enable/disable specific models and datasets easily
-
-### ✅ Result Management
-
-- JSON-based result storage
-- Detailed logging
-- TensorBoard integration
-- Jupyter notebook for visualization
+- **Classification**: Accuracy, Precision, Recall, F1 (macro/per-class)
+- **QA**: Exact Match, Token F1
+- **Generation**: N-gram overlap scores
+- **Detailed outputs**: Full predictions + metrics saved
 
 ## 🚀 Getting Started
 
-### Step 1: Install Dependencies
+### Option 1: Google Colab (Easiest!)
+
+1. Open [`LLM_PowerLaw_Colab.ipynb`](LLM_PowerLaw_Colab.ipynb) in Google Colab
+2. Enable GPU: Runtime → Change runtime type → T4 GPU
+3. Run all cells step by step
+4. Download results from the Files panel
+
+**Perfect for**: Zero-setup testing, free GPU (~15GB VRAM), no local installation
+
+### Option 2: Local Installation
+
+**See [docs/SETUP.md](docs/SETUP.md) for complete instructions**
+
+Quick version:
 
 ```bash
-# Create virtual environment (recommended)
-python -m venv venv
-.\venv\Scripts\activate
-
-# Install all dependencies
+# Install dependencies
 pip install -r requirements.txt
-```
+pip install bitsandbytes  # For 4-bit quantization
 
-### Step 2: Configure API Keys
-
-```bash
-# Copy the example environment file
-copy .env.example .env
-
-# Edit .env and add your API keys
-# OPENAI_API_KEY=sk-...
-# ANTHROPIC_API_KEY=sk-ant-...
-# HUGGINGFACE_TOKEN=hf_...
-```
-
-### Step 3: Verify Setup
-
-```bash
-python setup.py
-```
-
-This will:
-
-- Check all dependencies
-- Verify configuration files
-- Create example datasets
-- Test configuration loading
-
-### Step 4: Configure Your Experiments
-
-**Enable Models** (config/models.yaml):
-
-```yaml
-models:
-  - name: gpt-3.5-turbo
-    enabled: true # Set to true
-```
-
-**Enable Datasets** (config/datasets.yaml):
-
-```yaml
-datasets:
-  - name: sst2
-    enabled: true # Set to true
-```
-
-### Step 5: Run Experiments
-
-```bash
-# Run all enabled experiments
+# Run test (5 samples)
 python experiments/run_benchmark.py
-
-# Run specific combinations
-python experiments/run_benchmark.py --model gpt-3.5-turbo --dataset sst2
-
-# Custom experiment name
-python experiments/run_benchmark.py --experiment-name my_test_v1
-```
-
-### Step 6: Analyze Results
-
-```bash
-# Open Jupyter notebook for analysis
-jupyter notebook notebooks/analysis.ipynb
-
-# Or view the JSON results directly
-ls results/
 ```
 
 ## 📊 Example Workflow
 
-### 1. Testing with Custom Dataset
+## 📊 Example Workflows
 
-Create a custom dataset file `datasets/data/my_task.jsonl`:
+### 1. Quick Sanity Check (2-3 minutes)
+
+```bash
+# Uses pre-configured test dataset (5 samples)
+python experiments/run_benchmark.py
+```
+
+Output:
+
+```
+Loading model components: 100%|████████| 2/2 [00:45<00:00]
+gemma-2b-4bit on custom_classification_test: 100%|████| 5/5 [00:12<00:00]
+✅ Accuracy: 0.80
+```
+
+### 2. Compare Prompting Techniques
+
+Edit `config/prompting_techniques.yaml`:
+
+```yaml
+- name: zero_shot
+  enabled: true
+- name: few_shot
+  enabled: true
+  params:
+    num_examples: 3
+- name: chain_of_thought
+  enabled: true
+```
+
+Results show technique comparison:
+
+```
+gemma-2b-4bit on sst2 [zero_shot]: Accuracy 0.82
+gemma-2b-4bit on sst2 [few_shot]: Accuracy 0.87
+gemma-2b-4bit on sst2 [chain_of_thought]: Accuracy 0.85
+```
+
+### 3. Scale to Larger Dataset
+
+Edit `config/datasets.yaml`:
+
+```yaml
+- name: sst2
+  num_samples: 200 # Increase from 5
+  enabled: true
+```
+
+### 4. Run Memory-Efficient Large Model
+
+Edit `config/models.yaml`:
+
+```yaml
+- name: llama-2-7b-4bit
+  provider: huggingface_local
+  model_id: meta-llama/Llama-2-7b-chat-hf
+  load_in_4bit: true # 75% memory reduction!
+  enabled: true
+```
+
+Can run 7B model on just 4GB VRAM!
+
+### 5. Custom Dataset Evaluation
+
+### 5. Custom Dataset Evaluation
+
+Create `data_loaders/data/my_task.jsonl`:
 
 ```jsonl
 {"input": "This is great!", "label": "positive"}
@@ -169,7 +200,7 @@ Add to `config/datasets.yaml`:
 ```yaml
 - name: my_task
   type: custom
-  file_path: "./datasets/data/my_task.jsonl"
+  file_path: "./data_loaders/data/my_task.jsonl"
   task_type: classification
   format: jsonl
   fields:
@@ -178,48 +209,41 @@ Add to `config/datasets.yaml`:
   enabled: true
 ```
 
-### 2. Comparing Multiple Models
+Run: `python experiments/run_benchmark.py`
 
-Enable multiple models in `config/models.yaml`:
+## 📈 Results Structure
 
-```yaml
-models:
-  - name: gpt-3.5-turbo
-    enabled: true
-  - name: gpt-4
-    enabled: true
-  - name: claude-3-sonnet
-    enabled: true
+After running experiments:
+
+```
+results/
+├── experiment_20260308_summary.json          # All results summary
+├── experiment_gemma-2b_sst2_20260308.json   # Individual result
+├── experiment_20260308.log                   # Detailed logs
+└── (more result files...)
 ```
 
-Run experiments:
+Each result file contains:
 
-```bash
-python experiments/run_benchmark.py --dataset my_task
-```
+- Model and dataset configuration
+- Start/end timestamps
+- All predictions with inputs
+- Comprehensive metrics (accuracy, F1, precision, recall)
+- Error information (if any)
 
-### 3. Analyzing Results
+## 📚 Documentation Guide
 
-Results are saved in `results/` directory:
-
-- Individual results: `experiment_model_dataset_timestamp.json`
-- Summary: `experiment_summary.json`
-- Logs: `experiment.log`
-
-Load in notebook:
-
-```python
-import json
-with open('results/experiment_summary.json') as f:
-    results = json.load(f)
-```
-
-## 📚 Documentation
-
-- **README.md**: Complete documentation with all features
-- **QUICKSTART.md**: Quick reference guide
-- **Inline comments**: All code is well-documented
-- **Example notebooks**: Provided for analysis
+| Document                                                     | Purpose                                 |
+| ------------------------------------------------------------ | --------------------------------------- |
+| [README.md](README.md)                                       | Main documentation & quick start        |
+| [docs/SETUP.md](docs/SETUP.md)                               | Complete installation for all platforms |
+| [LLM_PowerLaw_Colab.ipynb](LLM_PowerLaw_Colab.ipynb)         | Google Colab notebook                   |
+| [QUICKSTART.md](QUICKSTART.md)                               | Quick reference commands                |
+| [QUICKSTART_4GB_VRAM.md](QUICKSTART_4GB_VRAM.md)             | 4GB VRAM setup                          |
+| [MEMORY_OPTIMIZATION_GUIDE.md](MEMORY_OPTIMIZATION_GUIDE.md) | Quantization deep dive                  |
+| [PROMPTING_GUIDE.md](PROMPTING_GUIDE.md)                     | Prompting techniques                    |
+| [LOCAL_MODELS.md](LOCAL_MODELS.md)                           | Local model execution                   |
+| [docs/DIAGNOSIS_AND_FIXES.md](docs/DIAGNOSIS_AND_FIXES.md)   | Troubleshooting                         |
 
 ## 🔧 Customization
 
@@ -240,81 +264,68 @@ Edit `utils/metrics.py`:
 
 ```python
 @staticmethod
-def your_custom_metric(predictions):
+def custom_metric(predictions):
     # Your metric calculation
     return {'metric_name': value}
 ```
 
-### Add New Dataset Type
+### Create Custom Prompting Technique
 
-Edit `datasets/custom_loader.py`:
+Edit `config/prompting_techniques.yaml`:
 
-```python
-@staticmethod
-def load_your_format(file_path):
-    # Your loading code
-    return data
+```yaml
+- name: my_custom_technique
+  type: custom
+  enabled: true
+  template: |
+    Context: {context}
+    Question: {input}
+
+    Let's think step by step:
 ```
 
-## 📈 Expected Output
+## 💡 Tips & Best Practices
 
-After running experiments, you'll have:
+- **Start small**: Use test datasets (5 samples) to verify setup
+- **Use quantization**: Enable 4-bit for large models on limited VRAM
+- **Monitor progress**: Watch the progress bars to estimate completion time
+- **Check logs**: `results/*.log` files contain detailed execution info
+- **Compare techniques**: Enable multiple prompting techniques to find best approach
+- **Iterate quickly**: Test with 5-100 samples before scaling to full datasets
 
-```
-results/
-├── experiment_20260221_100000.log
-├── experiment_20260221_100000_summary.json
-├── experiment_gpt-3.5-turbo_sst2_20260221_100000.json
-├── experiment_gpt-4_sst2_20260221_100001.json
-└── analysis_summary.csv
-```
+## 🆘 Common Issues
 
-Each result file contains:
+| Issue                   | Solution                                                      |
+| ----------------------- | ------------------------------------------------------------- |
+| **Out of Memory**       | Enable `load_in_4bit: true` or reduce `num_samples`           |
+| **Slow inference**      | Expected with quantization (~2-3x slower than full precision) |
+| **Unicode errors**      | Fixed in latest version (UTF-8 encoding added)                |
+| **sentencepiece error** | Windows: `pip install sentencepiece --only-binary :all:`      |
+| **Import errors**       | `pip install -r requirements.txt`                             |
 
-- Model and dataset info
-- Execution time
-- All predictions
-- Comprehensive metrics
-- Error information (if any)
+**Full troubleshooting**: [docs/DIAGNOSIS_AND_FIXES.md](docs/DIAGNOSIS_AND_FIXES.md)
 
 ## 🎓 Next Steps
 
-1. **Install dependencies**: `pip install -r requirements.txt`
-2. **Run setup**: `python setup.py`
-3. **Add API keys**: Edit `.env` file
-4. **Configure experiments**: Enable models and datasets
-5. **Run benchmarks**: `python experiments/run_benchmark.py`
-6. **Analyze results**: Use the Jupyter notebook
+1. **Run test**: `python experiments/run_benchmark.py` (2-3 min)
+2. **Review results**: Check `results/` directory
+3. **Enable more models**: Edit `config/models.yaml`
+4. **Scale datasets**: Increase `num_samples` in `config/datasets.yaml`
+5. **Try prompting**: Enable techniques in `config/prompting_techniques.yaml`
+6. **Analyze**: Use `notebooks/analysis.ipynb` for visualization
 
-## 💡 Tips
+## 🤝 Contributing
 
-- Start with small datasets to test your setup
-- Use `num_samples` to limit dataset size during testing
-- Enable `use_cache` to speed up repeated runs
-- Check logs in `results/` directory for debugging
-- Use the analysis notebook for visualizations
+Areas to enhance:
 
-## 🆘 Troubleshooting
-
-**Import Errors**: Run `pip install -r requirements.txt`
-
-**API Key Issues**: Check `.env` file and ensure keys are correct
-
-**PromptBench Errors**: Optional, you can use custom datasets without it
-
-**Memory Issues**: Use `load_in_8bit: true` for large models
-
-## 📞 Support
-
-Check these resources:
-
-1. README.md for detailed documentation
-2. QUICKSTART.md for quick reference
-3. Example configurations in config/
-4. Logs in results/ directory
+- New model providers (Cohere, AI21, etc.)
+- Additional metrics (BLEU, ROUGE, etc.)
+- Custom dataset loaders
+- Configuration presets
+- Analysis tools
 
 ---
 
-**Your LLM benchmarking framework is ready! 🎉**
+**Ready to benchmark LLMs! 🚀**
 
-Start by running: `python setup.py`
+Start with: **[LLM_PowerLaw_Colab.ipynb](LLM_PowerLaw_Colab.ipynb)** or **[docs/SETUP.md](docs/SETUP.md)**

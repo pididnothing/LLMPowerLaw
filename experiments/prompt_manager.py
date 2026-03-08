@@ -59,7 +59,7 @@ class PromptManager:
     
     def load_config(self):
         """Load prompting techniques configuration"""
-        with open(self.config_path, 'r') as f:
+        with open(self.config_path, 'r', encoding='utf-8') as f:
             config = yaml.safe_load(f)
         
         self.techniques = [

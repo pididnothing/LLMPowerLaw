@@ -105,7 +105,7 @@ class ExperimentConfig:
         if not config_path.exists():
             raise FileNotFoundError(f"Model config not found: {config_path}")
         
-        with open(config_path, 'r') as f:
+        with open(config_path, 'r', encoding='utf-8') as f:
             config = yaml.safe_load(f)
         
         self.models = [
@@ -122,7 +122,7 @@ class ExperimentConfig:
         if not config_path.exists():
             raise FileNotFoundError(f"Dataset config not found: {config_path}")
         
-        with open(config_path, 'r') as f:
+        with open(config_path, 'r', encoding='utf-8') as f:
             config = yaml.safe_load(f)
         
         self.datasets = [

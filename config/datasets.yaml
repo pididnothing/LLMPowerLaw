@@ -2,30 +2,76 @@
 # Configure benchmarking datasets for evaluation
 # Supports both built-in PromptBench datasets and custom datasets
 
+# ============================================================
+# 🧪 TEST RUN STRATEGY (Recommended workflow)
+# ============================================================
+# 1. START HERE: Enable test datasets (5-10 samples)
+# 2. Run: python experiments/run_benchmark.py
+# 3. Verify model loads and predictions work
+# 4. THEN: Switch to full datasets (100-500 samples)
+# 5. Run full experiments
+# ============================================================
+
 datasets:
-  # PromptBench built-in datasets
+  # ============================================================
+  # 🧪 QUICK TEST DATASETS (5-10 samples for verification)
+  # Enable these first to verify your setup works!
+  # ============================================================
+  
+  # Test with custom classification (fastest - local file)
+  - name: custom_classification_test
+    type: custom
+    file_path: "./data_loaders/data/custom_classification.jsonl"
+    task_type: classification
+    format: jsonl
+    fields:
+      text: "input"
+      label: "label"
+    num_samples: 5  # Just 5 samples for quick test
+    enabled: true  # ✅ ENABLED - Quick test (completes in ~1 min)
+    
+  # Test with SST-2 sentiment classification
+  - name: sst2_test
+    type: promptbench
+    dataset_name: sst-2
+    task_type: classification
+    num_samples: 10  # Just 10 samples for verification
+    enabled: false  # Enable after custom test works
+    
+  # ============================================================
+  # 📊 FULL EXPERIMENT DATASETS (100-500 samples)
+  # Enable these after verifying with test datasets
+  # ============================================================
+  # ============================================================
+  # 📊 FULL EXPERIMENT DATASETS (100-500 samples)
+  # Enable these after verifying with test datasets
+  # ============================================================
+  
+  # SST-2: Sentiment classification (full)
   - name: sst2
     type: promptbench
     dataset_name: sst-2
     task_type: classification
-    num_samples: 500  # Reduced for faster testing
-    enabled: false  # Disabled due to PromptBench compatibility issues
+    num_samples: 100  # Start with 100, increase to 500 for final runs
+    enabled: false  # Enable after test runs work
     
+  # MNLI: Natural language inference (full)
   - name: mnli
     type: promptbench
     dataset_name: mnli
     task_type: classification
-    num_samples: 500  # Reduced for faster testing
-    enabled: false  # Disabled due to PromptBench compatibility issues
+    num_samples: 100  # Start with 100, increase to 500 for final runs
+    enabled: false  # Enable after test runs work
     
+  # QQP: Question pair matching (full)
   - name: qqp
     type: promptbench
     dataset_name: qqp
     task_type: classification
-    num_samples: 10  # Minimal for quick testing
+    num_samples: 100  # Start with 100
     enabled: false
   
-  # Custom datasets from files
+  # Custom classification (full dataset)
   - name: custom_classification
     type: custom
     file_path: "./data_loaders/data/custom_classification.jsonl"
@@ -34,8 +80,8 @@ datasets:
     fields:
       text: "input"
       label: "label"
-    num_samples: null
-    enabled: true
+    num_samples: null  # Use all available samples
+    enabled: false  # Enable for full custom dataset runs
     
   - name: custom_qa
     type: custom

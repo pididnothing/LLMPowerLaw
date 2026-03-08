@@ -11,6 +11,7 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 import traceback
+from tqdm import tqdm
 
 # Add parent directory to path
 sys.path.append(str(Path(__file__).parent.parent))
@@ -185,8 +186,11 @@ class BenchmarkRunner:
         try:
             # Load dataset
             self.logger.log_info(f"Loading dataset: {dataset_config.name}")
-            dataset = self.load_dataset(dataset_config)
+            with tqdm(total=1, desc=f"Loading {dataset_config.name}", leave=False) as pbar:
+                dataset = self.load_dataset(dataset_config)
+                pbar.update(1)
             results['num_samples'] = len(dataset)
+            self.logger.log_info(f"✓ Loaded {len(dataset)} samples")
             
             # Initialize model
             self.logger.log_info(f"Initializing model: {model_config.name}")
@@ -247,9 +251,14 @@ class BenchmarkRunner:
                     few_shot_examples = dataset[:num_examples]
                     dataset = dataset[num_examples:]  # Skip examples in test
         
+        # Add progress bar for prediction loop
+        pbar = tqdm(enumerate(dataset), total=len(dataset), 
+                   desc=f"{model_config.name} on {dataset_config.name}",
+                   unit="sample")
+        
         # This is a simplified version - actual implementation would depend on
         # dataset structure and task type
-        for i, example in enumerate(dataset):
+        for i, example in pbar:
             try:
                 # Extract input based on task type
                 if dataset_config.type == "custom":
@@ -284,6 +293,12 @@ class BenchmarkRunner:
                     'true_label': true_label
                 })
                 
+                # Update progress bar with current accuracy
+                if len(predictions) > 0 and i % 10 == 0:
+                    valid_preds = [p for p in predictions if 'error' not in p]
+                    if len(valid_preds) > 0:
+                        pbar.set_postfix({'completed': len(valid_preds)})
+                
             except Exception as e:
                 self.logger.log_error(f"Error processing sample {i}: {str(e)}")
                 predictions.append({
@@ -291,6 +306,7 @@ class BenchmarkRunner:
                     'error': str(e)
                 })
         
+        pbar.close()
         return predictions
     
     def _get_model_prediction(self, model, input_text: str, model_config: ModelConfig) -> str:
@@ -352,6 +368,20 @@ class BenchmarkRunner:
             'experiments': []
         }
         
+        # Calculate total experiments to run
+        total_experiments = 0
+        for model_config in enabled_models:
+            for dataset_config in enabled_datasets:
+                if self.enable_prompting and self.prompt_manager:
+                    techniques = self.prompt_manager.get_techniques_for_dataset(dataset_config.name)
+                    total_experiments += len(techniques) if techniques else 1
+                else:
+                    total_experiments += 1
+        
+        # Progress bar for overall experiments
+        experiment_pbar = tqdm(total=total_experiments, desc="Overall Progress", 
+                              position=0, leave=True, unit="exp")
+        
         # Run each combination
         for model_config in enabled_models:
             for dataset_config in enabled_datasets:
@@ -362,18 +392,23 @@ class BenchmarkRunner:
                 
                 # If no techniques configured, run without prompting
                 if not techniques:
+                    experiment_pbar.set_description(f"{model_config.name}/{dataset_config.name}/baseline")
                     result = self.run_single_experiment(model_config, dataset_config, None)
                     all_results['experiments'].append(result)
+                    experiment_pbar.update(1)
                 else:
                     # Run experiment for each prompting technique
                     for technique in techniques:
+                        experiment_pbar.set_description(f"{model_config.name}/{dataset_config.name}/{technique.name}")
                         result = self.run_single_experiment(
                             model_config, 
                             dataset_config,
                             technique
                         )
                         all_results['experiments'].append(result)
+                        experiment_pbar.update(1)
         
+        experiment_pbar.close()
         all_results['end_time'] = datetime.now().isoformat()
         
         # Clean up loaded models
@@ -381,7 +416,7 @@ class BenchmarkRunner:
         
         # Save summary
         summary_path = self.output_dir / f"{self.experiment_name}_summary.json"
-        with open(summary_path, 'w') as f:
+        with open(summary_path, 'w', encoding='utf-8') as f:
             json.dump(all_results, f, indent=2)
         
         self.logger.log_info(f"All experiments completed. Summary saved to {summary_path}")

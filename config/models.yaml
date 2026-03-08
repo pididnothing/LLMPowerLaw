@@ -2,7 +2,108 @@
 # Configure different LLM models for benchmarking
 # Each model has: name, provider, configuration parameters
 
+# ============================================================
+# 🔧 HARDWARE-SPECIFIC RECOMMENDATIONS
+# ============================================================
+# For 4GB VRAM + 16GB RAM (your setup):
+#   ✅ RECOMMENDED: tinyllama-local, gemma-2b-4bit, phi-3-mini-4bit
+#   ✅ WORKS: llama-2-7b-4bit (tight, but should work)
+#   ❌ TOO BIG: Any 8B+ model without 4-bit quantization
+#
+# For 8GB+ VRAM:
+#   ✅ All 7B models with 4-bit quantization
+#   ✅ 13B models with 4-bit (12GB+ recommended)
+# ============================================================
+
 models:
+  # ============================================================
+  # 🚀 QUICK TEST MODELS (For verification before full runs)
+  # Start here! These load fast and let you verify setup
+  # ============================================================
+  
+  # FASTEST: ~300MB, loads in <30 seconds (NOT for real experiments)
+  - name: distilgpt2-test
+    provider: huggingface_local
+    model_id: distilgpt2
+    max_tokens: 50
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: false
+    torch_dtype: auto
+    trust_remote_code: false
+    local_model_path: null
+    enabled: false  # Enable ONLY for testing your setup
+    # Note: Not suitable for classification tasks, but great for testing
+  
+  # BEST FOR TESTING: 1.1B params, ~2GB download, good quality
+  - name: tinyllama-test
+    provider: huggingface_local
+    model_id: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+    max_tokens: 256
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: false
+    torch_dtype: auto
+    trust_remote_code: false
+    local_model_path: null
+    enabled: false  # ✅ ENABLED - Perfect for your 4GB VRAM
+    # Memory: ~1GB VRAM | Speed: Fast | Quality: Good for testing
+  
+  # ============================================================
+  # 💎 RECOMMENDED FOR 4GB VRAM (Real Experiments)
+  # ============================================================
+  
+  # Gemma 2B with 4-bit: Excellent quality, fits comfortably in 4GB
+  - name: gemma-2b-4bit
+    provider: huggingface_local
+    model_id: google/gemma-2b-it
+    max_tokens: 512
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: true  # 4-bit reduces to ~1GB VRAM
+    torch_dtype: auto
+    trust_remote_code: false
+    local_model_path: null
+    enabled: false  # ✅ ENABLED - Great for 4GB VRAM
+    # Memory: ~1GB VRAM | Quality: Excellent for size
+  
+  # Phi-3-mini with 4-bit: Microsoft's efficient model
+  - name: phi-3-mini-4bit
+    provider: huggingface_local
+    model_id: microsoft/Phi-3-mini-4k-instruct
+    max_tokens: 512
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: true  # 4-bit reduces to ~2GB VRAM
+    torch_dtype: auto
+    trust_remote_code: true  # Required for Phi models
+    local_model_path: null
+    enabled: false  # ✅ ENABLED - Fits in 4GB VRAM
+    # Memory: ~2GB VRAM | Quality: Very good
+  
+  # Llama 2 7B with 4-bit: More powerful, uses most of your VRAM
+  - name: llama-2-7b-4bit
+    provider: huggingface_local
+    model_id: meta-llama/Llama-2-7b-chat-hf
+    max_tokens: 512
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: true  # 4-bit reduces to ~4GB VRAM (tight!)
+    torch_dtype: auto
+    trust_remote_code: false
+    local_model_path: null
+    enabled: false  # Enable for better quality (uses all 4GB VRAM)
+    # Memory: ~4GB VRAM (tight fit) | Quality: Excellent
+    # Note: May need to close other GPU apps
+  
+  # ============================================================
+  # ⚠️  LARGER MODELS (Disabled - Require >4GB VRAM)
+  # ============================================================
   # OpenAI Models
   - name: gpt-4
     provider: openai
@@ -41,13 +142,13 @@ models:
     model_id: meta-llama/Llama-2-7b-chat-hf
     max_tokens: 512
     temperature: 0.0
-    device: auto  # auto, cuda, cpu
-    load_in_8bit: false  # Reduce memory usage (requires bitsandbytes)
-    load_in_4bit: false  # Further reduce memory (requires bitsandbytes)
-    torch_dtype: auto  # auto, float16, bfloat16, float32
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: false  # Without quantization: ~14GB VRAM
+    torch_dtype: auto
     trust_remote_code: false
-    local_model_path: null  # Optional: path to local model files
-    enabled: false
+    local_model_path: null
+    enabled: false  # ❌ TOO BIG for 4GB VRAM without quantization
     
   - name: mistral-7b-local
     provider: huggingface_local
@@ -56,11 +157,11 @@ models:
     temperature: 0.0
     device: auto
     load_in_8bit: false
-    load_in_4bit: false
+    load_in_4bit: false  # Without quantization: ~14GB VRAM
     torch_dtype: auto
     trust_remote_code: false
     local_model_path: null
-    enabled: false
+    enabled: false  # ❌ TOO BIG for 4GB VRAM without quantization
     
   - name: llama-3-8b-local
     provider: huggingface_local
@@ -69,11 +170,11 @@ models:
     temperature: 0.0
     device: auto
     load_in_8bit: false
-    load_in_4bit: false
+    load_in_4bit: false  # Without quantization: ~16GB VRAM
     torch_dtype: auto
     trust_remote_code: false
     local_model_path: null
-    enabled: false
+    enabled: false  # ❌ TOO BIG for 4GB VRAM without quantization
   
   - name: phi-3-mini-local
     provider: huggingface_local
@@ -82,50 +183,73 @@ models:
     temperature: 0.0
     device: auto
     load_in_8bit: false
-    load_in_4bit: true  # 4-bit quantization for faster loading
+    load_in_4bit: true
     torch_dtype: auto
-    trust_remote_code: true  # Required for Phi models
+    trust_remote_code: true
     local_model_path: null
-    enabled: false  # Enable if you want to retry Phi-3
+    enabled: false  # Duplicate of phi-3-mini-4bit above (kept for backwards compatibility)
   
-  # Tiny model for quick testing (~300MB)
-  - name: distilgpt2-local
-    provider: huggingface_local
-    model_id: distilgpt2
-    max_tokens: 50
-    temperature: 0.0
-    device: auto
-    load_in_8bit: false
-    load_in_4bit: false
-    torch_dtype: auto
-    trust_remote_code: false
-    local_model_path: null
-    enabled: false  # Not suitable for classification
+  # ===== LARGER MODELS WITH MEMORY OPTIMIZATION =====
+  # These models require quantization to run on consumer hardware
+  # See MEMORY_OPTIMIZATION_GUIDE.md for details
   
-  # Small instruction-following model (~2.2GB)
-  - name: tinyllama-local
+  # Llama 2 13B with 4-bit quantization (~7GB VRAM)
+  - name: llama-2-13b-4bit
     provider: huggingface_local
-    model_id: TinyLlama/TinyLlama-1.1B-Chat-v1.0
-    max_tokens: 256
-    temperature: 0.0
-    device: auto
-    load_in_8bit: false
-    load_in_4bit: false
-    torch_dtype: auto
-    trust_remote_code: false
-    local_model_path: null
-    enabled: true
-  
-  - name: gemma-2b-local
-    provider: huggingface_local
-    model_id: google/gemma-2b-it
+    model_id: meta-llama/Llama-2-13b-chat-hf
     max_tokens: 512
     temperature: 0.0
     device: auto
     load_in_8bit: false
-    load_in_4bit: false
+    load_in_4bit: true  # Essential for 13B models
     torch_dtype: auto
     trust_remote_code: false
+    local_model_path: null
+    enabled: false
+    # Expected: ~7GB VRAM, 2-3x slower than 7B models
+  
+  # Mixtral 8x7B with 4-bit quantization (~25GB VRAM)
+  - name: mixtral-8x7b-4bit
+    provider: huggingface_local
+    model_id: mistralai/Mixtral-8x7B-Instruct-v0.1
+    max_tokens: 512
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: true  # Required for MoE models
+    torch_dtype: auto
+    trust_remote_code: false
+    local_model_path: null
+    enabled: false
+    # Expected: ~25GB VRAM, high-quality results
+  
+  # Llama 3 70B with 4-bit quantization (~35GB - CPU fallback)
+  - name: llama-3-70b-4bit
+    provider: huggingface_local
+    model_id: meta-llama/Meta-Llama-3-70B-Instruct
+    max_tokens: 256  # Reduced for speed
+    temperature: 0.0
+    device: auto  # Will use CPU+GPU offloading
+    load_in_8bit: false
+    load_in_4bit: true  # Mandatory for 70B models
+    torch_dtype: auto
+    trust_remote_code: false
+    local_model_path: null
+    enabled: false
+    # Expected: ~35GB total RAM, VERY slow (0.5-2 tokens/sec)
+    # Only for research/experiments where accuracy > speed
+  
+  # Qwen 14B with 4-bit quantization (~8GB VRAM)
+  - name: qwen-14b-4bit
+    provider: huggingface_local
+    model_id: Qwen/Qwen-14B-Chat
+    max_tokens: 512
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: true
+    torch_dtype: auto
+    trust_remote_code: true  # Qwen requires trust_remote_code
     local_model_path: null
     enabled: false
   

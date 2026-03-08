@@ -86,7 +86,7 @@ class ExperimentLogger:
         
         output_path = self.output_dir / filename
         
-        with open(output_path, 'w') as f:
+        with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(results, f, indent=2)
         
         self.log_info(f"Results saved to {output_path}")
@@ -104,7 +104,7 @@ class ExperimentLogger:
         
         output_path = self.output_dir / filename
         
-        with open(output_path, 'w') as f:
+        with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(metrics, f, indent=2)
         
         self.log_info(f"Metrics saved to {output_path}")

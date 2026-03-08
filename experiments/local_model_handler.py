@@ -8,6 +8,7 @@ import os
 import torch
 from typing import Dict, Any, Optional, List
 from pathlib import Path
+from tqdm import tqdm
 
 
 class LocalModelHandler:
@@ -52,26 +53,29 @@ class LocalModelHandler:
         # Prepare loading kwargs
         load_kwargs = self._prepare_hf_load_kwargs()
         
-        # Load tokenizer
-        print("Loading tokenizer...")
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            model_path,
-            trust_remote_code=self.model_config.get('trust_remote_code', False),
-            cache_dir=self.global_settings.get('local_models', {}).get('hf_cache_dir')
-        )
+        # Load tokenizer with progress
+        with tqdm(total=2, desc="Loading model components", bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt}') as pbar:
+            pbar.set_description("Loading tokenizer")
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                model_path,
+                trust_remote_code=self.model_config.get('trust_remote_code', False),
+                cache_dir=self.global_settings.get('local_models', {}).get('hf_cache_dir')
+            )
+            pbar.update(1)
+            
+            # Ensure tokenizer has padding token
+            if self.tokenizer.pad_token is None:
+                self.tokenizer.pad_token = self.tokenizer.eos_token
+            
+            # Load model
+            pbar.set_description(f"Loading model ({load_kwargs.get('load_in_4bit', False) and '4-bit' or load_kwargs.get('load_in_8bit', False) and '8-bit' or 'full precision'})")
+            self.model = AutoModelForCausalLM.from_pretrained(
+                model_path,
+                **load_kwargs
+            )
+            pbar.update(1)
         
-        # Ensure tokenizer has padding token
-        if self.tokenizer.pad_token is None:
-            self.tokenizer.pad_token = self.tokenizer.eos_token
-        
-        # Load model
-        print(f"Loading model with config: {load_kwargs}")
-        self.model = AutoModelForCausalLM.from_pretrained(
-            model_path,
-            **load_kwargs
-        )
-        
-        print(f"Model loaded successfully on device: {self.model.device}")
+        print(f"✓ Model loaded successfully on device: {self.model.device}")
         
         return self.model, self.tokenizer
     
@@ -158,17 +162,18 @@ class LocalModelHandler:
             model_id = self.model_config.get('model_id')
             model_path = self._download_gguf_from_hf(model_id, model_file)
         
-        print(f"Loading GGUF model: {model_path}")
+        with tqdm(total=1, desc="Loading GGUF model", bar_format='{l_bar}{bar}| [{elapsed}<{remaining}]') as pbar:
+            pbar.set_description(f"Loading GGUF model: {Path(model_path).name}")
+            self.model = Llama(
+                model_path=str(model_path),
+                n_ctx=self.model_config.get('n_ctx', 2048),
+                n_gpu_layers=self.model_config.get('n_gpu_layers', 0),
+                n_threads=self.global_settings.get('gguf', {}).get('n_threads', 4),
+                use_mlock=self.global_settings.get('gguf', {}).get('use_mlock', False),
+            )
+            pbar.update(1)
         
-        self.model = Llama(
-            model_path=str(model_path),
-            n_ctx=self.model_config.get('n_ctx', 2048),
-            n_gpu_layers=self.model_config.get('n_gpu_layers', 0),
-            n_threads=self.global_settings.get('gguf', {}).get('n_threads', 4),
-            use_mlock=self.global_settings.get('gguf', {}).get('use_mlock', False),
-        )
-        
-        print("GGUF model loaded successfully")
+        print("✓ GGUF model loaded successfully")
         
         return self.model, None  # GGUF doesn't use separate tokenizer
     
@@ -208,16 +213,17 @@ class LocalModelHandler:
         
         model_path = local_path if local_path else model_id
         
-        print(f"Loading vLLM model: {model_path}")
+        with tqdm(total=1, desc="Loading vLLM model", bar_format='{l_bar}{bar}| [{elapsed}<{remaining}]') as pbar:
+            pbar.set_description(f"Loading vLLM model: {model_path}")
+            self.model = LLM(
+                model=model_path,
+                tensor_parallel_size=self.model_config.get('tensor_parallel_size', 1),
+                gpu_memory_utilization=self.model_config.get('gpu_memory_utilization', 0.9),
+                trust_remote_code=self.model_config.get('trust_remote_code', False),
+            )
+            pbar.update(1)
         
-        self.model = LLM(
-            model=model_path,
-            tensor_parallel_size=self.model_config.get('tensor_parallel_size', 1),
-            gpu_memory_utilization=self.model_config.get('gpu_memory_utilization', 0.9),
-            trust_remote_code=self.model_config.get('trust_remote_code', False),
-        )
-        
-        print("vLLM model loaded successfully")
+        print("✓ vLLM model loaded successfully")
         
         return self.model, None  # vLLM has built-in tokenizer
     
