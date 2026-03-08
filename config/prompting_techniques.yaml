@@ -72,7 +72,7 @@ prompting_techniques:
       instructions: "Carefully analyze the input and provide an accurate response."
       task: "classification"  # Will be filled from dataset config
   
-  - name: classification_simple
+  - name: classification_simple_phi_3_mini
     type: custom
     description: "Simple classification prompt with clear instructions"
     enabled: true
