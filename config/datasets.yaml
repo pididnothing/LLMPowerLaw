@@ -32,11 +32,16 @@ datasets:
     
   # Test with SST-2 sentiment classification
   - name: sst2_test
-    type: promptbench
-    dataset_name: sst-2
+    type: huggingface
+    dataset_name: glue
+    subset: sst2
+    split: validation
     task_type: classification
     num_samples: 10  # Just 10 samples for verification
     enabled: false  # Enable after custom test works
+    fields:
+      text: "sentence"
+      label: "label"
     
   # ============================================================
   # 📊 FULL EXPERIMENT DATASETS (100-500 samples)
@@ -49,27 +54,42 @@ datasets:
   
   # SST-2: Sentiment classification (full)
   - name: sst2
-    type: promptbench
-    dataset_name: sst-2
+    type: huggingface
+    dataset_name: glue
+    subset: sst2
+    split: validation
     task_type: classification
     num_samples: 100  # Start with 100, increase to 500 for final runs
-    enabled: false  # Enable after test runs work
+    enabled: true  # ✅ ENABLED for testing
+    fields:
+      text: "sentence"
+      label: "label"
     
   # MNLI: Natural language inference (full)
   - name: mnli
-    type: promptbench
-    dataset_name: mnli
+    type: huggingface
+    dataset_name: glue
+    subset: mnli
+    split: validation_matched
     task_type: classification
     num_samples: 100  # Start with 100, increase to 500 for final runs
     enabled: false  # Enable after test runs work
+    fields:
+      text: "premise"  # Will need to concatenate with hypothesis
+      label: "label"
     
   # QQP: Question pair matching (full)
   - name: qqp
-    type: promptbench
-    dataset_name: qqp
+    type: huggingface
+    dataset_name: glue
+    subset: qqp
+    split: validation
     task_type: classification
     num_samples: 100  # Start with 100
     enabled: false
+    fields:
+      text: "question1"  # Will need to concatenate with question2
+      label: "label"
   
   # Custom classification (full dataset)
   - name: custom_classification

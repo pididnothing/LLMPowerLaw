@@ -82,7 +82,7 @@ models:
     torch_dtype: auto
     trust_remote_code: true  # Required for Phi models
     local_model_path: null
-    enabled: false  # ✅ ENABLED - Fits in 4GB VRAM
+    enabled: true  # ✅ ENABLED - Fits in 4GB VRAM
     # Memory: ~2GB VRAM | Quality: Very good
   
   # Llama 2 7B with 4-bit: More powerful, uses most of your VRAM

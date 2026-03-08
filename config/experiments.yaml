@@ -53,8 +53,8 @@ experiments:
     dataset: sst2
     prompting_technique: sst2_simple_phi_3_mini
     description: "Phi-3 on SST-2 with simple classification"
-    enabled: false
-    num_samples: 100     # Override: test on 100 samples instead of full dataset
+    enabled: true  # ✅ ENABLED for testing
+    num_samples: 10      # Override: test on 10 samples for quick validation
     max_tokens: 10       # Override: only need a few tokens for classification
   
   - id: phi3_sst2_cot

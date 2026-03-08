@@ -272,8 +272,20 @@ class BenchmarkRunner:
                     
                     input_text = example.get(text_field, "")
                     true_label = example.get(label_field, "")
+                elif dataset_config.type == "huggingface":
+                    # Use field mappings from dataset config if available
+                    fields = dataset_config.additional_params.get('fields', {})
+                    text_field = fields.get('text', 'text')  # Default to 'text' if not specified
+                    label_field = fields.get('label', 'label')  # Default to 'label' if not specified
+                    
+                    input_text = example.get(text_field, "")
+                    true_label = example.get(label_field, "")
+                    
+                    # If input_text is still empty, try common field names
+                    if not input_text:
+                        input_text = str(example.get('sentence', example.get('question', example.get('text', example))))
                 else:
-                    # Handle PromptBench or HuggingFace datasets
+                    # Handle PromptBench or other datasets
                     input_text = str(example.get('text', example.get('question', example)))
                     true_label = example.get('label', example.get('answer', ''))
                 
