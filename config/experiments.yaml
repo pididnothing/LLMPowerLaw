@@ -12,6 +12,10 @@ global_settings:
   
   # Maximum number of experiments to run (null = no limit)
   max_experiments: null
+  
+  # Default overrides (optional - can be overridden per experiment)
+  default_num_samples: null  # Override dataset sample size (null = use dataset config)
+  default_max_tokens: null   # Override model max_tokens (null = use model config)
 
 # Experiment definitions - each is a model-dataset-template triplet
 experiments:
@@ -22,6 +26,8 @@ experiments:
     prompting_technique: classification_simple_phi_3_mini
     description: "Phi-3 on custom sentiment with simple classification"
     enabled: true
+    num_samples: 10      # Override: limit to 10 samples for quick test
+    max_tokens: 50       # Override: reduce tokens for faster generation
   
   - id: gemma_custom_simple
     model: gemma-2b-4bit
@@ -29,6 +35,8 @@ experiments:
     prompting_technique: classification_simple
     description: "Gemma on custom sentiment with simple classification"
     enabled: true
+    num_samples: 10
+    max_tokens: 50
   
   - id: tinyllama_custom_simple
     model: tinyllama-test
@@ -36,6 +44,8 @@ experiments:
     prompting_technique: classification_simple
     description: "TinyLlama on custom sentiment with simple classification"
     enabled: true
+    num_samples: 10
+    max_tokens: 50
   
   # Full experiments (disabled by default - enable as needed)
   - id: phi3_sst2_simple
@@ -44,6 +54,8 @@ experiments:
     prompting_technique: classification_simple_phi_3_mini
     description: "Phi-3 on SST-2 with simple classification"
     enabled: false
+    num_samples: 100     # Override: test on 100 samples instead of full dataset
+    max_tokens: 10       # Override: only need a few tokens for classification
   
   - id: phi3_sst2_cot
     model: phi-3-mini-4bit
@@ -79,6 +91,27 @@ experiments:
     prompting_technique: cot
     description: "Phi-3 on GSM8K math reasoning with CoT"
     enabled: false
+    num_samples: 50      # Test on small subset first
+    max_tokens: 500      # Allow more tokens for reasoning
+
+# Example override patterns:
+#
+# 1. Quick validation test (few samples, low tokens):
+#    num_samples: 10
+#    max_tokens: 20
+#
+# 2. Development testing (moderate samples):
+#    num_samples: 100
+#    max_tokens: 50
+#
+# 3. Full evaluation (use dataset defaults):
+#    # Don't specify num_samples or max_tokens
+#
+# 4. Token-efficient classification:
+#    max_tokens: 5  # Just need the label
+#
+# 5. Long-form generation tasks:
+#    max_tokens: 1024  # Allow detailed responses
 
 # Notes:
 # - Each experiment ID should be unique
@@ -87,3 +120,6 @@ experiments:
 # - Prompting technique must match a technique in config/prompting_techniques.yaml
 # - Set enabled=true for experiments you want to run
 # - Define model-specific chat templates in the prompting technique templates themselves
+# - Optional: Use num_samples to override dataset sample size for this experiment
+# - Optional: Use max_tokens to override model max_tokens for this experiment
+# - Experiment-level overrides take precedence over model/dataset configs

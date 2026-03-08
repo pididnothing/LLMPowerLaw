@@ -10,6 +10,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Any, Optional
+from copy import copy
 import traceback
 from tqdm import tqdm
 
@@ -428,6 +429,19 @@ class BenchmarkRunner:
                 technique = self.prompt_manager.get_technique_by_name(exp_triplet.prompting_technique)
                 if not technique:
                     self.logger.log_warning(f"Technique '{exp_triplet.prompting_technique}' not found, running without prompting")
+            
+            # Apply experiment-level overrides
+            if exp_triplet.num_samples is not None:
+                # Create a copy of dataset_config with overridden num_samples
+                dataset_config = copy(dataset_config)
+                dataset_config.num_samples = exp_triplet.num_samples
+                self.logger.log_info(f"Overriding num_samples to {exp_triplet.num_samples} for experiment {exp_triplet.id}")
+            
+            if exp_triplet.max_tokens is not None:
+                # Create a copy of model_config with overridden max_tokens
+                model_config = copy(model_config)
+                model_config.max_tokens = exp_triplet.max_tokens
+                self.logger.log_info(f"Overriding max_tokens to {exp_triplet.max_tokens} for experiment {exp_triplet.id}")
             
             # Run experiment
             experiment_pbar.set_description(f"[{exp_triplet.id}] {exp_triplet.model}/{exp_triplet.dataset}")

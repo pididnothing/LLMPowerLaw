@@ -89,6 +89,8 @@ class ExperimentTriplet:
     prompting_technique: str
     description: str = ""
     enabled: bool = True
+    num_samples: Optional[int] = None  # Override dataset num_samples
+    max_tokens: Optional[int] = None   # Override model max_tokens
     
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'ExperimentTriplet':
@@ -99,7 +101,9 @@ class ExperimentTriplet:
             dataset=data['dataset'],
             prompting_technique=data['prompting_technique'],
             description=data.get('description', ''),
-            enabled=data.get('enabled', True)
+            enabled=data.get('enabled', True),
+            num_samples=data.get('num_samples'),
+            max_tokens=data.get('max_tokens')
         )
 
 
