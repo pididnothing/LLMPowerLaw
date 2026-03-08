@@ -81,8 +81,9 @@ prompting_techniques:
       Classify the sentiment of the text as POSITIVE, NEGATIVE, or NEUTRAL.
       Return ONLY the label.
 
-      Text: $input
+      Text: $input<|end|>
       <|assistant|>
+      Sentiment:
 
   - name: sst2_simple_phi_3_mini
     type: custom
@@ -91,10 +92,11 @@ prompting_techniques:
     template: |
       <|user|>
       Classify the sentiment of the text as 1 if positive or 0 if negative.
-      Return ONLY the Label. Your choices are 1 or 0.
+      Return ONLY the number.
 
-      Text: $input
+      Text: $input<|end|>
       <|assistant|>
+      Label:
   
   - name: custom_structured
     type: custom
