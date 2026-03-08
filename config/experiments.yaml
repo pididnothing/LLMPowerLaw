@@ -19,7 +19,7 @@ experiments:
   - id: phi3_custom_simple
     model: phi-3-mini-4bit
     dataset: custom_classification_test
-    prompting_technique: classification_simple
+    prompting_technique: classification_simple_phi_3_mini
     description: "Phi-3 on custom sentiment with simple classification"
     enabled: true
   
