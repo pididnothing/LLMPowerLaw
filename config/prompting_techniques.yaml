@@ -84,7 +84,17 @@ prompting_techniques:
       Text: $input
       <|assistant|>
 
-  
+  - name: sst2_simple_phi_3_mini
+    type: custom
+    description: "Simple classification prompt with clear instructions"
+    enabled: true
+    template: |
+      <|user|>
+      Classify the sentiment of the text as 1 if positive or 0 if negative.
+      Return ONLY the Label. Your choices are 1 or 0.
+
+      Text: $input
+      <|assistant|>
   
   - name: custom_structured
     type: custom

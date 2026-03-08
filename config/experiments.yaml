@@ -51,7 +51,7 @@ experiments:
   - id: phi3_sst2_simple
     model: phi-3-mini-4bit
     dataset: sst2
-    prompting_technique: classification_simple_phi_3_mini
+    prompting_technique: sst2_simple_phi_3_mini
     description: "Phi-3 on SST-2 with simple classification"
     enabled: false
     num_samples: 100     # Override: test on 100 samples instead of full dataset
