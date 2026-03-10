@@ -19,22 +19,25 @@ global_settings:
 
 # Experiment definitions - each is a model-dataset-template triplet
 experiments:
-  # Quick test experiments (enabled by default for fast validation)
+
+  # ================================================================
+  # EXISTING QUICK TEST EXPERIMENTS (keep for validation)
+  # ================================================================
   - id: phi3_custom_simple
     model: phi-3-mini-4bit
     dataset: custom_classification_test
     prompting_technique: classification_simple_phi_3_mini
     description: "Phi-3 on custom sentiment with simple classification"
-    enabled: true
-    num_samples: 10      # Override: limit to 10 samples for quick test
-    max_tokens: 50       # Override: reduce tokens for faster generation
+    enabled: false
+    num_samples: 10
+    max_tokens: 50
   
   - id: gemma_custom_simple
     model: gemma-2b-4bit
     dataset: custom_classification_test
     prompting_technique: classification_simple
     description: "Gemma on custom sentiment with simple classification"
-    enabled: true
+    enabled: false
     num_samples: 10
     max_tokens: 50
   
@@ -43,17 +46,398 @@ experiments:
     dataset: custom_classification_test
     prompting_technique: classification_simple
     description: "TinyLlama on custom sentiment with simple classification"
-    enabled: true
+    enabled: false
     num_samples: 10
     max_tokens: 50
-  
-  # Full experiments (disabled by default - enable as needed)
+
+  # ================================================================
+  #  SCALING LAW EXPERIMENTS
+  #  Organized by phase. Enable one phase at a time.
+  #  Models (10): smollm-135m, smollm-360m, qwen2.5-0.5b,
+  #    tinyllama-test, qwen2.5-1.5b, smollm-1.7b,
+  #    qwen2.5-3b, phi-3-mini-4bit, mistral-7b-instruct, qwen2.5-7b
+  #  Techniques (5): zero_shot, few_shot, cot, few_shot_cot, role_expert
+  # ================================================================
+
+  # ================================================================
+  # PHASE 0 — SANITY CHECK (5 experiments)
+  # Run the smallest model on SST-2 with each technique.
+  # Verifies the full pipeline works end-to-end.
+  # ================================================================
+  - id: p0_smollm135m_sst2_zero
+    model: smollm-135m
+    dataset: sst2
+    prompting_technique: scaling_zero_shot_sst2
+    description: "Phase 0 sanity: SmolLM-135M SST-2 zero-shot"
+    enabled: false
+    num_samples: 20
+    max_tokens: 10
+
+  - id: p0_smollm135m_sst2_few
+    model: smollm-135m
+    dataset: sst2
+    prompting_technique: scaling_few_shot_sst2
+    description: "Phase 0 sanity: SmolLM-135M SST-2 few-shot"
+    enabled: false
+    num_samples: 20
+    max_tokens: 10
+
+  - id: p0_smollm135m_sst2_cot
+    model: smollm-135m
+    dataset: sst2
+    prompting_technique: scaling_cot_sst2
+    description: "Phase 0 sanity: SmolLM-135M SST-2 CoT"
+    enabled: false
+    num_samples: 20
+    max_tokens: 100
+
+  - id: p0_smollm135m_sst2_fscot
+    model: smollm-135m
+    dataset: sst2
+    prompting_technique: scaling_few_shot_cot_sst2
+    description: "Phase 0 sanity: SmolLM-135M SST-2 few-shot-CoT"
+    enabled: false
+    num_samples: 20
+    max_tokens: 100
+
+  - id: p0_smollm135m_sst2_role
+    model: smollm-135m
+    dataset: sst2
+    prompting_technique: scaling_role_expert_sst2
+    description: "Phase 0 sanity: SmolLM-135M SST-2 role-expert"
+    enabled: false
+    num_samples: 20
+    max_tokens: 10
+
+  # ================================================================
+  # PHASE 1 — SST-2 SENTIMENT (50 experiments)
+  # Binary classification. All 10 models × 5 techniques.
+  # This is the primary scaling law dataset (simplest task).
+  # ================================================================
+
+  # --- SmolLM-135M × SST-2 ---
+  - {id: p1_smollm135m_sst2_zero, model: smollm-135m, dataset: sst2, prompting_technique: scaling_zero_shot_sst2, description: "SmolLM-135M SST-2 zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_smollm135m_sst2_few, model: smollm-135m, dataset: sst2, prompting_technique: scaling_few_shot_sst2, description: "SmolLM-135M SST-2 few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_smollm135m_sst2_cot, model: smollm-135m, dataset: sst2, prompting_technique: scaling_cot_sst2, description: "SmolLM-135M SST-2 CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_smollm135m_sst2_fscot, model: smollm-135m, dataset: sst2, prompting_technique: scaling_few_shot_cot_sst2, description: "SmolLM-135M SST-2 few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_smollm135m_sst2_role, model: smollm-135m, dataset: sst2, prompting_technique: scaling_role_expert_sst2, description: "SmolLM-135M SST-2 role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # --- SmolLM-360M × SST-2 ---
+  - {id: p1_smollm360m_sst2_zero, model: smollm-360m, dataset: sst2, prompting_technique: scaling_zero_shot_sst2, description: "SmolLM-360M SST-2 zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_smollm360m_sst2_few, model: smollm-360m, dataset: sst2, prompting_technique: scaling_few_shot_sst2, description: "SmolLM-360M SST-2 few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_smollm360m_sst2_cot, model: smollm-360m, dataset: sst2, prompting_technique: scaling_cot_sst2, description: "SmolLM-360M SST-2 CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_smollm360m_sst2_fscot, model: smollm-360m, dataset: sst2, prompting_technique: scaling_few_shot_cot_sst2, description: "SmolLM-360M SST-2 few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_smollm360m_sst2_role, model: smollm-360m, dataset: sst2, prompting_technique: scaling_role_expert_sst2, description: "SmolLM-360M SST-2 role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # --- Qwen2.5-0.5B × SST-2 ---
+  - {id: p1_qwen05b_sst2_zero, model: qwen2.5-0.5b, dataset: sst2, prompting_technique: scaling_zero_shot_sst2, description: "Qwen2.5-0.5B SST-2 zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_qwen05b_sst2_few, model: qwen2.5-0.5b, dataset: sst2, prompting_technique: scaling_few_shot_sst2, description: "Qwen2.5-0.5B SST-2 few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_qwen05b_sst2_cot, model: qwen2.5-0.5b, dataset: sst2, prompting_technique: scaling_cot_sst2, description: "Qwen2.5-0.5B SST-2 CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_qwen05b_sst2_fscot, model: qwen2.5-0.5b, dataset: sst2, prompting_technique: scaling_few_shot_cot_sst2, description: "Qwen2.5-0.5B SST-2 few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_qwen05b_sst2_role, model: qwen2.5-0.5b, dataset: sst2, prompting_technique: scaling_role_expert_sst2, description: "Qwen2.5-0.5B SST-2 role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # --- TinyLlama-1.1B × SST-2 ---
+  - {id: p1_tinyllama_sst2_zero, model: tinyllama-test, dataset: sst2, prompting_technique: scaling_zero_shot_sst2, description: "TinyLlama-1.1B SST-2 zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_tinyllama_sst2_few, model: tinyllama-test, dataset: sst2, prompting_technique: scaling_few_shot_sst2, description: "TinyLlama-1.1B SST-2 few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_tinyllama_sst2_cot, model: tinyllama-test, dataset: sst2, prompting_technique: scaling_cot_sst2, description: "TinyLlama-1.1B SST-2 CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_tinyllama_sst2_fscot, model: tinyllama-test, dataset: sst2, prompting_technique: scaling_few_shot_cot_sst2, description: "TinyLlama-1.1B SST-2 few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_tinyllama_sst2_role, model: tinyllama-test, dataset: sst2, prompting_technique: scaling_role_expert_sst2, description: "TinyLlama-1.1B SST-2 role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # --- Qwen2.5-1.5B × SST-2 ---
+  - {id: p1_qwen15b_sst2_zero, model: qwen2.5-1.5b, dataset: sst2, prompting_technique: scaling_zero_shot_sst2, description: "Qwen2.5-1.5B SST-2 zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_qwen15b_sst2_few, model: qwen2.5-1.5b, dataset: sst2, prompting_technique: scaling_few_shot_sst2, description: "Qwen2.5-1.5B SST-2 few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_qwen15b_sst2_cot, model: qwen2.5-1.5b, dataset: sst2, prompting_technique: scaling_cot_sst2, description: "Qwen2.5-1.5B SST-2 CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_qwen15b_sst2_fscot, model: qwen2.5-1.5b, dataset: sst2, prompting_technique: scaling_few_shot_cot_sst2, description: "Qwen2.5-1.5B SST-2 few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_qwen15b_sst2_role, model: qwen2.5-1.5b, dataset: sst2, prompting_technique: scaling_role_expert_sst2, description: "Qwen2.5-1.5B SST-2 role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # --- SmolLM-1.7B × SST-2 ---
+  - {id: p1_smollm17b_sst2_zero, model: smollm-1.7b, dataset: sst2, prompting_technique: scaling_zero_shot_sst2, description: "SmolLM-1.7B SST-2 zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_smollm17b_sst2_few, model: smollm-1.7b, dataset: sst2, prompting_technique: scaling_few_shot_sst2, description: "SmolLM-1.7B SST-2 few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_smollm17b_sst2_cot, model: smollm-1.7b, dataset: sst2, prompting_technique: scaling_cot_sst2, description: "SmolLM-1.7B SST-2 CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_smollm17b_sst2_fscot, model: smollm-1.7b, dataset: sst2, prompting_technique: scaling_few_shot_cot_sst2, description: "SmolLM-1.7B SST-2 few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_smollm17b_sst2_role, model: smollm-1.7b, dataset: sst2, prompting_technique: scaling_role_expert_sst2, description: "SmolLM-1.7B SST-2 role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # --- Qwen2.5-3B × SST-2 ---
+  - {id: p1_qwen3b_sst2_zero, model: qwen2.5-3b, dataset: sst2, prompting_technique: scaling_zero_shot_sst2, description: "Qwen2.5-3B SST-2 zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_qwen3b_sst2_few, model: qwen2.5-3b, dataset: sst2, prompting_technique: scaling_few_shot_sst2, description: "Qwen2.5-3B SST-2 few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_qwen3b_sst2_cot, model: qwen2.5-3b, dataset: sst2, prompting_technique: scaling_cot_sst2, description: "Qwen2.5-3B SST-2 CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_qwen3b_sst2_fscot, model: qwen2.5-3b, dataset: sst2, prompting_technique: scaling_few_shot_cot_sst2, description: "Qwen2.5-3B SST-2 few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_qwen3b_sst2_role, model: qwen2.5-3b, dataset: sst2, prompting_technique: scaling_role_expert_sst2, description: "Qwen2.5-3B SST-2 role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # --- Phi-3-mini (3.8B) × SST-2 ---
+  - {id: p1_phi3_sst2_zero, model: phi-3-mini-4bit, dataset: sst2, prompting_technique: scaling_zero_shot_sst2, description: "Phi-3-mini SST-2 zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_phi3_sst2_few, model: phi-3-mini-4bit, dataset: sst2, prompting_technique: scaling_few_shot_sst2, description: "Phi-3-mini SST-2 few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_phi3_sst2_cot, model: phi-3-mini-4bit, dataset: sst2, prompting_technique: scaling_cot_sst2, description: "Phi-3-mini SST-2 CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_phi3_sst2_fscot, model: phi-3-mini-4bit, dataset: sst2, prompting_technique: scaling_few_shot_cot_sst2, description: "Phi-3-mini SST-2 few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_phi3_sst2_role, model: phi-3-mini-4bit, dataset: sst2, prompting_technique: scaling_role_expert_sst2, description: "Phi-3-mini SST-2 role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # --- Mistral-7B × SST-2 ---
+  - {id: p1_mistral7b_sst2_zero, model: mistral-7b-instruct, dataset: sst2, prompting_technique: scaling_zero_shot_sst2, description: "Mistral-7B SST-2 zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_mistral7b_sst2_few, model: mistral-7b-instruct, dataset: sst2, prompting_technique: scaling_few_shot_sst2, description: "Mistral-7B SST-2 few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_mistral7b_sst2_cot, model: mistral-7b-instruct, dataset: sst2, prompting_technique: scaling_cot_sst2, description: "Mistral-7B SST-2 CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_mistral7b_sst2_fscot, model: mistral-7b-instruct, dataset: sst2, prompting_technique: scaling_few_shot_cot_sst2, description: "Mistral-7B SST-2 few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_mistral7b_sst2_role, model: mistral-7b-instruct, dataset: sst2, prompting_technique: scaling_role_expert_sst2, description: "Mistral-7B SST-2 role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # --- Qwen2.5-7B × SST-2 ---
+  - {id: p1_qwen7b_sst2_zero, model: qwen2.5-7b, dataset: sst2, prompting_technique: scaling_zero_shot_sst2, description: "Qwen2.5-7B SST-2 zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_qwen7b_sst2_few, model: qwen2.5-7b, dataset: sst2, prompting_technique: scaling_few_shot_sst2, description: "Qwen2.5-7B SST-2 few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_qwen7b_sst2_cot, model: qwen2.5-7b, dataset: sst2, prompting_technique: scaling_cot_sst2, description: "Qwen2.5-7B SST-2 CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_qwen7b_sst2_fscot, model: qwen2.5-7b, dataset: sst2, prompting_technique: scaling_few_shot_cot_sst2, description: "Qwen2.5-7B SST-2 few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 150}
+  - {id: p1_qwen7b_sst2_role, model: qwen2.5-7b, dataset: sst2, prompting_technique: scaling_role_expert_sst2, description: "Qwen2.5-7B SST-2 role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # ================================================================
+  # PHASE 2 — ARC-CHALLENGE SCIENCE REASONING (50 experiments)
+  # 4-way multiple choice. All 10 models × 5 techniques.
+  # Harder task — expect to see clearer scaling differences.
+  # ================================================================
+
+  # --- SmolLM-135M × ARC ---
+  - {id: p2_smollm135m_arc_zero, model: smollm-135m, dataset: arc_challenge, prompting_technique: scaling_zero_shot_arc, description: "SmolLM-135M ARC zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_smollm135m_arc_few, model: smollm-135m, dataset: arc_challenge, prompting_technique: scaling_few_shot_arc, description: "SmolLM-135M ARC few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_smollm135m_arc_cot, model: smollm-135m, dataset: arc_challenge, prompting_technique: scaling_cot_arc, description: "SmolLM-135M ARC CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_smollm135m_arc_fscot, model: smollm-135m, dataset: arc_challenge, prompting_technique: scaling_few_shot_cot_arc, description: "SmolLM-135M ARC few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_smollm135m_arc_role, model: smollm-135m, dataset: arc_challenge, prompting_technique: scaling_role_expert_arc, description: "SmolLM-135M ARC role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # --- SmolLM-360M × ARC ---
+  - {id: p2_smollm360m_arc_zero, model: smollm-360m, dataset: arc_challenge, prompting_technique: scaling_zero_shot_arc, description: "SmolLM-360M ARC zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_smollm360m_arc_few, model: smollm-360m, dataset: arc_challenge, prompting_technique: scaling_few_shot_arc, description: "SmolLM-360M ARC few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_smollm360m_arc_cot, model: smollm-360m, dataset: arc_challenge, prompting_technique: scaling_cot_arc, description: "SmolLM-360M ARC CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_smollm360m_arc_fscot, model: smollm-360m, dataset: arc_challenge, prompting_technique: scaling_few_shot_cot_arc, description: "SmolLM-360M ARC few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_smollm360m_arc_role, model: smollm-360m, dataset: arc_challenge, prompting_technique: scaling_role_expert_arc, description: "SmolLM-360M ARC role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # --- Qwen2.5-0.5B × ARC ---
+  - {id: p2_qwen05b_arc_zero, model: qwen2.5-0.5b, dataset: arc_challenge, prompting_technique: scaling_zero_shot_arc, description: "Qwen2.5-0.5B ARC zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_qwen05b_arc_few, model: qwen2.5-0.5b, dataset: arc_challenge, prompting_technique: scaling_few_shot_arc, description: "Qwen2.5-0.5B ARC few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_qwen05b_arc_cot, model: qwen2.5-0.5b, dataset: arc_challenge, prompting_technique: scaling_cot_arc, description: "Qwen2.5-0.5B ARC CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_qwen05b_arc_fscot, model: qwen2.5-0.5b, dataset: arc_challenge, prompting_technique: scaling_few_shot_cot_arc, description: "Qwen2.5-0.5B ARC few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_qwen05b_arc_role, model: qwen2.5-0.5b, dataset: arc_challenge, prompting_technique: scaling_role_expert_arc, description: "Qwen2.5-0.5B ARC role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # --- TinyLlama-1.1B × ARC ---
+  - {id: p2_tinyllama_arc_zero, model: tinyllama-test, dataset: arc_challenge, prompting_technique: scaling_zero_shot_arc, description: "TinyLlama-1.1B ARC zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_tinyllama_arc_few, model: tinyllama-test, dataset: arc_challenge, prompting_technique: scaling_few_shot_arc, description: "TinyLlama-1.1B ARC few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_tinyllama_arc_cot, model: tinyllama-test, dataset: arc_challenge, prompting_technique: scaling_cot_arc, description: "TinyLlama-1.1B ARC CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_tinyllama_arc_fscot, model: tinyllama-test, dataset: arc_challenge, prompting_technique: scaling_few_shot_cot_arc, description: "TinyLlama-1.1B ARC few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_tinyllama_arc_role, model: tinyllama-test, dataset: arc_challenge, prompting_technique: scaling_role_expert_arc, description: "TinyLlama-1.1B ARC role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # --- Qwen2.5-1.5B × ARC ---
+  - {id: p2_qwen15b_arc_zero, model: qwen2.5-1.5b, dataset: arc_challenge, prompting_technique: scaling_zero_shot_arc, description: "Qwen2.5-1.5B ARC zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_qwen15b_arc_few, model: qwen2.5-1.5b, dataset: arc_challenge, prompting_technique: scaling_few_shot_arc, description: "Qwen2.5-1.5B ARC few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_qwen15b_arc_cot, model: qwen2.5-1.5b, dataset: arc_challenge, prompting_technique: scaling_cot_arc, description: "Qwen2.5-1.5B ARC CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_qwen15b_arc_fscot, model: qwen2.5-1.5b, dataset: arc_challenge, prompting_technique: scaling_few_shot_cot_arc, description: "Qwen2.5-1.5B ARC few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_qwen15b_arc_role, model: qwen2.5-1.5b, dataset: arc_challenge, prompting_technique: scaling_role_expert_arc, description: "Qwen2.5-1.5B ARC role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # --- SmolLM-1.7B × ARC ---
+  - {id: p2_smollm17b_arc_zero, model: smollm-1.7b, dataset: arc_challenge, prompting_technique: scaling_zero_shot_arc, description: "SmolLM-1.7B ARC zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_smollm17b_arc_few, model: smollm-1.7b, dataset: arc_challenge, prompting_technique: scaling_few_shot_arc, description: "SmolLM-1.7B ARC few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_smollm17b_arc_cot, model: smollm-1.7b, dataset: arc_challenge, prompting_technique: scaling_cot_arc, description: "SmolLM-1.7B ARC CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_smollm17b_arc_fscot, model: smollm-1.7b, dataset: arc_challenge, prompting_technique: scaling_few_shot_cot_arc, description: "SmolLM-1.7B ARC few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_smollm17b_arc_role, model: smollm-1.7b, dataset: arc_challenge, prompting_technique: scaling_role_expert_arc, description: "SmolLM-1.7B ARC role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # --- Qwen2.5-3B × ARC ---
+  - {id: p2_qwen3b_arc_zero, model: qwen2.5-3b, dataset: arc_challenge, prompting_technique: scaling_zero_shot_arc, description: "Qwen2.5-3B ARC zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_qwen3b_arc_few, model: qwen2.5-3b, dataset: arc_challenge, prompting_technique: scaling_few_shot_arc, description: "Qwen2.5-3B ARC few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_qwen3b_arc_cot, model: qwen2.5-3b, dataset: arc_challenge, prompting_technique: scaling_cot_arc, description: "Qwen2.5-3B ARC CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_qwen3b_arc_fscot, model: qwen2.5-3b, dataset: arc_challenge, prompting_technique: scaling_few_shot_cot_arc, description: "Qwen2.5-3B ARC few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_qwen3b_arc_role, model: qwen2.5-3b, dataset: arc_challenge, prompting_technique: scaling_role_expert_arc, description: "Qwen2.5-3B ARC role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # --- Phi-3-mini (3.8B) × ARC ---
+  - {id: p2_phi3_arc_zero, model: phi-3-mini-4bit, dataset: arc_challenge, prompting_technique: scaling_zero_shot_arc, description: "Phi-3-mini ARC zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_phi3_arc_few, model: phi-3-mini-4bit, dataset: arc_challenge, prompting_technique: scaling_few_shot_arc, description: "Phi-3-mini ARC few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_phi3_arc_cot, model: phi-3-mini-4bit, dataset: arc_challenge, prompting_technique: scaling_cot_arc, description: "Phi-3-mini ARC CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_phi3_arc_fscot, model: phi-3-mini-4bit, dataset: arc_challenge, prompting_technique: scaling_few_shot_cot_arc, description: "Phi-3-mini ARC few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_phi3_arc_role, model: phi-3-mini-4bit, dataset: arc_challenge, prompting_technique: scaling_role_expert_arc, description: "Phi-3-mini ARC role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # --- Mistral-7B × ARC ---
+  - {id: p2_mistral7b_arc_zero, model: mistral-7b-instruct, dataset: arc_challenge, prompting_technique: scaling_zero_shot_arc, description: "Mistral-7B ARC zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_mistral7b_arc_few, model: mistral-7b-instruct, dataset: arc_challenge, prompting_technique: scaling_few_shot_arc, description: "Mistral-7B ARC few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_mistral7b_arc_cot, model: mistral-7b-instruct, dataset: arc_challenge, prompting_technique: scaling_cot_arc, description: "Mistral-7B ARC CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_mistral7b_arc_fscot, model: mistral-7b-instruct, dataset: arc_challenge, prompting_technique: scaling_few_shot_cot_arc, description: "Mistral-7B ARC few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_mistral7b_arc_role, model: mistral-7b-instruct, dataset: arc_challenge, prompting_technique: scaling_role_expert_arc, description: "Mistral-7B ARC role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # --- Qwen2.5-7B × ARC ---
+  - {id: p2_qwen7b_arc_zero, model: qwen2.5-7b, dataset: arc_challenge, prompting_technique: scaling_zero_shot_arc, description: "Qwen2.5-7B ARC zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_qwen7b_arc_few, model: qwen2.5-7b, dataset: arc_challenge, prompting_technique: scaling_few_shot_arc, description: "Qwen2.5-7B ARC few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p2_qwen7b_arc_cot, model: qwen2.5-7b, dataset: arc_challenge, prompting_technique: scaling_cot_arc, description: "Qwen2.5-7B ARC CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_qwen7b_arc_fscot, model: qwen2.5-7b, dataset: arc_challenge, prompting_technique: scaling_few_shot_cot_arc, description: "Qwen2.5-7B ARC few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 200}
+  - {id: p2_qwen7b_arc_role, model: qwen2.5-7b, dataset: arc_challenge, prompting_technique: scaling_role_expert_arc, description: "Qwen2.5-7B ARC role-expert", enabled: false, num_samples: 200, max_tokens: 10}
+
+  # ================================================================
+  # PHASE 3 — HELLASWAG COMMONSENSE (30 experiments)
+  # 4-way commonsense completion. All 10 models × 3 techniques.
+  # Uses zero_shot, few_shot, CoT (skip few_shot_cot and role).
+  # ================================================================
+
+  # --- SmolLM-135M × HellaSwag ---
+  - {id: p3_smollm135m_hella_zero, model: smollm-135m, dataset: hellaswag, prompting_technique: scaling_zero_shot_hellaswag, description: "SmolLM-135M HellaSwag zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_smollm135m_hella_few, model: smollm-135m, dataset: hellaswag, prompting_technique: scaling_few_shot_hellaswag, description: "SmolLM-135M HellaSwag few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_smollm135m_hella_cot, model: smollm-135m, dataset: hellaswag, prompting_technique: scaling_cot_hellaswag, description: "SmolLM-135M HellaSwag CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # --- SmolLM-360M × HellaSwag ---
+  - {id: p3_smollm360m_hella_zero, model: smollm-360m, dataset: hellaswag, prompting_technique: scaling_zero_shot_hellaswag, description: "SmolLM-360M HellaSwag zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_smollm360m_hella_few, model: smollm-360m, dataset: hellaswag, prompting_technique: scaling_few_shot_hellaswag, description: "SmolLM-360M HellaSwag few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_smollm360m_hella_cot, model: smollm-360m, dataset: hellaswag, prompting_technique: scaling_cot_hellaswag, description: "SmolLM-360M HellaSwag CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # --- Qwen2.5-0.5B × HellaSwag ---
+  - {id: p3_qwen05b_hella_zero, model: qwen2.5-0.5b, dataset: hellaswag, prompting_technique: scaling_zero_shot_hellaswag, description: "Qwen2.5-0.5B HellaSwag zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_qwen05b_hella_few, model: qwen2.5-0.5b, dataset: hellaswag, prompting_technique: scaling_few_shot_hellaswag, description: "Qwen2.5-0.5B HellaSwag few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_qwen05b_hella_cot, model: qwen2.5-0.5b, dataset: hellaswag, prompting_technique: scaling_cot_hellaswag, description: "Qwen2.5-0.5B HellaSwag CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # --- TinyLlama-1.1B × HellaSwag ---
+  - {id: p3_tinyllama_hella_zero, model: tinyllama-test, dataset: hellaswag, prompting_technique: scaling_zero_shot_hellaswag, description: "TinyLlama-1.1B HellaSwag zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_tinyllama_hella_few, model: tinyllama-test, dataset: hellaswag, prompting_technique: scaling_few_shot_hellaswag, description: "TinyLlama-1.1B HellaSwag few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_tinyllama_hella_cot, model: tinyllama-test, dataset: hellaswag, prompting_technique: scaling_cot_hellaswag, description: "TinyLlama-1.1B HellaSwag CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # --- Qwen2.5-1.5B × HellaSwag ---
+  - {id: p3_qwen15b_hella_zero, model: qwen2.5-1.5b, dataset: hellaswag, prompting_technique: scaling_zero_shot_hellaswag, description: "Qwen2.5-1.5B HellaSwag zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_qwen15b_hella_few, model: qwen2.5-1.5b, dataset: hellaswag, prompting_technique: scaling_few_shot_hellaswag, description: "Qwen2.5-1.5B HellaSwag few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_qwen15b_hella_cot, model: qwen2.5-1.5b, dataset: hellaswag, prompting_technique: scaling_cot_hellaswag, description: "Qwen2.5-1.5B HellaSwag CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # --- SmolLM-1.7B × HellaSwag ---
+  - {id: p3_smollm17b_hella_zero, model: smollm-1.7b, dataset: hellaswag, prompting_technique: scaling_zero_shot_hellaswag, description: "SmolLM-1.7B HellaSwag zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_smollm17b_hella_few, model: smollm-1.7b, dataset: hellaswag, prompting_technique: scaling_few_shot_hellaswag, description: "SmolLM-1.7B HellaSwag few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_smollm17b_hella_cot, model: smollm-1.7b, dataset: hellaswag, prompting_technique: scaling_cot_hellaswag, description: "SmolLM-1.7B HellaSwag CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # --- Qwen2.5-3B × HellaSwag ---
+  - {id: p3_qwen3b_hella_zero, model: qwen2.5-3b, dataset: hellaswag, prompting_technique: scaling_zero_shot_hellaswag, description: "Qwen2.5-3B HellaSwag zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_qwen3b_hella_few, model: qwen2.5-3b, dataset: hellaswag, prompting_technique: scaling_few_shot_hellaswag, description: "Qwen2.5-3B HellaSwag few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_qwen3b_hella_cot, model: qwen2.5-3b, dataset: hellaswag, prompting_technique: scaling_cot_hellaswag, description: "Qwen2.5-3B HellaSwag CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # --- Phi-3-mini (3.8B) × HellaSwag ---
+  - {id: p3_phi3_hella_zero, model: phi-3-mini-4bit, dataset: hellaswag, prompting_technique: scaling_zero_shot_hellaswag, description: "Phi-3-mini HellaSwag zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_phi3_hella_few, model: phi-3-mini-4bit, dataset: hellaswag, prompting_technique: scaling_few_shot_hellaswag, description: "Phi-3-mini HellaSwag few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_phi3_hella_cot, model: phi-3-mini-4bit, dataset: hellaswag, prompting_technique: scaling_cot_hellaswag, description: "Phi-3-mini HellaSwag CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # --- Mistral-7B × HellaSwag ---
+  - {id: p3_mistral7b_hella_zero, model: mistral-7b-instruct, dataset: hellaswag, prompting_technique: scaling_zero_shot_hellaswag, description: "Mistral-7B HellaSwag zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_mistral7b_hella_few, model: mistral-7b-instruct, dataset: hellaswag, prompting_technique: scaling_few_shot_hellaswag, description: "Mistral-7B HellaSwag few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_mistral7b_hella_cot, model: mistral-7b-instruct, dataset: hellaswag, prompting_technique: scaling_cot_hellaswag, description: "Mistral-7B HellaSwag CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # --- Qwen2.5-7B × HellaSwag ---
+  - {id: p3_qwen7b_hella_zero, model: qwen2.5-7b, dataset: hellaswag, prompting_technique: scaling_zero_shot_hellaswag, description: "Qwen2.5-7B HellaSwag zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_qwen7b_hella_few, model: qwen2.5-7b, dataset: hellaswag, prompting_technique: scaling_few_shot_hellaswag, description: "Qwen2.5-7B HellaSwag few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p3_qwen7b_hella_cot, model: qwen2.5-7b, dataset: hellaswag, prompting_technique: scaling_cot_hellaswag, description: "Qwen2.5-7B HellaSwag CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # ================================================================
+  # PHASE 4 — GSM8K MATH REASONING (30 experiments)
+  # Open-ended math. All 10 models × 3 techniques.
+  # Uses zero_shot, CoT, few_shot_CoT (CoT most relevant for math).
+  # ================================================================
+
+  # --- SmolLM-135M × GSM8K ---
+  - {id: p4_smollm135m_gsm_zero, model: smollm-135m, dataset: gsm8k, prompting_technique: scaling_zero_shot_gsm8k, description: "SmolLM-135M GSM8K zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p4_smollm135m_gsm_cot, model: smollm-135m, dataset: gsm8k, prompting_technique: scaling_cot_gsm8k, description: "SmolLM-135M GSM8K CoT", enabled: false, num_samples: 200, max_tokens: 512}
+  - {id: p4_smollm135m_gsm_fscot, model: smollm-135m, dataset: gsm8k, prompting_technique: scaling_few_shot_cot_gsm8k, description: "SmolLM-135M GSM8K few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 512}
+
+  # --- SmolLM-360M × GSM8K ---
+  - {id: p4_smollm360m_gsm_zero, model: smollm-360m, dataset: gsm8k, prompting_technique: scaling_zero_shot_gsm8k, description: "SmolLM-360M GSM8K zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p4_smollm360m_gsm_cot, model: smollm-360m, dataset: gsm8k, prompting_technique: scaling_cot_gsm8k, description: "SmolLM-360M GSM8K CoT", enabled: false, num_samples: 200, max_tokens: 512}
+  - {id: p4_smollm360m_gsm_fscot, model: smollm-360m, dataset: gsm8k, prompting_technique: scaling_few_shot_cot_gsm8k, description: "SmolLM-360M GSM8K few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 512}
+
+  # --- Qwen2.5-0.5B × GSM8K ---
+  - {id: p4_qwen05b_gsm_zero, model: qwen2.5-0.5b, dataset: gsm8k, prompting_technique: scaling_zero_shot_gsm8k, description: "Qwen2.5-0.5B GSM8K zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p4_qwen05b_gsm_cot, model: qwen2.5-0.5b, dataset: gsm8k, prompting_technique: scaling_cot_gsm8k, description: "Qwen2.5-0.5B GSM8K CoT", enabled: false, num_samples: 200, max_tokens: 512}
+  - {id: p4_qwen05b_gsm_fscot, model: qwen2.5-0.5b, dataset: gsm8k, prompting_technique: scaling_few_shot_cot_gsm8k, description: "Qwen2.5-0.5B GSM8K few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 512}
+
+  # --- TinyLlama-1.1B × GSM8K ---
+  - {id: p4_tinyllama_gsm_zero, model: tinyllama-test, dataset: gsm8k, prompting_technique: scaling_zero_shot_gsm8k, description: "TinyLlama-1.1B GSM8K zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p4_tinyllama_gsm_cot, model: tinyllama-test, dataset: gsm8k, prompting_technique: scaling_cot_gsm8k, description: "TinyLlama-1.1B GSM8K CoT", enabled: false, num_samples: 200, max_tokens: 512}
+  - {id: p4_tinyllama_gsm_fscot, model: tinyllama-test, dataset: gsm8k, prompting_technique: scaling_few_shot_cot_gsm8k, description: "TinyLlama-1.1B GSM8K few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 512}
+
+  # --- Qwen2.5-1.5B × GSM8K ---
+  - {id: p4_qwen15b_gsm_zero, model: qwen2.5-1.5b, dataset: gsm8k, prompting_technique: scaling_zero_shot_gsm8k, description: "Qwen2.5-1.5B GSM8K zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p4_qwen15b_gsm_cot, model: qwen2.5-1.5b, dataset: gsm8k, prompting_technique: scaling_cot_gsm8k, description: "Qwen2.5-1.5B GSM8K CoT", enabled: false, num_samples: 200, max_tokens: 512}
+  - {id: p4_qwen15b_gsm_fscot, model: qwen2.5-1.5b, dataset: gsm8k, prompting_technique: scaling_few_shot_cot_gsm8k, description: "Qwen2.5-1.5B GSM8K few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 512}
+
+  # --- SmolLM-1.7B × GSM8K ---
+  - {id: p4_smollm17b_gsm_zero, model: smollm-1.7b, dataset: gsm8k, prompting_technique: scaling_zero_shot_gsm8k, description: "SmolLM-1.7B GSM8K zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p4_smollm17b_gsm_cot, model: smollm-1.7b, dataset: gsm8k, prompting_technique: scaling_cot_gsm8k, description: "SmolLM-1.7B GSM8K CoT", enabled: false, num_samples: 200, max_tokens: 512}
+  - {id: p4_smollm17b_gsm_fscot, model: smollm-1.7b, dataset: gsm8k, prompting_technique: scaling_few_shot_cot_gsm8k, description: "SmolLM-1.7B GSM8K few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 512}
+
+  # --- Qwen2.5-3B × GSM8K ---
+  - {id: p4_qwen3b_gsm_zero, model: qwen2.5-3b, dataset: gsm8k, prompting_technique: scaling_zero_shot_gsm8k, description: "Qwen2.5-3B GSM8K zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p4_qwen3b_gsm_cot, model: qwen2.5-3b, dataset: gsm8k, prompting_technique: scaling_cot_gsm8k, description: "Qwen2.5-3B GSM8K CoT", enabled: false, num_samples: 200, max_tokens: 512}
+  - {id: p4_qwen3b_gsm_fscot, model: qwen2.5-3b, dataset: gsm8k, prompting_technique: scaling_few_shot_cot_gsm8k, description: "Qwen2.5-3B GSM8K few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 512}
+
+  # --- Phi-3-mini (3.8B) × GSM8K ---
+  - {id: p4_phi3_gsm_zero, model: phi-3-mini-4bit, dataset: gsm8k, prompting_technique: scaling_zero_shot_gsm8k, description: "Phi-3-mini GSM8K zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p4_phi3_gsm_cot, model: phi-3-mini-4bit, dataset: gsm8k, prompting_technique: scaling_cot_gsm8k, description: "Phi-3-mini GSM8K CoT", enabled: false, num_samples: 200, max_tokens: 512}
+  - {id: p4_phi3_gsm_fscot, model: phi-3-mini-4bit, dataset: gsm8k, prompting_technique: scaling_few_shot_cot_gsm8k, description: "Phi-3-mini GSM8K few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 512}
+
+  # --- Mistral-7B × GSM8K ---
+  - {id: p4_mistral7b_gsm_zero, model: mistral-7b-instruct, dataset: gsm8k, prompting_technique: scaling_zero_shot_gsm8k, description: "Mistral-7B GSM8K zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p4_mistral7b_gsm_cot, model: mistral-7b-instruct, dataset: gsm8k, prompting_technique: scaling_cot_gsm8k, description: "Mistral-7B GSM8K CoT", enabled: false, num_samples: 200, max_tokens: 512}
+  - {id: p4_mistral7b_gsm_fscot, model: mistral-7b-instruct, dataset: gsm8k, prompting_technique: scaling_few_shot_cot_gsm8k, description: "Mistral-7B GSM8K few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 512}
+
+  # --- Qwen2.5-7B × GSM8K ---
+  - {id: p4_qwen7b_gsm_zero, model: qwen2.5-7b, dataset: gsm8k, prompting_technique: scaling_zero_shot_gsm8k, description: "Qwen2.5-7B GSM8K zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p4_qwen7b_gsm_cot, model: qwen2.5-7b, dataset: gsm8k, prompting_technique: scaling_cot_gsm8k, description: "Qwen2.5-7B GSM8K CoT", enabled: false, num_samples: 200, max_tokens: 512}
+  - {id: p4_qwen7b_gsm_fscot, model: qwen2.5-7b, dataset: gsm8k, prompting_technique: scaling_few_shot_cot_gsm8k, description: "Qwen2.5-7B GSM8K few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 512}
+
+  # ================================================================
+  # PHASE 5 — MMLU BROAD KNOWLEDGE (30 experiments, optional)
+  # 4-way multiple choice across many subjects.
+  # All 10 models × 3 techniques (zero_shot, few_shot, CoT).
+  # ================================================================
+
+  # --- SmolLM-135M × MMLU ---
+  - {id: p5_smollm135m_mmlu_zero, model: smollm-135m, dataset: mmlu, prompting_technique: scaling_zero_shot_arc, description: "SmolLM-135M MMLU zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_smollm135m_mmlu_few, model: smollm-135m, dataset: mmlu, prompting_technique: scaling_few_shot_arc, description: "SmolLM-135M MMLU few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_smollm135m_mmlu_cot, model: smollm-135m, dataset: mmlu, prompting_technique: scaling_cot_arc, description: "SmolLM-135M MMLU CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # --- SmolLM-360M × MMLU ---
+  - {id: p5_smollm360m_mmlu_zero, model: smollm-360m, dataset: mmlu, prompting_technique: scaling_zero_shot_arc, description: "SmolLM-360M MMLU zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_smollm360m_mmlu_few, model: smollm-360m, dataset: mmlu, prompting_technique: scaling_few_shot_arc, description: "SmolLM-360M MMLU few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_smollm360m_mmlu_cot, model: smollm-360m, dataset: mmlu, prompting_technique: scaling_cot_arc, description: "SmolLM-360M MMLU CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # --- Qwen2.5-0.5B × MMLU ---
+  - {id: p5_qwen05b_mmlu_zero, model: qwen2.5-0.5b, dataset: mmlu, prompting_technique: scaling_zero_shot_arc, description: "Qwen2.5-0.5B MMLU zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_qwen05b_mmlu_few, model: qwen2.5-0.5b, dataset: mmlu, prompting_technique: scaling_few_shot_arc, description: "Qwen2.5-0.5B MMLU few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_qwen05b_mmlu_cot, model: qwen2.5-0.5b, dataset: mmlu, prompting_technique: scaling_cot_arc, description: "Qwen2.5-0.5B MMLU CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # --- TinyLlama-1.1B × MMLU ---
+  - {id: p5_tinyllama_mmlu_zero, model: tinyllama-test, dataset: mmlu, prompting_technique: scaling_zero_shot_arc, description: "TinyLlama-1.1B MMLU zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_tinyllama_mmlu_few, model: tinyllama-test, dataset: mmlu, prompting_technique: scaling_few_shot_arc, description: "TinyLlama-1.1B MMLU few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_tinyllama_mmlu_cot, model: tinyllama-test, dataset: mmlu, prompting_technique: scaling_cot_arc, description: "TinyLlama-1.1B MMLU CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # --- Qwen2.5-1.5B × MMLU ---
+  - {id: p5_qwen15b_mmlu_zero, model: qwen2.5-1.5b, dataset: mmlu, prompting_technique: scaling_zero_shot_arc, description: "Qwen2.5-1.5B MMLU zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_qwen15b_mmlu_few, model: qwen2.5-1.5b, dataset: mmlu, prompting_technique: scaling_few_shot_arc, description: "Qwen2.5-1.5B MMLU few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_qwen15b_mmlu_cot, model: qwen2.5-1.5b, dataset: mmlu, prompting_technique: scaling_cot_arc, description: "Qwen2.5-1.5B MMLU CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # --- SmolLM-1.7B × MMLU ---
+  - {id: p5_smollm17b_mmlu_zero, model: smollm-1.7b, dataset: mmlu, prompting_technique: scaling_zero_shot_arc, description: "SmolLM-1.7B MMLU zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_smollm17b_mmlu_few, model: smollm-1.7b, dataset: mmlu, prompting_technique: scaling_few_shot_arc, description: "SmolLM-1.7B MMLU few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_smollm17b_mmlu_cot, model: smollm-1.7b, dataset: mmlu, prompting_technique: scaling_cot_arc, description: "SmolLM-1.7B MMLU CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # --- Qwen2.5-3B × MMLU ---
+  - {id: p5_qwen3b_mmlu_zero, model: qwen2.5-3b, dataset: mmlu, prompting_technique: scaling_zero_shot_arc, description: "Qwen2.5-3B MMLU zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_qwen3b_mmlu_few, model: qwen2.5-3b, dataset: mmlu, prompting_technique: scaling_few_shot_arc, description: "Qwen2.5-3B MMLU few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_qwen3b_mmlu_cot, model: qwen2.5-3b, dataset: mmlu, prompting_technique: scaling_cot_arc, description: "Qwen2.5-3B MMLU CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # --- Phi-3-mini (3.8B) × MMLU ---
+  - {id: p5_phi3_mmlu_zero, model: phi-3-mini-4bit, dataset: mmlu, prompting_technique: scaling_zero_shot_arc, description: "Phi-3-mini MMLU zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_phi3_mmlu_few, model: phi-3-mini-4bit, dataset: mmlu, prompting_technique: scaling_few_shot_arc, description: "Phi-3-mini MMLU few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_phi3_mmlu_cot, model: phi-3-mini-4bit, dataset: mmlu, prompting_technique: scaling_cot_arc, description: "Phi-3-mini MMLU CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # --- Mistral-7B × MMLU ---
+  - {id: p5_mistral7b_mmlu_zero, model: mistral-7b-instruct, dataset: mmlu, prompting_technique: scaling_zero_shot_arc, description: "Mistral-7B MMLU zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_mistral7b_mmlu_few, model: mistral-7b-instruct, dataset: mmlu, prompting_technique: scaling_few_shot_arc, description: "Mistral-7B MMLU few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_mistral7b_mmlu_cot, model: mistral-7b-instruct, dataset: mmlu, prompting_technique: scaling_cot_arc, description: "Mistral-7B MMLU CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # --- Qwen2.5-7B × MMLU ---
+  - {id: p5_qwen7b_mmlu_zero, model: qwen2.5-7b, dataset: mmlu, prompting_technique: scaling_zero_shot_arc, description: "Qwen2.5-7B MMLU zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_qwen7b_mmlu_few, model: qwen2.5-7b, dataset: mmlu, prompting_technique: scaling_few_shot_arc, description: "Qwen2.5-7B MMLU few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p5_qwen7b_mmlu_cot, model: qwen2.5-7b, dataset: mmlu, prompting_technique: scaling_cot_arc, description: "Qwen2.5-7B MMLU CoT", enabled: false, num_samples: 200, max_tokens: 200}
+
+  # ================================================================
+  # KEPT FOR REFERENCE — Original experiments
+  # ================================================================
   - id: phi3_sst2_simple
     model: phi-3-mini-4bit
     dataset: sst2
     prompting_technique: sst2_simple_phi_3_mini
     description: "Phi-3 on SST-2 with simple classification"
-    enabled: true  
+    enabled: false
     max_tokens: 10       
   
   - id: phi3_sst2_cot
@@ -90,8 +474,8 @@ experiments:
     prompting_technique: cot
     description: "Phi-3 on GSM8K math reasoning with CoT"
     enabled: false
-    num_samples: 50      # Test on small subset first
-    max_tokens: 500      # Allow more tokens for reasoning
+    num_samples: 50
+    max_tokens: 500
 
 # Example override patterns:
 #

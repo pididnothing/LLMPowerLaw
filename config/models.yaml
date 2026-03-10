@@ -102,6 +102,133 @@ models:
     # Note: May need to close other GPU apps
   
   # ============================================================
+  # 📐 SCALING LAW STUDY MODELS (For Colab T4 16GB VRAM)
+  # All models are ungated, free, no API key needed.
+  # Sorted by parameter count for scaling law plotting.
+  # Models ≤3.8B run in fp16; 7B+ use 4-bit quantization.
+  # ============================================================
+
+  # --- 135M params ---
+  - name: smollm-135m
+    provider: huggingface_local
+    model_id: HuggingFaceTB/SmolLM-135M-Instruct
+    max_tokens: 512
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: false
+    torch_dtype: auto
+    trust_remote_code: false
+    local_model_path: null
+    enabled: false
+    # Params: 0.135B | VRAM: ~0.3GB fp16 | Ungated
+
+  # --- 360M params ---
+  - name: smollm-360m
+    provider: huggingface_local
+    model_id: HuggingFaceTB/SmolLM-360M-Instruct
+    max_tokens: 512
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: false
+    torch_dtype: auto
+    trust_remote_code: false
+    local_model_path: null
+    enabled: false
+    # Params: 0.36B | VRAM: ~0.7GB fp16 | Ungated
+
+  # --- 500M params ---
+  - name: qwen2.5-0.5b
+    provider: huggingface_local
+    model_id: Qwen/Qwen2.5-0.5B-Instruct
+    max_tokens: 512
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: false
+    torch_dtype: auto
+    trust_remote_code: true
+    local_model_path: null
+    enabled: false
+    # Params: 0.5B | VRAM: ~1GB fp16 | Ungated (Apache 2.0)
+
+  # --- 1.5B params ---
+  - name: qwen2.5-1.5b
+    provider: huggingface_local
+    model_id: Qwen/Qwen2.5-1.5B-Instruct
+    max_tokens: 512
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: false
+    torch_dtype: auto
+    trust_remote_code: true
+    local_model_path: null
+    enabled: false
+    # Params: 1.5B | VRAM: ~3GB fp16 | Ungated (Apache 2.0)
+
+  # --- 1.7B params ---
+  - name: smollm-1.7b
+    provider: huggingface_local
+    model_id: HuggingFaceTB/SmolLM-1.7B-Instruct
+    max_tokens: 512
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: false
+    torch_dtype: auto
+    trust_remote_code: false
+    local_model_path: null
+    enabled: false
+    # Params: 1.7B | VRAM: ~3.4GB fp16 | Ungated (Apache 2.0)
+
+  # --- 3B params ---
+  - name: qwen2.5-3b
+    provider: huggingface_local
+    model_id: Qwen/Qwen2.5-3B-Instruct
+    max_tokens: 512
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: false
+    torch_dtype: auto
+    trust_remote_code: true
+    local_model_path: null
+    enabled: false
+    # Params: 3B | VRAM: ~6GB fp16 | Ungated (Apache 2.0)
+
+  # --- 7.2B params (4-bit quantized) ---
+  - name: mistral-7b-instruct
+    provider: huggingface_local
+    model_id: mistralai/Mistral-7B-Instruct-v0.3
+    max_tokens: 512
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: true
+    torch_dtype: auto
+    trust_remote_code: false
+    local_model_path: null
+    enabled: false
+    # Params: 7.2B | VRAM: ~4GB 4-bit | Ungated (Apache 2.0)
+
+  # --- 7.6B params (4-bit quantized) ---
+  - name: qwen2.5-7b
+    provider: huggingface_local
+    model_id: Qwen/Qwen2.5-7B-Instruct
+    max_tokens: 512
+    temperature: 0.0
+    device: auto
+    load_in_8bit: false
+    load_in_4bit: true
+    torch_dtype: auto
+    trust_remote_code: true
+    local_model_path: null
+    enabled: false
+    # Params: 7.6B | VRAM: ~4.5GB 4-bit | Ungated (Apache 2.0)
+
+  # ============================================================
   # ⚠️  LARGER MODELS (Disabled - Require >4GB VRAM)
   # ============================================================
   # OpenAI Models

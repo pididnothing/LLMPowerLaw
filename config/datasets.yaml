@@ -44,7 +44,55 @@ datasets:
       label: "label"
     
   # ============================================================
-  # 📊 FULL EXPERIMENT DATASETS (100-500 samples)
+  # � SCALING LAW BENCHMARK DATASETS
+  # Standard benchmarks for scaling law study.
+  # Enable per-phase as you work through experiments.
+  # ============================================================
+
+  # ARC-Challenge: Science reasoning, 4-way multiple choice
+  - name: arc_challenge
+    type: huggingface
+    dataset_name: allenai/ai2_arc
+    subset: ARC-Challenge
+    split: test
+    task_type: classification
+    num_samples: 200
+    enabled: false
+    fields:
+      text: "question"
+      label: "answerKey"
+      choices: "choices"
+
+  # HellaSwag: Commonsense reasoning, 4-way completion
+  - name: hellaswag
+    type: huggingface
+    dataset_name: Rowan/hellaswag
+    subset: null
+    split: validation
+    task_type: classification
+    num_samples: 200
+    enabled: false
+    fields:
+      text: "ctx"
+      label: "label"
+      endings: "endings"
+
+  # MMLU (subset): Broad knowledge, 4-way multiple choice
+  - name: mmlu
+    type: huggingface
+    dataset_name: cais/mmlu
+    subset: all
+    split: test
+    task_type: classification
+    num_samples: 200
+    enabled: false
+    fields:
+      text: "question"
+      label: "answer"
+      choices: "choices"
+
+  # ============================================================
+  # �📊 FULL EXPERIMENT DATASETS (100-500 samples)
   # Enable these after verifying with test datasets
   # ============================================================
   # ============================================================

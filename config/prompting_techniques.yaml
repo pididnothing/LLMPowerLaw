@@ -184,6 +184,282 @@ prompting_techniques:
     fields:
       analogy: "sorting items into categories based on their characteristics"
 
+  # ============================================================
+  # 📐 SCALING LAW STUDY PROMPTING TECHNIQUES
+  # These are the 5 core techniques for the scaling law experiments.
+  # Write your own templates below (replace the TODO placeholders).
+  # Each technique needs per-dataset variants if the task format differs.
+  # ============================================================
+
+  # --- ZERO-SHOT (Baseline) ---
+  # Direct question with no examples, no reasoning guidance.
+  # This is the baseline against which all other techniques are compared.
+
+  - name: scaling_zero_shot_sst2
+    type: custom
+    description: "Zero-shot baseline for SST-2 sentiment classification"
+    enabled: false
+    template: |
+      Classify the sentiment of the following text as "positive" or "negative".
+      Respond with ONLY one word: positive or negative.
+
+      Text: $input
+      Sentiment:
+
+  - name: scaling_zero_shot_arc
+    type: custom
+    description: "Zero-shot baseline for ARC-Challenge multiple choice"
+    enabled: false
+    template: |
+      Answer the following science question by choosing A, B, C, or D.
+      Respond with ONLY the letter of the correct answer.
+
+      Question: $input
+      $choices
+      Answer:
+
+  - name: scaling_zero_shot_hellaswag
+    type: custom
+    description: "Zero-shot baseline for HellaSwag commonsense completion"
+    enabled: false
+    template: |
+      Choose the most plausible continuation. Respond with ONLY the number (0, 1, 2, or 3).
+
+      Context: $input
+      $endings
+      Answer:
+
+  - name: scaling_zero_shot_gsm8k
+    type: custom
+    description: "Zero-shot baseline for GSM8K math reasoning"
+    enabled: false
+    template: |
+      Solve the following math problem. Give ONLY the final numerical answer.
+
+      Problem: $input
+      Answer:
+
+  # --- FEW-SHOT (3 examples) ---
+  # Provide 3 in-context examples before the test question.
+  # TODO: Fill in domain-appropriate examples for each dataset.
+
+  - name: scaling_few_shot_sst2
+    type: custom
+    description: "Few-shot (3 examples) for SST-2 sentiment"
+    enabled: false
+    template: |
+      Classify the sentiment as "positive" or "negative".
+
+      Text: a stirring , funny and finally transporting re-imagining of beauty and the beast
+      Sentiment: positive
+
+      Text: unflinchingly bleak and desperate
+      Sentiment: negative
+
+      Text: allows us to hope that nolan is poised to embark on a major career as a commercial yet inventive drop
+      Sentiment: positive
+
+      Text: $input
+      Sentiment:
+
+  - name: scaling_few_shot_arc
+    type: custom
+    description: "Few-shot (3 examples) for ARC-Challenge"
+    enabled: false
+    template: |
+      Answer the science question by choosing A, B, C, or D.
+
+      TODO: Write 3 example question-answer pairs here.
+
+      Question: $input
+      $choices
+      Answer:
+
+  - name: scaling_few_shot_hellaswag
+    type: custom
+    description: "Few-shot (3 examples) for HellaSwag"
+    enabled: false
+    template: |
+      Choose the most plausible continuation (0, 1, 2, or 3).
+
+      TODO: Write 3 example context-answer pairs here.
+
+      Context: $input
+      $endings
+      Answer:
+
+  - name: scaling_few_shot_gsm8k
+    type: custom
+    description: "Few-shot (3 examples) for GSM8K math"
+    enabled: false
+    template: |
+      Solve the math problem. Give ONLY the final numerical answer.
+
+      TODO: Write 3 example problem-answer pairs here.
+
+      Problem: $input
+      Answer:
+
+  # --- CHAIN-OF-THOUGHT (CoT) ---
+  # Append "Let's think step by step" to elicit reasoning.
+
+  - name: scaling_cot_sst2
+    type: custom
+    description: "Chain-of-thought for SST-2 sentiment"
+    enabled: false
+    template: |
+      Classify the sentiment of the following text as "positive" or "negative".
+      Let's think step by step.
+
+      Text: $input
+
+      Step-by-step reasoning:
+
+  - name: scaling_cot_arc
+    type: custom
+    description: "Chain-of-thought for ARC-Challenge"
+    enabled: false
+    template: |
+      Answer the following science question. Let's think step by step.
+
+      Question: $input
+      $choices
+
+      Step-by-step reasoning:
+
+  - name: scaling_cot_hellaswag
+    type: custom
+    description: "Chain-of-thought for HellaSwag"
+    enabled: false
+    template: |
+      Choose the most plausible continuation. Let's think step by step.
+
+      Context: $input
+      $endings
+
+      Step-by-step reasoning:
+
+  - name: scaling_cot_gsm8k
+    type: custom
+    description: "Chain-of-thought for GSM8K math"
+    enabled: false
+    template: |
+      Solve the following math problem. Let's think step by step.
+
+      Problem: $input
+
+      Step-by-step solution:
+
+  # --- FEW-SHOT COT ---
+  # Combine in-context examples that include reasoning chains.
+  # TODO: Write examples that demonstrate step-by-step reasoning.
+
+  - name: scaling_few_shot_cot_sst2
+    type: custom
+    description: "Few-shot CoT for SST-2 sentiment"
+    enabled: false
+    template: |
+      Classify the sentiment as "positive" or "negative". Show your reasoning.
+
+      Text: a stirring , funny and finally transporting re-imagining
+      Reasoning: The words "stirring", "funny", and "transporting" are all positive descriptors.
+      Sentiment: positive
+
+      Text: unflinchingly bleak and desperate
+      Reasoning: "Bleak" and "desperate" are strongly negative words.
+      Sentiment: negative
+
+      Text: $input
+      Reasoning:
+
+  - name: scaling_few_shot_cot_arc
+    type: custom
+    description: "Few-shot CoT for ARC-Challenge"
+    enabled: false
+    template: |
+      Answer the science question. Show your step-by-step reasoning.
+
+      TODO: Write 2-3 example question-reasoning-answer triples here.
+
+      Question: $input
+      $choices
+      Reasoning:
+
+  - name: scaling_few_shot_cot_hellaswag
+    type: custom
+    description: "Few-shot CoT for HellaSwag"
+    enabled: false
+    template: |
+      Choose the most plausible continuation. Show your reasoning.
+
+      TODO: Write 2-3 example context-reasoning-answer triples here.
+
+      Context: $input
+      $endings
+      Reasoning:
+
+  - name: scaling_few_shot_cot_gsm8k
+    type: custom
+    description: "Few-shot CoT for GSM8K math"
+    enabled: false
+    template: |
+      Solve the math problem. Show your step-by-step work.
+
+      TODO: Write 2-3 example problem-solution-answer triples here.
+
+      Problem: $input
+      Solution:
+
+  # --- ROLE-EXPERT ---
+  # Assign an expert persona before the task.
+
+  - name: scaling_role_expert_sst2
+    type: custom
+    description: "Role-expert prompting for SST-2 sentiment"
+    enabled: false
+    template: |
+      You are an expert sentiment analyst with years of experience in NLP and text classification.
+      Classify the sentiment of the following text as "positive" or "negative".
+      Respond with ONLY one word.
+
+      Text: $input
+      Sentiment:
+
+  - name: scaling_role_expert_arc
+    type: custom
+    description: "Role-expert prompting for ARC-Challenge"
+    enabled: false
+    template: |
+      You are an expert science teacher. Answer the following question by choosing A, B, C, or D.
+      Respond with ONLY the letter.
+
+      Question: $input
+      $choices
+      Answer:
+
+  - name: scaling_role_expert_hellaswag
+    type: custom
+    description: "Role-expert prompting for HellaSwag"
+    enabled: false
+    template: |
+      You are an expert in commonsense reasoning. Choose the most plausible continuation.
+      Respond with ONLY the number (0, 1, 2, or 3).
+
+      Context: $input
+      $endings
+      Answer:
+
+  - name: scaling_role_expert_gsm8k
+    type: custom
+    description: "Role-expert prompting for GSM8K math"
+    enabled: false
+    template: |
+      You are an expert mathematician. Solve the following problem.
+      Give ONLY the final numerical answer.
+
+      Problem: $input
+      Answer:
+
 # Prompting technique combinations (apply multiple techniques)
 technique_combinations:
   - name: role_plus_cot
