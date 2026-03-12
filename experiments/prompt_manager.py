@@ -69,6 +69,16 @@ class PromptManager:
         
         self.technique_combinations = config.get('technique_combinations', [])
         self.global_settings = config.get('global_settings', {})
+
+        # Also load generated prompt templates if available
+        generated_path = self.config_path.parent / "prompting_techniques_generated.yaml"
+        if generated_path.exists():
+            with open(generated_path, 'r', encoding='utf-8') as f:
+                gen_config = yaml.safe_load(f) or {}
+            existing_names = {t.name for t in self.techniques}
+            for tech_data in gen_config.get('prompting_techniques', []):
+                if tech_data.get('name') not in existing_names:
+                    self.techniques.append(PromptTechnique.from_dict(tech_data))
     
     def get_enabled_techniques(self) -> List[PromptTechnique]:
         """Get list of enabled techniques"""
