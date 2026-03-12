@@ -59,6 +59,18 @@ class BenchmarkRunner:
         
         self.metrics_calculator = MetricsCalculator()
         
+        # Load dataset instructions (for label maps etc.)
+        self.dataset_instructions = {}
+        try:
+            import yaml
+            instructions_path = Path(__file__).parent.parent / "config" / "dataset_instructions.yaml"
+            if instructions_path.exists():
+                with open(instructions_path, 'r') as f:
+                    raw = yaml.safe_load(f)
+                self.dataset_instructions = raw.get('dataset_instructions', {})
+        except Exception as e:
+            print(f"Warning: Could not load dataset_instructions.yaml: {e}")
+        
         # Initialize prompt manager
         self.enable_prompting = enable_prompting
         self.prompt_manager = None
@@ -288,6 +300,19 @@ class BenchmarkRunner:
                     # Handle PromptBench or other datasets
                     input_text = str(example.get('text', example.get('question', example)))
                     true_label = example.get('label', example.get('answer', ''))
+                
+                # Map numeric true_label to text using dataset_instructions label_map
+                ds_instructions = self.dataset_instructions.get(dataset_config.name, {})
+                label_map = ds_instructions.get('label_map')
+                if label_map and true_label in label_map:
+                    true_label = label_map[true_label]
+                elif label_map:
+                    # Try with string key (YAML may parse ints as ints or strings)
+                    str_key = str(true_label)
+                    for k, v in label_map.items():
+                        if str(k) == str_key:
+                            true_label = v
+                            break
                 
                 # Apply prompting technique if available
                 if prompt_technique and self.prompt_manager:
