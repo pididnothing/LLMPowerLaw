@@ -1,222 +1,182 @@
-# LLM Power Law - Multi-Model Benchmarking Framework
+# LLM Power Law — Scaling-Law Benchmark Framework
 
-A comprehensive framework for benchmarking LLMs with support for local models, quantization, prompting techniques, and custom datasets.
+Benchmark open-source LLMs across multiple prompting techniques to plot **model size vs accuracy** and empirically derive scaling laws for prompt-augmented LLMs.
 
-## 🚀 Quick Start
+All models are free, ungated, and run locally (Colab T4 or your own GPU). No API keys needed.
 
-### Option 1: Google Colab (Recommended)
+---
 
-**Easiest way to get started - no installation required!**
+## Quick Start
 
-1. Open [`LLM_PowerLaw_Colab.ipynb`](LLM_PowerLaw_Colab.ipynb) in Google Colab
-2. Enable GPU (Runtime → Change runtime type → T4 GPU)
-3. Run all cells
-4. Download your results
+1. Open **[LLM_PowerLaw_Colab.ipynb](LLM_PowerLaw_Colab.ipynb)** in Google Colab.
+2. Runtime → Change runtime type → **T4 GPU**.
+3. Use **Mode A** or **Mode A+** (see below) to enable experiments.
+4. Run the benchmark cells and download results.
 
-**Provides**: Free ~15GB VRAM GPU, zero setup, works immediately
-
-### Option 2: Local Setup
+For local setup:
 
 ```bash
-# Clone repository
-git clone https://github.com/YOUR_USERNAME/LLMPowerLaw.git
-cd LLMPowerLaw
-
-# Install dependencies
 pip install -r requirements.txt
-pip install bitsandbytes  # For 4-bit quantization (optional)
-
-# Run test (5 samples, ~2-3 minutes)
+pip install bitsandbytes          # optional, needed for 4-bit models
 python experiments/run_benchmark.py
 ```
 
-**Full instructions**: [docs/SETUP.md](docs/SETUP.md)
+---
 
-## ✨ Key Features
+## How Experiments Work
 
-- 🚀 **Progress Bars**: Real-time monitoring of all operations
-- 🧠 **Memory Optimization**: Run 7B-70B models with 4-bit/8-bit quantization
-- 🎯 **Prompting Techniques**: Zero-shot, few-shot, chain-of-thought, custom templates
-- 💻 **Multi-Provider Support**: HuggingFace, OpenAI, Anthropic, GGUF, vLLM
-- 📊 **Multiple Datasets**: PromptBench datasets + custom JSONL/JSON/CSV
-- 🔧 **Flexible Configuration**: Simple YAML files for models, datasets, prompts
+Every experiment is a **triplet**: `(model, dataset, prompting_technique)`.
+All 195 triplets are defined in `config/experiments.yaml` (disabled by default).
+The notebook provides two ways to enable the ones you want.
 
-## 📁 Project Structure
+---
+
+## Mode A — Pick Individual Experiments
+
+Edit the `experiments_to_enable` list in the "Mode A" cell with specific experiment IDs:
+
+```python
+experiments_to_enable = [
+    "p1_phi3_sst2_zero",
+    "p1_tinyllama_sst2_few",
+]
+```
+
+Use this when you want exact control over which triplets run.
+
+---
+
+## Mode A+ — Batch Enable by Cross-Product (Recommended)
+
+Set three lists — every `(model × dataset × technique)` combination that exists in `experiments.yaml` is enabled automatically.
+
+```python
+MODELS     = ["smollm-135m", "qwen2.5-0.5b"]   # or ["*"] for all
+DATASETS   = ["sst2", "arc_challenge"]           # or ["*"] for all
+TECHNIQUES = ["zero_shot", "chain_of_thought"]   # or ["*"] for all
+```
+
+Glob patterns work: `"qwen*"` matches all Qwen models, `"*_shot*"` matches zero_shot + few_shot + few_shot_cot.
+
+### Available Keys
+
+**Models** (sorted by parameter count):
+
+| Key                   | Model                    | Params |
+| --------------------- | ------------------------ | ------ |
+| `smollm-135m`         | SmolLM-135M-Instruct     | 0.135B |
+| `smollm-360m`         | SmolLM-360M-Instruct     | 0.36B  |
+| `qwen2.5-0.5b`        | Qwen2.5-0.5B-Instruct    | 0.5B   |
+| `tinyllama-test`      | TinyLlama-1.1B-Chat      | 1.1B   |
+| `qwen2.5-1.5b`        | Qwen2.5-1.5B-Instruct    | 1.5B   |
+| `smollm-1.7b`         | SmolLM-1.7B-Instruct     | 1.7B   |
+| `qwen2.5-3b`          | Qwen2.5-3B-Instruct      | 3B     |
+| `phi-3-mini-4bit`     | Phi-3-mini-4k-instruct   | 3.8B   |
+| `mistral-7b-instruct` | Mistral-7B-Instruct-v0.3 | 7.2B   |
+| `qwen2.5-7b`          | Qwen2.5-7B-Instruct      | 7.6B   |
+
+**Datasets:**
+
+| Key             | Benchmark     | Task                            |
+| --------------- | ------------- | ------------------------------- |
+| `sst2`          | SST-2 (GLUE)  | Sentiment (positive / negative) |
+| `arc_challenge` | ARC-Challenge | Science MCQ (A/B/C/D)           |
+| `hellaswag`     | HellaSwag     | Commonsense MCQ (A/B/C/D)       |
+| `gsm8k`         | GSM8K         | Math reasoning (numeric)        |
+| `mmlu`          | MMLU          | Knowledge MCQ (A/B/C/D)         |
+
+**Techniques:**
+
+| Key                | Description                     |
+| ------------------ | ------------------------------- |
+| `zero_shot`        | Direct question, no examples    |
+| `few_shot`         | Includes demonstration examples |
+| `chain_of_thought` | Step-by-step reasoning          |
+| `few_shot_cot`     | Examples + reasoning            |
+| `role_expert`      | Domain-expert persona           |
+
+---
+
+## Project Structure
 
 ```
 LLMPowerLaw/
-├── LLM_PowerLaw_Colab.ipynb      # 👈 Start here for Colab
-├── config/                        # Configuration files
-│   ├── models.yaml               # Model setup
-│   ├── datasets.yaml             # Dataset setup
-│   └── prompting_techniques.yaml # Prompting strategies
-├── experiments/                   # Core benchmarking code
-│   ├── run_benchmark.py          # Main runner
-│   ├── local_model_handler.py    # Local model loading
-│   └── prompt_manager.py         # Prompting techniques
-├── data_loaders/                 # Dataset loaders
-├── utils/                        # Logging & metrics
-├── results/                      # Output directory
-└── docs/                         # Documentation
-    └── SETUP.md                  # Complete setup guide
+├── LLM_PowerLaw_Colab.ipynb          # Main notebook (start here)
+├── config/
+│   ├── models.yaml                    # 10 scaling-law models + test models
+│   ├── datasets.yaml                  # 5 benchmarks + test datasets
+│   ├── experiments.yaml               # 195 experiment triplets
+│   ├── prompting_techniques.yaml      # Base technique definitions
+│   ├── prompting_techniques_generated.yaml  # 125 model-family templates
+│   └── dataset_instructions.yaml      # Per-dataset instructions & label maps
+├── experiments/
+│   ├── run_benchmark.py               # Main benchmark runner
+│   ├── experiment_config.py           # Config dataclasses
+│   ├── prompt_manager.py              # Loads & applies prompting techniques
+│   └── local_model_handler.py         # HuggingFace model loading & inference
+├── utils/
+│   ├── metrics.py                     # Accuracy, F1, exact-match
+│   ├── logger.py                      # Experiment logging
+│   └── generate_prompt_templates.py   # Regenerate 125 templates from sources
+├── data_loaders/                      # Custom dataset loader
+├── results/                           # Experiment output (JSON)
+└── docs/                              # Setup & troubleshooting
 ```
 
-## 🎯 Hardware-Specific Guides
+---
 
-| Hardware                | Recommended Models | Quick Start Guide                                            |
-| ----------------------- | ------------------ | ------------------------------------------------------------ |
-| **Google Colab** (15GB) | 7B-13B with 4-bit  | [LLM_PowerLaw_Colab.ipynb](LLM_PowerLaw_Colab.ipynb)         |
-| **4GB VRAM**            | 2B-3B with 4-bit   | [QUICKSTART_4GB_VRAM.md](QUICKSTART_4GB_VRAM.md)             |
-| **8GB VRAM**            | 7B with 4-bit      | [MEMORY_OPTIMIZATION_GUIDE.md](MEMORY_OPTIMIZATION_GUIDE.md) |
-| **12GB+ VRAM**          | 13B-70B with 4-bit | [LARGE_MODEL_QUICKSTART.md](LARGE_MODEL_QUICKSTART.md)       |
-| **CPU Only**            | GGUF quantized     | [LOCAL_MODELS.md](LOCAL_MODELS.md)                           |
+## Configuration Quick Reference
 
-## 🔥 Quick Examples
-
-### Run Test (5 samples, ~2 minutes)
-
-```bash
-python experiments/run_benchmark.py
-```
-
-### Enable More Models
-
-```yaml
-# Edit config/models.yaml
-- name: llama-2-7b-4bit
-  enabled: true # Change false → true
-```
-
-### Scale Up Dataset
-
-```yaml
-# Edit config/datasets.yaml
-- name: sst2
-  num_samples: 200 # Increase from 5
-  enabled: true
-```
-
-### Run Specific Model/Dataset
-
-```bash
-python experiments/run_benchmark.py --model gemma-2b-4bit --dataset sst2
-```
-
-## 📊 Example Output
-
-```
-Loading model components: 100%|████████| 2/2 [00:45<00:00]
-✓ Model loaded successfully on device: cuda:0
-Loading sst2: 100%|████████| 1/1 [00:02<00:00]
-✓ Loaded 100 samples
-gemma-2b-4bit on sst2: 100%|████████| 100/100 [03:25<00:00, 2.1s/sample]
-Overall Progress: 100%|████████| 1/1 [03:30<00:00]
-
-Results saved to: results/experiment_20260308_summary.json
-✅ Accuracy: 0.87
-```
-
-## 📚 Documentation
-
-### Getting Started
-
-- **[docs/SETUP.md](docs/SETUP.md)** - Complete installation guide (Colab, Windows, Linux)
-- **[QUICKSTART.md](QUICKSTART.md)** - Quick reference commands
-- **[LLM_PowerLaw_Colab.ipynb](LLM_PowerLaw_Colab.ipynb)** - Interactive Colab notebook
-
-### Hardware-Specific
-
-- **[QUICKSTART_4GB_VRAM.md](QUICKSTART_4GB_VRAM.md)** - For 4GB VRAM GPUs
-- **[MEMORY_OPTIMIZATION_GUIDE.md](MEMORY_OPTIMIZATION_GUIDE.md)** - Quantization deep dive
-- **[LARGE_MODEL_QUICKSTART.md](LARGE_MODEL_QUICKSTART.md)** - For 12GB+ VRAM
-
-### Feature Guides
-
-- **[PROMPTING_GUIDE.md](PROMPTING_GUIDE.md)** - Prompting techniques explained
-- **[LOCAL_MODELS.md](LOCAL_MODELS.md)** - Running models locally
-- **[PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md)** - Architecture overview
-
-### Configuration
-
-- [`config/models.yaml`](config/models.yaml) - Model configurations
-- [`config/datasets.yaml`](config/datasets.yaml) - Dataset configurations
-- [`config/prompting_techniques.yaml`](config/prompting_techniques.yaml) - Prompting strategies
-
-### Troubleshooting
-
-- **[docs/DIAGNOSIS_AND_FIXES.md](docs/DIAGNOSIS_AND_FIXES.md)** - Common issues & solutions
-- **[docs/WINDOWS_INSTALL_FIX.md](docs/WINDOWS_INSTALL_FIX.md)** - Windows-specific fixes
-
-## 🎯 Common Use Cases
-
-### Quick Sanity Check
-
-```bash
-# Uses test dataset (5 samples) - 2-3 minutes
-python experiments/run_benchmark.py
-```
-
-### Compare Multiple Models
-
-```yaml
-# In config/models.yaml - enable multiple models
-- name: gemma-2b-4bit
-  enabled: true
-- name: phi-3-mini-4bit
-  enabled: true
-- name: llama-2-7b-4bit
-  enabled: true
-```
-
-### Test Prompting Techniques
-
-```yaml
-# In config/prompting_techniques.yaml
-- name: zero_shot
-  enabled: true
-- name: few_shot
-  enabled: true
-- name: chain_of_thought
-  enabled: true
-```
-
-### Custom Dataset
-
-```yaml
-# In config/datasets.yaml
-- name: my_dataset
-  type: custom
-  file_path: "./data_loaders/data/my_data.jsonl"
-  task_type: classification
-  format: jsonl
-  enabled: true
-```
-
-## 🔧 Configuration Quick Reference
-
-Enable/disable models:
+Enable/disable a model:
 
 ```yaml
 # config/models.yaml
-- name: model_name
+- name: phi-3-mini-4bit
   enabled: true # or false
+  load_in_4bit: true # 4-bit quantization (~75% memory saving)
 ```
 
-Adjust sample size:
+Change sample count:
 
 ```yaml
 # config/datasets.yaml
-- name: dataset_name
-  num_samples: 100 # or any number
+- name: sst2
+  num_samples: 200
 ```
 
-Enable quantization:
+Per-experiment overrides in `experiments.yaml`:
 
 ```yaml
-# config/models.yaml
-- name: model_name
-  load_in_4bit: true # 75% memory reduction
+- id: p1_phi3_sst2_zero
+  model: phi-3-mini-4bit
+  dataset: sst2
+  prompting_technique: sst2_zero_shot_phi3
+  num_samples: 50 # override dataset default
+  max_tokens: 10 # override model default
+  enabled: true
 ```
+
+---
+
+## Hardware Guide
+
+| Platform | VRAM  | Recommended models       | Quantization               |
+| -------- | ----- | ------------------------ | -------------------------- |
+| Colab T4 | 15 GB | All 10 models            | fp16 for ≤3B, 4-bit for 7B |
+| 4 GB GPU | 4 GB  | smollm-135m → qwen2.5-3b | fp16 only                  |
+| 8 GB GPU | 8 GB  | All up to 7B             | 4-bit for 7B               |
+| CPU only | —     | smollm-135m, smollm-360m | float32 (slow)             |
+
+---
+
+## Troubleshooting
+
+| Problem                              | Fix                                                                 |
+| ------------------------------------ | ------------------------------------------------------------------- |
+| `bitsandbytes` install error         | See [docs/INSTALL_BITSANDBYTES.md](docs/INSTALL_BITSANDBYTES.md)    |
+| `sentencepiece` C++ error on Windows | See [docs/WINDOWS_INSTALL_FIX.md](docs/WINDOWS_INSTALL_FIX.md)      |
+| Model outputs nonsense               | Check [docs/DIAGNOSIS_AND_FIXES.md](docs/DIAGNOSIS_AND_FIXES.md)    |
+| 0% accuracy on SST-2                 | Label mapping issue — ensure you have the latest `run_benchmark.py` |
 
 ## 🆘 Troubleshooting
 
