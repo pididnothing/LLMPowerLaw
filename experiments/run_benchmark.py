@@ -314,6 +314,7 @@ class BenchmarkRunner:
                 # Log prediction details for first few samples
                 if i < 3:  # Log first 3 predictions
                     self.logger.log_info(f"Sample {i}:")
+                    self.logger.log_info(f"  Model input: '{input_text}'")
                     self.logger.log_info(f"  Raw prediction: '{raw_prediction}'")
                     self.logger.log_info(f"  Extracted: '{extracted_prediction}'")
                     self.logger.log_info(f"  True label: '{true_label}'")
