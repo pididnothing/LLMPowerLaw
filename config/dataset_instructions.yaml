@@ -1,0 +1,56 @@
+# Dataset-specific task instructions
+# These fill the {{instruction}} placeholder in prompt_technique_template.yaml
+# Also includes answer format constraints and label spaces.
+
+dataset_instructions:
+
+  sst2:
+    task_type: sentiment_classification
+    instruction: >
+      Classify the sentiment of the following text as "positive" or "negative".
+    answer_format: "Respond with ONLY one word: positive or negative."
+    label_space: ["positive", "negative"]
+    input_field: "sentence"
+    label_field: "label"
+    label_map:
+      0: "negative"
+      1: "positive"
+
+  arc_challenge:
+    task_type: science_mcq
+    instruction: >
+      Answer the following science question by choosing A, B, C, or D.
+    answer_format: "Respond with ONLY the letter of the correct answer."
+    label_space: ["A", "B", "C", "D"]
+    input_field: "question"
+    label_field: "answerKey"
+    # Choices come from the dataset row; formatted as $choices at runtime.
+
+  hellaswag:
+    task_type: commonsense_mcq
+    instruction: >
+      Choose the most plausible continuation of the following context.
+    answer_format: "Respond with ONLY the letter: A, B, C, or D."
+    label_space: ["A", "B", "C", "D"]
+    input_field: "ctx"
+    label_field: "label"
+    # Endings come from the dataset row; formatted as $endings at runtime.
+
+  gsm8k:
+    task_type: math_reasoning
+    instruction: >
+      Solve the following math problem.
+    answer_format: "Give ONLY the final numerical answer."
+    label_space: null  # open-ended
+    input_field: "question"
+    label_field: "answer"
+
+  mmlu:
+    task_type: knowledge_mcq
+    instruction: >
+      Answer the following question by choosing A, B, C, or D.
+    answer_format: "Respond with ONLY the letter of the correct answer."
+    label_space: ["A", "B", "C", "D"]
+    input_field: "question"
+    label_field: "answer"
+    # Choices come from the dataset row; formatted as $choices at runtime.

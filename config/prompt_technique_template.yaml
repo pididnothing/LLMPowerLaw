@@ -1,0 +1,65 @@
+prompt_techniques:
+
+  zero_shot:
+    template: |
+      Task: {{instruction}}
+
+      Input:
+      {{input}}
+
+      Answer:
+
+
+  few_shot:
+    shots: 3
+    template: |
+      Task: {{instruction}}
+
+      {% for example in examples %}
+      Input: {{example.input}}
+      Answer: {{example.answer}}
+
+      {% endfor %}
+
+      Input: {{input}}
+      Answer:
+
+
+  chain_of_thought:
+    template: |
+      Task: {{instruction}}
+
+      Question:
+      {{input}}
+
+      Let's think step by step.
+
+      Final Answer:
+
+
+  few_shot_cot:
+    shots: 3
+    template: |
+      Task: {{instruction}}
+
+      {% for example in examples %}
+      Question: {{example.input}}
+      Reasoning: {{example.reasoning}}
+      Answer: {{example.answer}}
+
+      {% endfor %}
+
+      Question: {{input}}
+      Reasoning:
+
+
+  role_expert:
+    template: |
+      You are an expert {{domain}}.
+
+      Task: {{instruction}}
+
+      Question:
+      {{input}}
+
+      Answer:

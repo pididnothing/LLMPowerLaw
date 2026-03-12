@@ -1,0 +1,149 @@
+model_chat_templates:
+
+  # --------------------
+  # SmolLM Instruct
+  # --------------------
+  # Models:
+  # - SmolLM-135M-Instruct (0.135B, fp16)
+  # - SmolLM-360M-Instruct (0.36B, fp16)
+  # - SmolLM-1.7B-Instruct (1.7B, fp16)
+  smollm_instruct:
+    applies_to:
+      - SmolLM-135M-Instruct
+      - SmolLM-360M-Instruct
+      - SmolLM-1.7B-Instruct
+    template: |
+      {%- for message in messages -%}
+      {%- if loop.first and message.role != 'system' -%}
+      <|im_start|>system
+      You are a helpful AI assistant named SmolLM, trained by Hugging Face<|im_end|>
+      {%- endif -%}
+      <|im_start|>{{ message.role }}
+      {{ message.content }}<|im_end|>
+      {%- endfor -%}
+      {%- if add_generation_prompt -%}
+      <|im_start|>assistant
+      {%- endif -%}
+
+  # --------------------
+  # Qwen2.5 Instruct (ChatML)
+  # --------------------
+  # Models:
+  # - Qwen2.5-0.5B-Instruct (0.5B, fp16)
+  # - Qwen2.5-1.5B-Instruct (1.5B, fp16)
+  # - Qwen2.5-3B-Instruct   (3.0B, fp16)
+  # - Qwen2.5-7B-Instruct   (7.6B, 4-bit)
+  qwen2_5_instruct:
+    applies_to:
+      - Qwen2.5-0.5B-Instruct
+      - Qwen2.5-1.5B-Instruct
+      - Qwen2.5-3B-Instruct
+      - Qwen2.5-7B-Instruct
+    template: |
+      {%- for message in messages -%}
+      <|im_start|>{{ message.role }}
+      {{ message.content }}<|im_end|>
+      {%- endfor -%}
+      {%- if add_generation_prompt -%}
+      <|im_start|>assistant
+      {%- endif -%}
+
+  # --------------------
+  # TinyLlama-1.1B-Chat (Llama-style)
+  # --------------------
+  # Model:
+  # - TinyLlama-1.1B-Chat (1.1B, fp16)
+  tinyllama_chat:
+    applies_to:
+      - TinyLlama-1.1B-Chat
+    template: |
+      {# Optional system message as first message #}
+      {%- set system_msg = None -%}
+      {%- if messages and messages[0].role == 'system' -%}
+        {%- set system_msg = messages[0].content -%}
+        {%- set user_assistant = messages[1:] -%}
+      {%- else -%}
+        {%- set user_assistant = messages -%}
+      {%- endif -%}
+
+      {%- if system_msg is not none -%}
+      <s>[INST] <<SYS>>
+      {{ system_msg }}
+      <</SYS>>
+
+      {%- endif -%}
+      {%- for message in user_assistant -%}
+      {%- if message.role == 'user' -%}
+      {{ message.content }} [/INST]
+      {%- elif message.role == 'assistant' -%}
+      {{ message.content }}</s>
+      {%- endif -%}
+      {%- if not loop.last and message.role == 'assistant' -%}
+      <s>[INST]
+      {%- endif -%}
+      {%- endfor -%}
+      {%- if add_generation_prompt -%}
+      <s>[INST]
+      {%- endif -%}
+
+  # --------------------
+  # Phi-3-mini-4k-instruct
+  # --------------------
+  # Model:
+  # - Phi-3-mini-4k-instruct (3.8B, fp16)
+  phi3_instruct:
+    applies_to:
+      - Phi-3-mini-4k-instruct
+    template: |
+      {%- for message in messages -%}
+      {%- if message.role == 'system' -%}
+      <|system|>
+      {{ message.content }}<|end|>
+      {%- elif message.role == 'user' -%}
+      <|user|>
+      {{ message.content }}<|end|>
+      {%- elif message.role == 'assistant' -%}
+      <|assistant|>
+      {{ message.content }}<|end|>
+      {%- endif -%}
+      {%- endfor -%}
+      {%- if add_generation_prompt -%}
+      <|assistant|>
+      {%- endif -%}
+
+  # --------------------
+  # Mistral-7B-Instruct-v0.3
+  # --------------------
+  # Model:
+  # - Mistral-7B-Instruct-v0.3 (7.2B, 4-bit)
+  mistral_7b_instruct_v0_3:
+    applies_to:
+      - Mistral-7B-Instruct-v0.3
+    template: |
+      {{ bos_token }}
+      {%- set system_message = none -%}
+      {%- if messages and messages[0].role == 'system' -%}
+        {%- set system_message = messages[0].content -%}
+        {%- set loop_messages = messages[1:] -%}
+      {%- else -%}
+        {%- set loop_messages = messages -%}
+      {%- endif -%}
+
+      {%- for message in loop_messages -%}
+        {%- if message.role == 'user' -%}
+          {%- if system_message is defined and system_message is not none and loop.first -%}
+          [INST] {{ system_message }}
+
+          {{ message.content }}[/INST]
+          {%- else -%}
+          [INST] {{ message.content }}[/INST]
+          {%- endif -%}
+        {%- elif message.role == 'assistant' -%}
+          {{ " " ~ message.content ~ eos_token }}
+        {%- else -%}
+          {%- do raise_exception('Only system, user and assistant roles are supported!') -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- if add_generation_prompt -%}
+      [INST]
+      {%- endif -%}

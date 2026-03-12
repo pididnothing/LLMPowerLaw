@@ -1,0 +1,146 @@
+few_shot_examples:
+
+  sst2:
+    task: sentiment_classification
+    label_space: [positive, negative]
+
+    examples:
+      - input: "The movie had stunning visuals but the story was painfully boring."
+        output: "negative"
+        reasoning: "Although 'stunning visuals' is positive, 'painfully boring' is a strong negative phrase about the core story, making the overall sentiment negative."
+
+      - input: "An incredibly touching story with excellent performances."
+        output: "positive"
+        reasoning: "'Incredibly touching' and 'excellent performances' are strongly positive descriptors with no negatives present."
+
+      - input: "The plot was predictable and the characters were dull."
+        output: "negative"
+        reasoning: "'Predictable' and 'dull' are both negative descriptors criticising the plot and characters."
+
+      - input: "A delightful film that keeps you smiling the whole time."
+        output: "positive"
+        reasoning: "'Delightful' and 'keeps you smiling' convey a clearly positive viewing experience."
+
+
+
+  arc_challenge:
+    task: science_reasoning
+    format: multiple_choice
+    choices: [A, B, C, D]
+
+    examples:
+      - question: "Which process allows plants to make their own food?"
+        options:
+          A: "Respiration"
+          B: "Photosynthesis"
+          C: "Digestion"
+          D: "Fermentation"
+        answer: "B"
+        reasoning: "Plants use sunlight, water, and CO2 to produce glucose through photosynthesis. Respiration consumes energy, digestion breaks down food in animals, and fermentation is anaerobic. So the answer is B."
+
+      - question: "What is the main source of energy for Earth's climate system?"
+        options:
+          A: "The Moon"
+          B: "The Sun"
+          C: "Volcanoes"
+          D: "Ocean currents"
+        answer: "B"
+        reasoning: "The Sun provides the vast majority of energy that drives Earth's weather and climate. The Moon affects tides, volcanoes have local effects, and ocean currents distribute heat but don't generate it. So the answer is B."
+
+      - question: "Which state of matter has a definite shape and volume?"
+        options:
+          A: "Liquid"
+          B: "Gas"
+          C: "Solid"
+          D: "Plasma"
+        answer: "C"
+        reasoning: "Solids have particles tightly packed in fixed positions giving them definite shape and volume. Liquids have definite volume but take the shape of their container. Gases and plasma have neither. So the answer is C."
+
+
+
+  hellaswag:
+    task: commonsense_completion
+    format: multiple_choice
+    choices: [A, B, C, D]
+
+    examples:
+      - context: "A man is cooking pasta in a kitchen. He drains the noodles in the sink."
+        options:
+          A: "He throws the noodles on the floor."
+          B: "He mixes the noodles with sauce."
+          C: "He puts the noodles back in the package."
+          D: "He washes the noodles with soap."
+        answer: "B"
+        reasoning: "After draining pasta, the next logical cooking step is to add sauce. Throwing food on the floor, repackaging cooked noodles, or washing them with soap are all nonsensical. So the answer is B."
+
+      - context: "A woman is planting flowers in her garden."
+        options:
+          A: "She waters the plants after placing them in the soil."
+          B: "She burns the flowers with a lighter."
+          C: "She throws the soil away."
+          D: "She eats the flowers immediately."
+        answer: "A"
+        reasoning: "Watering newly planted flowers is the standard next step in gardening. The other options are destructive or absurd actions that don't follow logically. So the answer is A."
+
+      - context: "A person opens a laptop to begin working."
+        options:
+          A: "They start typing on the keyboard."
+          B: "They throw the laptop into the trash."
+          C: "They fill the laptop with water."
+          D: "They smash the screen with a hammer."
+        answer: "A"
+        reasoning: "When someone opens a laptop to work, typing on the keyboard is the natural next action. The other options all involve destroying the laptop, which contradicts the intent to work. So the answer is A."
+
+
+
+  gsm8k:
+    task: math_reasoning
+    format: open_ended
+
+    examples:
+      - question: "Tom has 3 bags with 4 apples in each bag. How many apples does he have in total?"
+        answer: "12"
+        reasoning: "Tom has 3 bags. Each bag has 4 apples. Total apples = 3 × 4 = 12."
+
+      - question: "A store sells pencils for $2 each. If Sarah buys 5 pencils, how much does she pay?"
+        answer: "10"
+        reasoning: "Each pencil costs $2. Sarah buys 5 pencils. Total cost = 5 × $2 = $10."
+
+      - question: "There are 18 cookies and 6 children. If they are divided equally, how many cookies does each child get?"
+        answer: "3"
+        reasoning: "18 cookies divided equally among 6 children: 18 ÷ 6 = 3 cookies per child."
+
+
+
+  mmlu:
+    task: knowledge_mcq
+    format: multiple_choice
+    choices: [A, B, C, D]
+
+    examples:
+      - question: "Who developed the theory of relativity?"
+        options:
+          A: "Isaac Newton"
+          B: "Albert Einstein"
+          C: "Galileo Galilei"
+          D: "Nikola Tesla"
+        answer: "B"
+        reasoning: "The theory of relativity (both special and general) was developed by Albert Einstein. Newton formulated classical mechanics, Galileo contributed to observational astronomy, and Tesla was an electrical engineer. So the answer is B."
+
+      - question: "What is the capital of Japan?"
+        options:
+          A: "Seoul"
+          B: "Tokyo"
+          C: "Kyoto"
+          D: "Beijing"
+        answer: "B"
+        reasoning: "Tokyo has been the capital of Japan since 1868. Seoul is the capital of South Korea, Kyoto is a former capital of Japan, and Beijing is the capital of China. So the answer is B."
+
+      - question: "Which organ pumps blood through the human body?"
+        options:
+          A: "Liver"
+          B: "Lungs"
+          C: "Heart"
+          D: "Kidney"
+        answer: "C"
+        reasoning: "The heart is the muscular organ that pumps blood through the circulatory system. The liver processes toxins, lungs handle gas exchange, and kidneys filter waste. So the answer is C."
