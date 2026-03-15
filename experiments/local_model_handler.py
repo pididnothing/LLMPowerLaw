@@ -532,6 +532,11 @@ class LocalModelHandler:
             if response.startswith(prefix):
                 response = response[len(prefix):].strip()
 
+        # Prefer explicit FINAL_ANSWER field when present.
+        final_answer_match = re.findall(r'final[_\s-]*answer\s*[:\-]\s*([^\n\r]+)', response, flags=re.IGNORECASE)
+        if final_answer_match:
+            response = final_answer_match[-1].strip()
+
         # If we know the valid label set, use stricter parsing to avoid false positives
         # from outputs such as "positive or negative".
         if label_space:
@@ -548,7 +553,7 @@ class LocalModelHandler:
                     matches = re.findall(pattern, lower_response)
                     if matches:
                         candidate = matches[-1] if isinstance(matches[-1], str) else matches[-1][0]
-                        candidate = candidate.strip().lower()
+                        candidate = candidate.strip().rstrip('.,;:!?)]}').lower()
                         if candidate in labels:
                             return candidate
 
@@ -594,6 +599,11 @@ class LocalModelHandler:
     
     def _extract_qa_answer(self, response: str) -> str:
         """Extract answer from QA task response"""
+        # Prefer explicit FINAL_ANSWER field when present.
+        final_answer_match = re.findall(r'final[_\s-]*answer\s*[:\-]\s*([^\n\r]+)', response, flags=re.IGNORECASE)
+        if final_answer_match:
+            return final_answer_match[-1].strip().rstrip('.,;:!?')
+
         # Remove common QA prefixes
         response = response.strip()
         prefixes_to_remove = ['Answer:', 'A:', 'The answer is:', 'The answer is']

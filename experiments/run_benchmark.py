@@ -49,6 +49,7 @@ class BenchmarkRunner:
         experiment_name: Optional[str] = None,
         enable_prompting: bool = True,
         generation_overrides: Optional[Dict[str, Any]] = None,
+        reasoning_output_mode: bool = False,
     ):
         self.config = config
         self.output_dir = Path(output_dir)
@@ -66,6 +67,7 @@ class BenchmarkRunner:
         
         self.metrics_calculator = MetricsCalculator()
         self.generation_overrides = generation_overrides or {}
+        self.reasoning_output_mode = reasoning_output_mode
         
         # Load dataset instructions (for label maps etc.)
         self.dataset_instructions = {}
@@ -97,6 +99,32 @@ class BenchmarkRunner:
             self.logger.log_info(
                 f"Runtime generation overrides active: {format_controls(self.generation_overrides)}"
             )
+        if self.reasoning_output_mode:
+            self.logger.log_info("Reasoning output mode enabled: model should respond with reasoning plus FINAL_ANSWER line")
+
+    def _apply_reasoning_output_format(
+        self,
+        prompt_text: str,
+        task_type: str,
+        label_space: Optional[List[Any]] = None,
+    ) -> str:
+        """Append a deterministic output schema instruction for extraction."""
+        if not self.reasoning_output_mode:
+            return prompt_text
+
+        if 'FINAL_ANSWER:' in prompt_text:
+            return prompt_text
+
+        label_hint = ""
+        if task_type == 'classification' and label_space:
+            label_hint = f" from: {', '.join(str(x) for x in label_space)}"
+
+        output_contract = (
+            "\n\nOutput format (required):\n"
+            "Reasoning: <brief step-by-step reasoning>\n"
+            f"FINAL_ANSWER: <single final answer{label_hint}>"
+        )
+        return prompt_text + output_contract
 
     def _extract_input_and_label(
         self,
@@ -396,6 +424,12 @@ class BenchmarkRunner:
                         examples=few_shot_examples,
                         output_mode='content' if use_hf_chat_template else 'manual'
                     )
+
+                prompt_text = self._apply_reasoning_output_format(
+                    prompt_text,
+                    task_type=dataset_config.task_type,
+                    label_space=label_space,
+                )
 
                 model_input = prompt_text
                 if isinstance(model, LocalModelHandler):
@@ -743,6 +777,11 @@ def main():
         help='Disable prompting techniques'
     )
     parser.add_argument(
+        '--reasoning-output',
+        action='store_true',
+        help='Request model output in the format: Reasoning + FINAL_ANSWER'
+    )
+    parser.add_argument(
         '--gen-preset',
         choices=['concise', 'balanced', 'reasoning', 'classification'],
         help='Generation preset for decoding behavior'
@@ -792,6 +831,7 @@ def main():
         experiment_name=args.experiment_name,
         enable_prompting=enable_prompting,
         generation_overrides=generation_overrides,
+        reasoning_output_mode=args.reasoning_output,
     )
     
     # Print prompting summary if enabled
