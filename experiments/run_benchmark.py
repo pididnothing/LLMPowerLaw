@@ -385,7 +385,8 @@ class BenchmarkRunner:
                     model_config,
                     task_type=dataset_config.task_type,
                     use_hf_chat_template=use_hf_chat_template,
-                    label_space=label_space
+                    label_space=label_space,
+                    original_input_text=input_text
                 )
                 
                 # Handle both string predictions and dict (with raw/extracted)
@@ -438,7 +439,8 @@ class BenchmarkRunner:
         model_config: ModelConfig,
         task_type: str = None,
         use_hf_chat_template: bool = False,
-        label_space: list = None
+        label_space: list = None,
+        original_input_text: Optional[str] = None
     ):
         """Get prediction from model (handles different model types)
         
@@ -454,7 +456,54 @@ class BenchmarkRunner:
                 use_hf_chat_template=use_hf_chat_template
             )
             # Extract answer based on task type
-            return model.extract_answer(raw_response, task_type, label_space=label_space or [])
+            extracted = model.extract_answer(raw_response, task_type, label_space=label_space or [])
+            scoring_prompt = input_text
+
+            # Retry classification with a minimal direct instruction if the
+            # initial prompt produces an unparseable response.
+            if (
+                task_type == 'classification'
+                and not extracted.get('extracted')
+                and (label_space or [])
+                and original_input_text
+            ):
+                fallback_labels = '/'.join([str(x) for x in (label_space or [])])
+                retry_prompt = (
+                    f"Classify the sentiment of this text. "
+                    f"Respond with only one label: {fallback_labels}.\n\n"
+                    f"Text: {original_input_text}\n"
+                    "Answer:"
+                )
+                retry_raw = model.generate(
+                    retry_prompt,
+                    task_type=task_type,
+                    use_hf_chat_template=use_hf_chat_template
+                )
+                scoring_prompt = retry_prompt
+                retry_extracted = model.extract_answer(
+                    retry_raw,
+                    task_type,
+                    label_space=label_space or []
+                )
+                if retry_extracted.get('extracted'):
+                    extracted = retry_extracted
+
+            # Fallback for classification: if free-form output cannot be parsed,
+            # score allowed labels directly and pick the most likely one.
+            if (
+                task_type == 'classification'
+                and not extracted.get('extracted')
+                and (label_space or [])
+            ):
+                constrained_label = model.predict_label_from_choices(
+                    scoring_prompt,
+                    label_space or [],
+                    use_hf_chat_template=use_hf_chat_template
+                )
+                if constrained_label:
+                    extracted['extracted'] = constrained_label
+
+            return extracted
         
         # Handle PromptBench models
         if hasattr(model, 'predict'):

@@ -429,7 +429,11 @@ prompting_techniques:
 
     Question: $input
 
-    Reasoning:<|im_end|><|im_start|>assistant'
+    Provide brief reasoning in one sentence, then output ONLY one word on the final line.
+
+    Reasoning:
+
+    Final Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: sst2

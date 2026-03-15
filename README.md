@@ -158,6 +158,79 @@ Per-experiment overrides in `experiments.yaml`:
 
 ---
 
+## Manually Edit Model Input Generation (YAML Workflow)
+
+If you want to experiment with how prompts are built and sent to models, edit the YAMLs below.
+
+### 1) Choose manual template mode vs HF chat templating
+
+In `config/models.yaml`:
+
+- `chat_template_mode: hf` -> use HuggingFace `tokenizer.apply_chat_template(...)` with message content.
+- `chat_template_mode: manual` (or unset) -> use the full prompt string in the template directly.
+
+This is useful when comparing model behavior between native tokenizer chat formatting and hand-written prompt wrappers.
+
+### 2) Edit technique structure (global style)
+
+In `config/prompt_technique_template.yaml`, edit technique skeletons such as:
+
+- `few_shot`
+- `chain_of_thought`
+- `few_shot_cot`
+
+This is where you change the generic layout (for example, `Input/Answer` vs `Question/Reasoning/Final Answer`).
+
+### 3) Edit dataset-specific instructions and labels
+
+In `config/dataset_instructions.yaml`, adjust:
+
+- task instructions
+- answer format constraints
+- label map / label space
+
+For classification tasks, this directly affects extraction and evaluation alignment.
+
+### 4) Edit few-shot demonstrations and role personas
+
+- `config/few_shot_samples.yaml` -> update in-context examples and reasoning traces
+- `config/domain_experts.yaml` -> update role-expert persona text
+
+### 5) Edit chat wrappers per model family
+
+In `config/chat_templates.yaml`, edit system/user/assistant wrappers for each model family.
+
+Use this when you want strict control over tokens like ChatML tags, instruction blocks, or family-specific formatting.
+
+### 6) Regenerate experiment templates after source edits
+
+After changing source YAMLs (steps 2-5), regenerate:
+
+```bash
+python -m utils.generate_prompt_templates --config-dir ./config --output-dir ./config
+```
+
+This updates:
+
+- `config/generated_prompts.yaml`
+- `config/model_template_map.yaml`
+- `config/prompting_techniques_generated.yaml`
+
+### 7) Quick direct-edit option (fast iteration)
+
+For rapid experiments, you can directly edit `config/prompting_techniques_generated.yaml`.
+
+- Pros: instant testing
+- Cons: changes are overwritten next time you run the generator
+
+Best practice: direct edit for quick tests, then move final changes back into source YAMLs and regenerate.
+
+### 8) Target one experiment while iterating
+
+In `config/experiments.yaml`, enable only one triplet (or a tiny set) and lower `num_samples` while testing prompt edits. This keeps turnaround fast and makes debugging easier.
+
+---
+
 ## Hardware Guide
 
 | Platform | VRAM  | Recommended models       | Quantization               |

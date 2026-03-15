@@ -5,6 +5,7 @@ Supports HuggingFace, GGUF, vLLM, and other local model formats
 """
 
 import os
+import re
 import torch
 from typing import Dict, Any, Optional, List
 from pathlib import Path
@@ -338,15 +339,29 @@ class LocalModelHandler:
                 if len(tokens) == 1:
                     stop_token_ids.append(tokens[0])
         
+        effective_temperature = temperature if temperature is not None else self.model_config.get('temperature', 0.0)
+        do_sample = bool(effective_temperature and effective_temperature > 0)
+
         # Generation parameters
         gen_kwargs = {
             'max_new_tokens': max_tokens or self.model_config.get('max_tokens', 512),
-            'temperature': temperature if temperature is not None else self.model_config.get('temperature', 0.0),
-            'do_sample': temperature is not None and temperature > 0,
+            'do_sample': do_sample,
             'pad_token_id': self.tokenizer.pad_token_id,
             'eos_token_id': self.tokenizer.eos_token_id,
             **kwargs
         }
+
+        if do_sample:
+            gen_kwargs['temperature'] = effective_temperature
+        else:
+            # Avoid transformers warnings about ignored sampling params in greedy mode.
+            gen_kwargs.pop('temperature', None)
+            gen_kwargs.pop('top_p', None)
+            gen_kwargs.pop('top_k', None)
+
+        if task_type == 'classification':
+            # Prevent immediate EOS-only generations that decode to an empty string.
+            gen_kwargs.setdefault('min_new_tokens', 1)
         
         # Add stop token IDs if available
         if stop_token_ids:
@@ -359,9 +374,21 @@ class LocalModelHandler:
         
         # Decode only the generated tokens (exclude prompt)
         generated_tokens = outputs[0][inputs['input_ids'].shape[1]:]
-        response = self.tokenizer.decode(generated_tokens, skip_special_tokens=True)
-        
-        return response.strip()
+        response = self.tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
+
+        # Retry once with light sampling if greedy decoding produced only special/end tokens.
+        if not response and task_type == 'classification':
+            retry_kwargs = dict(gen_kwargs)
+            retry_kwargs['do_sample'] = True
+            retry_kwargs['temperature'] = max(0.2, float(effective_temperature or 0.0))
+            retry_kwargs.setdefault('top_p', 0.9)
+            retry_kwargs.setdefault('min_new_tokens', 1)
+            with torch.no_grad():
+                retry_outputs = self.model.generate(**inputs, **retry_kwargs)
+            retry_tokens = retry_outputs[0][inputs['input_ids'].shape[1]:]
+            response = self.tokenizer.decode(retry_tokens, skip_special_tokens=True).strip()
+
+        return response
     
     def extract_answer(self, response: str, task_type: str, label_space: list = None) -> dict:
         """Extract answer from model response based on task type
@@ -382,6 +409,70 @@ class LocalModelHandler:
             'raw': raw_response,
             'extracted': extracted
         }
+
+    def predict_label_from_choices(
+        self,
+        prompt: str,
+        label_space: list,
+        use_hf_chat_template: bool = False,
+        chat_messages: Optional[List[Dict[str, str]]] = None
+    ) -> str:
+        """Pick the most likely label by scoring label continuations.
+
+        This fallback is used when free-form generation does not yield a
+        parsable class label. It is currently optimized for small label spaces.
+        """
+        if self.model is None or self.tokenizer is None or not label_space:
+            return ''
+
+        prompt = self.format_prompt(
+            prompt,
+            use_hf_chat_template=use_hf_chat_template,
+            chat_messages=chat_messages
+        )
+
+        base = self.tokenizer(prompt, return_tensors="pt", add_special_tokens=False)
+        input_ids = base['input_ids'].to(self.model.device)
+
+        def _score_token_sequence(prefix_ids: torch.Tensor, seq_ids: List[int]) -> float:
+            running_ids = prefix_ids
+            total_logp = 0.0
+            with torch.no_grad():
+                for tok_id in seq_ids:
+                    out = self.model(input_ids=running_ids)
+                    next_logits = out.logits[:, -1, :]
+                    log_probs = torch.log_softmax(next_logits, dim=-1)
+                    total_logp += float(log_probs[0, tok_id].item())
+                    next_tok = torch.tensor([[tok_id]], device=running_ids.device)
+                    running_ids = torch.cat([running_ids, next_tok], dim=1)
+            return total_logp
+
+        best_label = ''
+        best_score = float('-inf')
+        for raw_label in label_space:
+            label = str(raw_label).strip().lower()
+            if not label:
+                continue
+
+            # Try with a leading space first (common for BPE tokenization),
+            # then without space and keep the better score.
+            candidate_variants = [f" {label}", label]
+            variant_scores = []
+            for variant in candidate_variants:
+                seq = self.tokenizer.encode(variant, add_special_tokens=False)
+                if not seq:
+                    continue
+                variant_scores.append(_score_token_sequence(input_ids, seq))
+
+            if not variant_scores:
+                continue
+
+            label_score = max(variant_scores)
+            if label_score > best_score:
+                best_score = label_score
+                best_label = label
+
+        return best_label
     
     def _extract_classification_answer(self, response: str, label_space: list = None) -> str:
         """Extract clean classification answer from potentially verbose output.
@@ -399,16 +490,47 @@ class LocalModelHandler:
         for prefix in prefixes_to_remove:
             if response.startswith(prefix):
                 response = response[len(prefix):].strip()
-        
-        # If we know the valid label set, scan the response for the first match.
+
+        # If we know the valid label set, use stricter parsing to avoid false positives
+        # from outputs such as "positive or negative".
         if label_space:
-            import re
-            lower_response = response.lower()
-            # Sort labels longest-first to avoid prefix-matching issues
-            for label in sorted([str(l) for l in label_space], key=len, reverse=True):
-                pattern = r'\b' + re.escape(label.lower()) + r'\b'
-                if re.search(pattern, lower_response):
-                    return label.lower()
+            labels = [str(l).strip().lower() for l in label_space if str(l).strip()]
+            labels = list(dict.fromkeys(labels))
+            if labels:
+                # 1) Prefer explicit answer fields near the end of generation.
+                explicit_patterns = [
+                    r'(?:final\s+answer|answer|sentiment|classification)\s*[:\-]\s*([a-z_\-]+)',
+                    r'\b(?:is|=)\s*(positive|negative|neutral)\b',
+                ]
+                lower_response = response.lower()
+                for pattern in explicit_patterns:
+                    matches = re.findall(pattern, lower_response)
+                    if matches:
+                        candidate = matches[-1] if isinstance(matches[-1], str) else matches[-1][0]
+                        candidate = candidate.strip().lower()
+                        if candidate in labels:
+                            return candidate
+
+                # 2) If any line is just the label, trust that.
+                lines = [ln.strip().lower() for ln in response.splitlines() if ln.strip()]
+                for line in reversed(lines):
+                    if line in labels:
+                        return line
+                    normalized_line = line.rstrip('.,;:!?')
+                    if normalized_line in labels:
+                        return normalized_line
+
+                # 3) If exactly one label appears anywhere, use it; if multiple appear, mark ambiguous.
+                found = []
+                for label in labels:
+                    if re.search(r'\b' + re.escape(label) + r'\b', lower_response):
+                        found.append(label)
+                unique_found = sorted(set(found))
+                if len(unique_found) == 1:
+                    return unique_found[0]
+
+                # For known label spaces, avoid falling back to arbitrary words.
+                return ''
 
         # Filter out responses that are just stop sequences
         stop_sequences = ['###', '\n\n', 'Question:', 'Text:']

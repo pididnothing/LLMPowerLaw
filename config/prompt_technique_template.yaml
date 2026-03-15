@@ -23,7 +23,8 @@ prompt_techniques:
 
       Now process the actual input below (not an example):
       Input: {{input}}
-      Answer:
+      Output ONLY one word label on the next line.
+      Final Answer:
 
 
   chain_of_thought:
@@ -52,7 +53,9 @@ prompt_techniques:
 
       Now solve the actual question below (not an example):
       Question: {{input}}
+      Provide brief reasoning in one sentence.
       Reasoning:
+      Final Answer:
 
 
   role_expert:

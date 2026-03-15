@@ -121,6 +121,7 @@ models:
     load_in_4bit: false
     torch_dtype: auto
     trust_remote_code: false
+    chat_template_mode: hf
     local_model_path: null
     enabled: false
     # Params: 0.135B | VRAM: ~0.3GB fp16 | Ungated
@@ -136,6 +137,7 @@ models:
     load_in_4bit: false
     torch_dtype: auto
     trust_remote_code: false
+    chat_template_mode: hf
     local_model_path: null
     enabled: false
     # Params: 0.36B | VRAM: ~0.7GB fp16 | Ungated
@@ -183,6 +185,7 @@ models:
     load_in_4bit: false
     torch_dtype: auto
     trust_remote_code: false
+    chat_template_mode: hf
     local_model_path: null
     enabled: false
     # Params: 1.7B | VRAM: ~3.4GB fp16 | Ungated (Apache 2.0)
