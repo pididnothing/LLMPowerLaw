@@ -365,7 +365,7 @@ class LocalModelHandler:
         
         return response.strip()
     
-    def extract_answer(self, response: str, task_type: str) -> dict:
+    def extract_answer(self, response: str, task_type: str, label_space: list = None) -> dict:
         """Extract answer from model response based on task type
         
         Returns:
@@ -374,7 +374,7 @@ class LocalModelHandler:
         raw_response = response.strip()
         
         if task_type == 'classification':
-            extracted = self._extract_classification_answer(raw_response)
+            extracted = self._extract_classification_answer(raw_response, label_space or [])
         elif task_type == 'qa':
             extracted = self._extract_qa_answer(raw_response)
         else:
@@ -385,8 +385,16 @@ class LocalModelHandler:
             'extracted': extracted
         }
     
-    def _extract_classification_answer(self, response: str) -> str:
-        """Extract clean classification answer from potentially verbose output"""
+    def _extract_classification_answer(self, response: str, label_space: list = None) -> str:
+        """Extract clean classification answer from potentially verbose output.
+
+        Strategy:
+        1. Strip common preamble prefixes ("Answer:", "Sentiment:", etc.)
+        2. If label_space provided, scan the *full* (stripped) response for the
+           first occurrence of any valid label (case-insensitive).  This handles
+           verbose outputs like "The text is positive, as it expresses...".
+        3. Fall back to the first-word heuristic if no valid label is found.
+        """
         # Remove common prefixes
         response = response.strip()
         prefixes_to_remove = ['### Answer:', 'Answer:', 'Sentiment:', 'Classification:', '###']
@@ -394,10 +402,19 @@ class LocalModelHandler:
             if response.startswith(prefix):
                 response = response[len(prefix):].strip()
         
+        # If we know the valid label set, scan the response for the first match.
+        if label_space:
+            import re
+            lower_response = response.lower()
+            # Sort labels longest-first to avoid prefix-matching issues
+            for label in sorted([str(l) for l in label_space], key=len, reverse=True):
+                pattern = r'\b' + re.escape(label.lower()) + r'\b'
+                if re.search(pattern, lower_response):
+                    return label.lower()
+
         # Filter out responses that are just stop sequences
         stop_sequences = ['###', '\n\n', 'Question:', 'Text:']
         if response in stop_sequences or not response:
-            # Return empty string for invalid responses
             return ''
         
         # Take only the first line
@@ -409,7 +426,7 @@ class LocalModelHandler:
         # Remove common punctuation
         first_word = first_word.rstrip('.,;:!?')
         
-        # Normalize case (lowercase for consistency)
+        # Normalize case
         first_word = first_word.lower()
         
         return first_word

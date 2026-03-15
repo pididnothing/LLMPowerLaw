@@ -330,7 +330,9 @@ class BenchmarkRunner:
                    desc=f"{model_config.name} on {dataset_config.name}",
                    unit="sample")
         use_hf_chat_template = self._should_use_hf_chat_template(model_config)
-        
+        ds_instructions = self.dataset_instructions.get(dataset_config.name, {})
+        label_space = ds_instructions.get('label_space') or []
+
         # This is a simplified version - actual implementation would depend on
         # dataset structure and task type
         for i, example in pbar:
@@ -363,7 +365,8 @@ class BenchmarkRunner:
                     prompt_text,
                     model_config,
                     task_type=dataset_config.task_type,
-                    use_hf_chat_template=use_hf_chat_template
+                    use_hf_chat_template=use_hf_chat_template,
+                    label_space=label_space
                 )
                 
                 # Handle both string predictions and dict (with raw/extracted)
@@ -415,7 +418,8 @@ class BenchmarkRunner:
         input_text: str,
         model_config: ModelConfig,
         task_type: str = None,
-        use_hf_chat_template: bool = False
+        use_hf_chat_template: bool = False,
+        label_space: list = None
     ):
         """Get prediction from model (handles different model types)
         
@@ -431,7 +435,7 @@ class BenchmarkRunner:
                 use_hf_chat_template=use_hf_chat_template
             )
             # Extract answer based on task type
-            return model.extract_answer(raw_response, task_type)
+            return model.extract_answer(raw_response, task_type, label_space=label_space or [])
         
         # Handle PromptBench models
         if hasattr(model, 'predict'):
