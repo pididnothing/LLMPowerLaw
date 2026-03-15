@@ -431,6 +431,22 @@ global_settings:
   cache_dir: "./cache"
   max_retries: 3
   retry_delay: 2
+
+  # Generation controls applied to all models unless overridden per model.
+  # You can also override these at runtime with run_benchmark CLI flags.
+  generation_controls:
+    default_preset: balanced  # concise | balanced | reasoning | classification
+    # max_new_tokens: 256
+    # min_new_tokens: 16
+    # classification_max_new_tokens: 20
+    # temperature: 0.2
+    # top_p: 0.95
+    # top_k: 50
+    # repetition_penalty: 1.05
+    # do_sample: true
+    # num_beams: 1
+    # max_input_tokens: 3072
+    # stop_sequences: ["\n\nFinal Answer:"]
   
   # Local model settings
   local_models:

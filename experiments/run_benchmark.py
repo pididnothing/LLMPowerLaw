@@ -21,6 +21,12 @@ from experiments.experiment_config import ExperimentConfig, ModelConfig, Dataset
 from experiments.prompt_manager import PromptManager, PromptTechnique
 from experiments.local_model_handler import LocalModelHandler
 from data_loaders.custom_loader import DatasetLoader
+from utils.generation_controls import (
+    build_runtime_overrides_from_args,
+    for_promptbench,
+    format_controls,
+    resolve_generation_controls,
+)
 from utils.logger import ExperimentLogger
 from utils.metrics import MetricsCalculator
 
@@ -41,7 +47,8 @@ class BenchmarkRunner:
         config: ExperimentConfig,
         output_dir: str = "./results",
         experiment_name: Optional[str] = None,
-        enable_prompting: bool = True
+        enable_prompting: bool = True,
+        generation_overrides: Optional[Dict[str, Any]] = None,
     ):
         self.config = config
         self.output_dir = Path(output_dir)
@@ -58,6 +65,7 @@ class BenchmarkRunner:
         )
         
         self.metrics_calculator = MetricsCalculator()
+        self.generation_overrides = generation_overrides or {}
         
         # Load dataset instructions (for label maps etc.)
         self.dataset_instructions = {}
@@ -84,6 +92,11 @@ class BenchmarkRunner:
         
         # Cache for loaded models (for local models)
         self.loaded_models = {}
+
+        if self.generation_overrides:
+            self.logger.log_info(
+                f"Runtime generation overrides active: {format_controls(self.generation_overrides)}"
+            )
 
     def _extract_input_and_label(
         self,
@@ -238,13 +251,26 @@ class BenchmarkRunner:
         if not PROMPTBENCH_AVAILABLE:
             # Return a mock model for testing without PromptBench
             return MockLLMModel(model_config)
+
+        merged_controls = resolve_generation_controls(
+            model_config=self._build_local_model_runtime_config(model_config),
+            global_settings=self.config.global_model_settings,
+            runtime_overrides=self.generation_overrides,
+        )
+        pb_controls = for_promptbench(merged_controls)
+        pb_max_tokens = pb_controls.get('max_new_tokens', model_config.max_tokens)
+        pb_temperature = pb_controls.get('temperature', model_config.temperature)
+
+        pb_additional_params = dict(model_config.additional_params)
+        pb_additional_params.pop('max_new_tokens', None)
+        pb_additional_params.pop('temperature', None)
         
         # Initialize model through PromptBench
         model = pb.LLMModel(
             model=model_config.model_id,
-            max_new_tokens=model_config.max_tokens,
-            temperature=model_config.temperature,
-            **model_config.additional_params
+            max_new_tokens=pb_max_tokens,
+            temperature=pb_temperature,
+            **pb_additional_params
         )
         
         return model
@@ -452,7 +478,8 @@ class BenchmarkRunner:
             raw_response = model.generate(
                 input_text,
                 task_type=task_type,
-                use_hf_chat_template=use_hf_chat_template
+                use_hf_chat_template=use_hf_chat_template,
+                generation_overrides=self.generation_overrides,
             )
             # Extract answer based on task type
             extracted = model.extract_answer(raw_response, task_type, label_space=label_space or [])
@@ -715,6 +742,29 @@ def main():
         action='store_true',
         help='Disable prompting techniques'
     )
+    parser.add_argument(
+        '--gen-preset',
+        choices=['concise', 'balanced', 'reasoning', 'classification'],
+        help='Generation preset for decoding behavior'
+    )
+    parser.add_argument('--gen-max-new-tokens', type=int, help='Override max new tokens')
+    parser.add_argument('--gen-min-new-tokens', type=int, help='Override min new tokens')
+    parser.add_argument('--gen-classification-max-new-tokens', type=int, help='Cap generation tokens for classification tasks')
+    parser.add_argument('--gen-temperature', type=float, help='Override decoding temperature')
+    parser.add_argument('--gen-top-p', type=float, help='Override nucleus sampling top_p')
+    parser.add_argument('--gen-top-k', type=int, help='Override top_k sampling cutoff')
+    parser.add_argument('--gen-repetition-penalty', type=float, help='Override repetition penalty')
+    parser.add_argument('--gen-num-beams', type=int, help='Override beam search count')
+    parser.add_argument(
+        '--gen-do-sample',
+        choices=['auto', 'true', 'false'],
+        help='Force sampling on/off; auto derives from temperature'
+    )
+    parser.add_argument('--gen-max-input-tokens', type=int, help='Truncate prompts to this many input tokens')
+    parser.add_argument(
+        '--gen-stop-sequences',
+        help="Custom stop sequences separated by '||'"
+    )
     
     args = parser.parse_args()
     
@@ -733,13 +783,15 @@ def main():
     
     # Determine prompting enable status
     enable_prompting = args.enable_prompting and not args.no_prompting
+    generation_overrides = build_runtime_overrides_from_args(args)
     
     # Initialize and run
     runner = BenchmarkRunner(
         config=config,
         output_dir=args.output_dir,
         experiment_name=args.experiment_name,
-        enable_prompting=enable_prompting
+        enable_prompting=enable_prompting,
+        generation_overrides=generation_overrides,
     )
     
     # Print prompting summary if enabled

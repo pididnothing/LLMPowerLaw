@@ -11,6 +11,8 @@ from typing import Dict, Any, Optional, List
 from pathlib import Path
 from tqdm import tqdm
 
+from utils.generation_controls import apply_generation_controls, resolve_generation_controls
+
 
 class LocalModelHandler:
     """Handler for local model loading and inference"""
@@ -281,9 +283,27 @@ class LocalModelHandler:
         **kwargs
     ) -> str:
         """Generate text from prompt"""
+        generation_overrides = kwargs.pop('generation_overrides', None)
+
         # Pass task_type to generation methods for task-specific optimization
         if task_type:
             kwargs['task_type'] = task_type
+
+        controls = resolve_generation_controls(
+            model_config=self.model_config,
+            global_settings=self.global_settings,
+            runtime_overrides=generation_overrides,
+        )
+        max_tokens, temperature, controlled_kwargs = apply_generation_controls(
+            base_max_tokens=max_tokens,
+            base_temperature=temperature,
+            controls=controls,
+            task_type=task_type,
+        )
+        kwargs = {
+            **controlled_kwargs,
+            **kwargs,
+        }
         
         if self.provider == 'huggingface_local':
             return self._generate_huggingface(prompt, max_tokens, temperature, **kwargs)
@@ -313,8 +333,18 @@ class LocalModelHandler:
             chat_messages=chat_messages
         )
 
+        max_input_tokens = kwargs.pop('max_input_tokens', None)
+
         # Prepare inputs
-        inputs = self.tokenizer(prompt, return_tensors="pt", padding=True)
+        tokenizer_kwargs = {
+            'return_tensors': "pt",
+            'padding': True,
+        }
+        if max_input_tokens:
+            tokenizer_kwargs['truncation'] = True
+            tokenizer_kwargs['max_length'] = int(max_input_tokens)
+
+        inputs = self.tokenizer(prompt, **tokenizer_kwargs)
         inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
         
         # Get task type hint from kwargs if available
@@ -339,8 +369,12 @@ class LocalModelHandler:
                 if len(tokens) == 1:
                     stop_token_ids.append(tokens[0])
         
+        explicit_do_sample = kwargs.pop('do_sample', None)
         effective_temperature = temperature if temperature is not None else self.model_config.get('temperature', 0.0)
-        do_sample = bool(effective_temperature and effective_temperature > 0)
+        if explicit_do_sample is None:
+            do_sample = bool(effective_temperature and effective_temperature > 0)
+        else:
+            do_sample = bool(explicit_do_sample)
 
         # Generation parameters
         gen_kwargs = {
@@ -352,6 +386,8 @@ class LocalModelHandler:
         }
 
         if do_sample:
+            if effective_temperature is None:
+                effective_temperature = 0.7
             gen_kwargs['temperature'] = effective_temperature
         else:
             # Avoid transformers warnings about ignored sampling params in greedy mode.

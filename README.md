@@ -156,6 +156,38 @@ Per-experiment overrides in `experiments.yaml`:
   enabled: true
 ```
 
+Tune generation behavior (reasoning budget, sampling, truncation):
+
+```yaml
+# config/models.yaml
+global_settings:
+  generation_controls:
+    default_preset: balanced # concise | balanced | reasoning | classification
+    max_new_tokens: 256
+    classification_max_new_tokens: 20
+    temperature: 0.15
+    top_p: 0.9
+    repetition_penalty: 1.03
+    max_input_tokens: 3072
+```
+
+Quick runtime override (no file edits required):
+
+```bash
+python experiments/run_benchmark.py \
+  --model phi-3-mini-4bit \
+  --dataset arc_challenge \
+  --gen-preset reasoning \
+  --gen-max-new-tokens 768 \
+  --gen-temperature 0.2 \
+  --gen-top-p 0.95
+```
+
+Notes:
+
+- Reasoning does **not** have to be verbose, but multi-step tasks often need more token budget (`max_new_tokens`) to complete coherent reasoning.
+- For strict label tasks, use `classification` preset or a low `classification_max_new_tokens` cap to avoid rambling outputs.
+
 ---
 
 ## Manually Edit Model Input Generation (YAML Workflow)
