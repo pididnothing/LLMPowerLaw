@@ -34,6 +34,11 @@ dataset_instructions:
     label_space: ["A", "B", "C", "D"]
     input_field: "ctx"
     label_field: "label"
+    label_map:
+      0: "A"
+      1: "B"
+      2: "C"
+      3: "D"
     # Endings come from the dataset row; formatted as $endings at runtime.
 
   gsm8k:
