@@ -142,12 +142,18 @@ class LocalModelHandler:
         load_in_4bit = self.model_config.get('load_in_4bit', False)
         
         if load_in_8bit:
-            kwargs['load_in_8bit'] = True
             print("Using 8-bit quantization")
+            # Prefer explicit quantization_config to avoid passing legacy
+            # load_in_* kwargs into model init for remote/custom model classes.
+            try:
+                from transformers import BitsAndBytesConfig
+                kwargs['quantization_config'] = BitsAndBytesConfig(load_in_8bit=True)
+            except ImportError:
+                kwargs['load_in_8bit'] = True
         elif load_in_4bit:
-            kwargs['load_in_4bit'] = True
             print("Using 4-bit quantization")
-            # Optionally add BitsAndBytes config for 4-bit
+            # Prefer explicit quantization_config to avoid passing legacy
+            # load_in_* kwargs into model init for remote/custom model classes.
             try:
                 from transformers import BitsAndBytesConfig
                 kwargs['quantization_config'] = BitsAndBytesConfig(
@@ -157,6 +163,7 @@ class LocalModelHandler:
                     bnb_4bit_quant_type="nf4"
                 )
             except ImportError:
+                kwargs['load_in_4bit'] = True
                 print("Warning: bitsandbytes not installed. Install with: pip install bitsandbytes")
         
         # Data type
