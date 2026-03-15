@@ -376,6 +376,11 @@ class LocalModelHandler:
         else:
             do_sample = bool(explicit_do_sample)
 
+        # Transformers requires temperature > 0 when sampling is enabled.
+        # Fall back to greedy decoding for non-positive temperatures.
+        if do_sample and (effective_temperature is None or float(effective_temperature) <= 0):
+            do_sample = False
+
         # Generation parameters
         gen_kwargs = {
             'max_new_tokens': max_tokens or self.model_config.get('max_tokens', 512),

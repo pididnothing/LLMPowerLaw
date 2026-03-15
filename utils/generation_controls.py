@@ -28,13 +28,11 @@ PRESETS: Dict[str, Dict[str, Any]] = {
     "concise": {
         "max_new_tokens": 64,
         "temperature": 0.0,
-        "do_sample": False,
     },
     # Good default for mixed tasks.
     "balanced": {
         "max_new_tokens": 192,
         "temperature": 0.15,
-        "do_sample": True,
         "top_p": 0.9,
         "repetition_penalty": 1.03,
     },
@@ -43,7 +41,6 @@ PRESETS: Dict[str, Dict[str, Any]] = {
         "max_new_tokens": 512,
         "min_new_tokens": 32,
         "temperature": 0.2,
-        "do_sample": True,
         "top_p": 0.95,
         "repetition_penalty": 1.05,
     },
@@ -51,7 +48,6 @@ PRESETS: Dict[str, Dict[str, Any]] = {
     "classification": {
         "classification_max_new_tokens": 20,
         "temperature": 0.0,
-        "do_sample": False,
     },
 }
 
