@@ -91,69 +91,20 @@ class BenchmarkRunner:
         dataset_config: DatasetConfig
     ) -> Tuple[str, Any]:
         """Extract task input text and raw label from a dataset example."""
-        def _format_mcq_options(raw_choices: Any) -> str:
-            if raw_choices is None:
-                return ""
-
-            # ARC-style: {'label': [...], 'text': [...]} or similar
-            if isinstance(raw_choices, dict):
-                labels = raw_choices.get('label') or raw_choices.get('labels') or []
-                texts = raw_choices.get('text') or raw_choices.get('texts') or []
-                options = []
-                for i, txt in enumerate(texts):
-                    label = labels[i] if i < len(labels) else chr(ord('A') + i)
-                    options.append(f"{label}. {txt}")
-                return "\n".join(options)
-
-            # MMLU/HellaSwag-style list
-            if isinstance(raw_choices, list):
-                options = [f"{chr(ord('A') + i)}. {choice}" for i, choice in enumerate(raw_choices)]
-                return "\n".join(options)
-
-            return str(raw_choices)
-
         if dataset_config.type == "custom":
             fields = dataset_config.additional_params.get('fields', {})
             text_field = fields.get('text') or fields.get('prompt') or fields.get('question')
             label_field = fields.get('label') or fields.get('answer') or fields.get('reference')
-            input_text = str(example.get(text_field, ""))
-            context_field = fields.get('context')
-            if context_field and example.get(context_field):
-                input_text = f"Context: {example.get(context_field)}\n\nQuestion: {input_text}"
 
-            return input_text, example.get(label_field, "")
+            return example.get(text_field, ""), example.get(label_field, "")
 
         if dataset_config.type == "huggingface":
             fields = dataset_config.additional_params.get('fields', {})
             text_field = fields.get('text', 'text')
             label_field = fields.get('label', 'label')
 
-            input_text = str(example.get(text_field, ""))
+            input_text = example.get(text_field, "")
             true_label = example.get(label_field, "")
-
-            # Pair-input datasets (e.g., MNLI, QQP)
-            if dataset_config.name == 'mnli' and example.get('hypothesis'):
-                input_text = f"Premise: {input_text}\nHypothesis: {example.get('hypothesis')}"
-            elif dataset_config.name == 'qqp' and example.get('question2'):
-                input_text = f"Question 1: {input_text}\nQuestion 2: {example.get('question2')}"
-
-            # Multiple-choice datasets (ARC/MMLU/HellaSwag)
-            choices_field = fields.get('choices')
-            endings_field = fields.get('endings')
-            raw_choices = example.get(choices_field) if choices_field else None
-            raw_endings = example.get(endings_field) if endings_field else None
-
-            options_text = _format_mcq_options(raw_choices)
-            if raw_endings is not None:
-                options_text = _format_mcq_options(raw_endings)
-
-            if options_text:
-                input_text = f"{input_text}\n\nOptions:\n{options_text}"
-
-            # QA-style context field when present in HuggingFace rows.
-            if example.get('context') and dataset_config.task_type in {'qa', 'reasoning'}:
-                input_text = f"Context: {example.get('context')}\n\nQuestion: {input_text}"
-
             if not input_text:
                 input_text = str(example.get('sentence', example.get('question', example.get('text', example))))
             return input_text, true_label
@@ -538,8 +489,6 @@ class BenchmarkRunner:
             return self.metrics_calculator.classification_metrics(valid_predictions)
         elif task_type == "qa":
             return self.metrics_calculator.qa_metrics(valid_predictions)
-        elif task_type == "reasoning":
-            return self.metrics_calculator.reasoning_metrics(valid_predictions)
         elif task_type == "generation":
             return self.metrics_calculator.generation_metrics(valid_predictions)
         else:

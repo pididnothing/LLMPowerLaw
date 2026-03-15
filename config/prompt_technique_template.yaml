@@ -36,13 +36,7 @@ prompt_techniques:
 
       Let's think step by step.
 
-      You may reason as much as needed.
-      After reasoning, output exactly one final answer using this marker:
-      FINAL_ANSWER: <your answer>
-
-      Reasoning:
-
-      FINAL_ANSWER:
+      Final Answer:
 
 
   few_shot_cot:
@@ -59,14 +53,9 @@ prompt_techniques:
 
       Now solve the actual question below (not an example):
       Question: {{input}}
-
-        You may reason as much as needed.
-        After reasoning, output exactly one final answer using this marker:
-        FINAL_ANSWER: <your answer>
-
+      Provide brief reasoning in one sentence.
       Reasoning:
-
-        FINAL_ANSWER:
+      Final Answer:
 
 
   role_expert:

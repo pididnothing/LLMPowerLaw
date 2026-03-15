@@ -133,9 +133,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer:<|im_end|><|im_start|>assistant'
+    Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: sst2
@@ -176,9 +174,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer:<|im_end|><|im_start|>assistant'
+    Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: sst2
@@ -219,9 +215,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer: [/INST]'
+    Answer: [/INST]'
   params: {}
   fields:
     dataset: sst2
@@ -262,9 +256,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer:<|end|><|assistant|>'
+    Answer:<|end|><|assistant|>'
   params: {}
   fields:
     dataset: sst2
@@ -277,7 +269,7 @@ prompting_techniques:
   template: "<s>[INST] You are a helpful assistant.\n\n    Task: Classify the sentiment of the following text as \"positive\" or \"negative\". Respond with ONLY one word: positive or negative.\n\nInput:\
     \ The movie had stunning visuals but the story was painfully boring.\nAnswer: negative\n\nInput: An incredibly touching story with excellent performances.\nAnswer: positive\n\nInput: The plot was predictable\
     \ and the characters were dull.\nAnswer: negative\n\nInput: A delightful film that keeps you smiling the whole time.\nAnswer: positive\n\nNow process the actual input below (not an example):\nInput:\
-    \ $input\nOutput ONLY one word label on the next line.\nFinal Answer:[/INST]"
+    \ $input\nAnswer:[/INST]"
   params: {}
   fields:
     dataset: sst2
@@ -302,17 +294,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER:<|im_end|><|im_start|>assistant'
+    Final Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: sst2
@@ -337,17 +319,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER:<|im_end|><|im_start|>assistant'
+    Final Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: sst2
@@ -372,17 +344,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER: [/INST]'
+    Final Answer: [/INST]'
   params: {}
   fields:
     dataset: sst2
@@ -407,17 +369,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER:<|end|><|assistant|>'
+    Final Answer:<|end|><|assistant|>'
   params: {}
   fields:
     dataset: sst2
@@ -428,7 +380,7 @@ prompting_techniques:
   description: Chain Of Thought for sst2 on mistral models
   enabled: true
   template: "<s>[INST] You are a helpful assistant.\n\n    Task: Classify the sentiment of the following text as \"positive\" or \"negative\". Respond with ONLY one word: positive or negative.\n\nQuestion:\n\
-    $input\n\nLet's think step by step.\n\nYou may reason as much as needed.\nAfter reasoning, output exactly one final answer using this marker:\nFINAL_ANSWER: <your answer>\n\nReasoning:\n\nFINAL_ANSWER:[/INST]"
+    $input\n\nLet's think step by step.\n\nFinal Answer:[/INST]"
   params: {}
   fields:
     dataset: sst2
@@ -438,13 +390,50 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for sst2 on smollm models
   enabled: true
-  template: "<|im_start|>system\nYou are a helpful AI assistant named SmolLM, trained by Hugging Face<|im_end|><|im_start|>user\nTask: Classify the sentiment of the following text as \"positive\" or \"\
-    negative\". Respond with ONLY one word: positive or negative.\n\nQuestion: The movie had stunning visuals but the story was painfully boring.\nReasoning: Although 'stunning visuals' is positive, 'painfully\
-    \ boring' is a strong negative phrase about the core story, making the overall sentiment negative.\nAnswer: negative\n\nQuestion: An incredibly touching story with excellent performances.\nReasoning:\
-    \ 'Incredibly touching' and 'excellent performances' are strongly positive descriptors with no negatives present.\nAnswer: positive\n\nQuestion: The plot was predictable and the characters were dull.\n\
-    Reasoning: 'Predictable' and 'dull' are both negative descriptors criticising the plot and characters.\nAnswer: negative\n\nQuestion: A delightful film that keeps you smiling the whole time.\nReasoning:\
-    \ 'Delightful' and 'keeps you smiling' convey a clearly positive viewing experience.\nAnswer: positive\n\nNow solve the actual question below (not an example):\nQuestion: $input\n\n  You may reason\
-    \ as much as needed.\n  After reasoning, output exactly one final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER:<|im_end|><|im_start|>assistant"
+  template: '<|im_start|>system
+
+    You are a helpful AI assistant named SmolLM, trained by Hugging Face<|im_end|><|im_start|>user
+
+    Task: Classify the sentiment of the following text as "positive" or "negative". Respond with ONLY one word: positive or negative.
+
+
+    Question: The movie had stunning visuals but the story was painfully boring.
+
+    Reasoning: Although ''stunning visuals'' is positive, ''painfully boring'' is a strong negative phrase about the core story, making the overall sentiment negative.
+
+    Answer: negative
+
+
+    Question: An incredibly touching story with excellent performances.
+
+    Reasoning: ''Incredibly touching'' and ''excellent performances'' are strongly positive descriptors with no negatives present.
+
+    Answer: positive
+
+
+    Question: The plot was predictable and the characters were dull.
+
+    Reasoning: ''Predictable'' and ''dull'' are both negative descriptors criticising the plot and characters.
+
+    Answer: negative
+
+
+    Question: A delightful film that keeps you smiling the whole time.
+
+    Reasoning: ''Delightful'' and ''keeps you smiling'' convey a clearly positive viewing experience.
+
+    Answer: positive
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Provide brief reasoning in one sentence, then output ONLY one word on the final line.
+
+    Reasoning:
+
+    Final Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: sst2
@@ -454,13 +443,46 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for sst2 on qwen2_5 models
   enabled: true
-  template: "<|im_start|>system\nYou are a helpful assistant.<|im_end|><|im_start|>user\nTask: Classify the sentiment of the following text as \"positive\" or \"negative\". Respond with ONLY one word: positive\
-    \ or negative.\n\nQuestion: The movie had stunning visuals but the story was painfully boring.\nReasoning: Although 'stunning visuals' is positive, 'painfully boring' is a strong negative phrase about\
-    \ the core story, making the overall sentiment negative.\nAnswer: negative\n\nQuestion: An incredibly touching story with excellent performances.\nReasoning: 'Incredibly touching' and 'excellent performances'\
-    \ are strongly positive descriptors with no negatives present.\nAnswer: positive\n\nQuestion: The plot was predictable and the characters were dull.\nReasoning: 'Predictable' and 'dull' are both negative\
-    \ descriptors criticising the plot and characters.\nAnswer: negative\n\nQuestion: A delightful film that keeps you smiling the whole time.\nReasoning: 'Delightful' and 'keeps you smiling' convey a clearly\
-    \ positive viewing experience.\nAnswer: positive\n\nNow solve the actual question below (not an example):\nQuestion: $input\n\n  You may reason as much as needed.\n  After reasoning, output exactly\
-    \ one final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER:<|im_end|><|im_start|>assistant"
+  template: '<|im_start|>system
+
+    You are a helpful assistant.<|im_end|><|im_start|>user
+
+    Task: Classify the sentiment of the following text as "positive" or "negative". Respond with ONLY one word: positive or negative.
+
+
+    Question: The movie had stunning visuals but the story was painfully boring.
+
+    Reasoning: Although ''stunning visuals'' is positive, ''painfully boring'' is a strong negative phrase about the core story, making the overall sentiment negative.
+
+    Answer: negative
+
+
+    Question: An incredibly touching story with excellent performances.
+
+    Reasoning: ''Incredibly touching'' and ''excellent performances'' are strongly positive descriptors with no negatives present.
+
+    Answer: positive
+
+
+    Question: The plot was predictable and the characters were dull.
+
+    Reasoning: ''Predictable'' and ''dull'' are both negative descriptors criticising the plot and characters.
+
+    Answer: negative
+
+
+    Question: A delightful film that keeps you smiling the whole time.
+
+    Reasoning: ''Delightful'' and ''keeps you smiling'' convey a clearly positive viewing experience.
+
+    Answer: positive
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Reasoning:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: sst2
@@ -470,13 +492,46 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for sst2 on tinyllama models
   enabled: true
-  template: "<s>[INST] <<SYS>>\nYou are a helpful assistant.\n<</SYS>>Task: Classify the sentiment of the following text as \"positive\" or \"negative\". Respond with ONLY one word: positive or negative.\n\
-    \nQuestion: The movie had stunning visuals but the story was painfully boring.\nReasoning: Although 'stunning visuals' is positive, 'painfully boring' is a strong negative phrase about the core story,\
-    \ making the overall sentiment negative.\nAnswer: negative\n\nQuestion: An incredibly touching story with excellent performances.\nReasoning: 'Incredibly touching' and 'excellent performances' are strongly\
-    \ positive descriptors with no negatives present.\nAnswer: positive\n\nQuestion: The plot was predictable and the characters were dull.\nReasoning: 'Predictable' and 'dull' are both negative descriptors\
-    \ criticising the plot and characters.\nAnswer: negative\n\nQuestion: A delightful film that keeps you smiling the whole time.\nReasoning: 'Delightful' and 'keeps you smiling' convey a clearly positive\
-    \ viewing experience.\nAnswer: positive\n\nNow solve the actual question below (not an example):\nQuestion: $input\n\n  You may reason as much as needed.\n  After reasoning, output exactly one final\
-    \ answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER: [/INST]"
+  template: '<s>[INST] <<SYS>>
+
+    You are a helpful assistant.
+
+    <</SYS>>Task: Classify the sentiment of the following text as "positive" or "negative". Respond with ONLY one word: positive or negative.
+
+
+    Question: The movie had stunning visuals but the story was painfully boring.
+
+    Reasoning: Although ''stunning visuals'' is positive, ''painfully boring'' is a strong negative phrase about the core story, making the overall sentiment negative.
+
+    Answer: negative
+
+
+    Question: An incredibly touching story with excellent performances.
+
+    Reasoning: ''Incredibly touching'' and ''excellent performances'' are strongly positive descriptors with no negatives present.
+
+    Answer: positive
+
+
+    Question: The plot was predictable and the characters were dull.
+
+    Reasoning: ''Predictable'' and ''dull'' are both negative descriptors criticising the plot and characters.
+
+    Answer: negative
+
+
+    Question: A delightful film that keeps you smiling the whole time.
+
+    Reasoning: ''Delightful'' and ''keeps you smiling'' convey a clearly positive viewing experience.
+
+    Answer: positive
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Reasoning: [/INST]'
   params: {}
   fields:
     dataset: sst2
@@ -486,13 +541,46 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for sst2 on phi3 models
   enabled: true
-  template: "<|system|>\nYou are a helpful assistant.<|end|><|user|>\nTask: Classify the sentiment of the following text as \"positive\" or \"negative\". Respond with ONLY one word: positive or negative.\n\
-    \nQuestion: The movie had stunning visuals but the story was painfully boring.\nReasoning: Although 'stunning visuals' is positive, 'painfully boring' is a strong negative phrase about the core story,\
-    \ making the overall sentiment negative.\nAnswer: negative\n\nQuestion: An incredibly touching story with excellent performances.\nReasoning: 'Incredibly touching' and 'excellent performances' are strongly\
-    \ positive descriptors with no negatives present.\nAnswer: positive\n\nQuestion: The plot was predictable and the characters were dull.\nReasoning: 'Predictable' and 'dull' are both negative descriptors\
-    \ criticising the plot and characters.\nAnswer: negative\n\nQuestion: A delightful film that keeps you smiling the whole time.\nReasoning: 'Delightful' and 'keeps you smiling' convey a clearly positive\
-    \ viewing experience.\nAnswer: positive\n\nNow solve the actual question below (not an example):\nQuestion: $input\n\n  You may reason as much as needed.\n  After reasoning, output exactly one final\
-    \ answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER:<|end|><|assistant|>"
+  template: '<|system|>
+
+    You are a helpful assistant.<|end|><|user|>
+
+    Task: Classify the sentiment of the following text as "positive" or "negative". Respond with ONLY one word: positive or negative.
+
+
+    Question: The movie had stunning visuals but the story was painfully boring.
+
+    Reasoning: Although ''stunning visuals'' is positive, ''painfully boring'' is a strong negative phrase about the core story, making the overall sentiment negative.
+
+    Answer: negative
+
+
+    Question: An incredibly touching story with excellent performances.
+
+    Reasoning: ''Incredibly touching'' and ''excellent performances'' are strongly positive descriptors with no negatives present.
+
+    Answer: positive
+
+
+    Question: The plot was predictable and the characters were dull.
+
+    Reasoning: ''Predictable'' and ''dull'' are both negative descriptors criticising the plot and characters.
+
+    Answer: negative
+
+
+    Question: A delightful film that keeps you smiling the whole time.
+
+    Reasoning: ''Delightful'' and ''keeps you smiling'' convey a clearly positive viewing experience.
+
+    Answer: positive
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Reasoning:<|end|><|assistant|>'
   params: {}
   fields:
     dataset: sst2
@@ -507,8 +595,7 @@ prompting_techniques:
     \ the overall sentiment negative.\nAnswer: negative\n\nQuestion: An incredibly touching story with excellent performances.\nReasoning: 'Incredibly touching' and 'excellent performances' are strongly\
     \ positive descriptors with no negatives present.\nAnswer: positive\n\nQuestion: The plot was predictable and the characters were dull.\nReasoning: 'Predictable' and 'dull' are both negative descriptors\
     \ criticising the plot and characters.\nAnswer: negative\n\nQuestion: A delightful film that keeps you smiling the whole time.\nReasoning: 'Delightful' and 'keeps you smiling' convey a clearly positive\
-    \ viewing experience.\nAnswer: positive\n\nNow solve the actual question below (not an example):\nQuestion: $input\n\n  You may reason as much as needed.\n  After reasoning, output exactly one final\
-    \ answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER:[/INST]"
+    \ viewing experience.\nAnswer: positive\n\nNow solve the actual question below (not an example):\nQuestion: $input\nReasoning:[/INST]"
   params: {}
   fields:
     dataset: sst2
@@ -779,9 +866,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer:<|im_end|><|im_start|>assistant'
+    Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: arc_challenge
@@ -841,9 +926,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer:<|im_end|><|im_start|>assistant'
+    Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: arc_challenge
@@ -903,9 +986,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer: [/INST]'
+    Answer: [/INST]'
   params: {}
   fields:
     dataset: arc_challenge
@@ -965,9 +1046,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer:<|end|><|assistant|>'
+    Answer:<|end|><|assistant|>'
   params: {}
   fields:
     dataset: arc_challenge
@@ -980,7 +1059,7 @@ prompting_techniques:
   template: "<s>[INST] You are a helpful assistant.\n\n    Task: Answer the following science question by choosing A, B, C, or D. Respond with ONLY the letter of the correct answer.\n\nInput: Which process\
     \ allows plants to make their own food?\nA: Respiration\nB: Photosynthesis\nC: Digestion\nD: Fermentation\nAnswer: B\n\nInput: What is the main source of energy for Earth's climate system?\nA: The Moon\n\
     B: The Sun\nC: Volcanoes\nD: Ocean currents\nAnswer: B\n\nInput: Which state of matter has a definite shape and volume?\nA: Liquid\nB: Gas\nC: Solid\nD: Plasma\nAnswer: C\n\nNow process the actual input\
-    \ below (not an example):\nInput: $input\nOutput ONLY one word label on the next line.\nFinal Answer:[/INST]"
+    \ below (not an example):\nInput: $input\nAnswer:[/INST]"
   params: {}
   fields:
     dataset: arc_challenge
@@ -1005,17 +1084,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER:<|im_end|><|im_start|>assistant'
+    Final Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: arc_challenge
@@ -1040,17 +1109,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER:<|im_end|><|im_start|>assistant'
+    Final Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: arc_challenge
@@ -1075,17 +1134,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER: [/INST]'
+    Final Answer: [/INST]'
   params: {}
   fields:
     dataset: arc_challenge
@@ -1110,17 +1159,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER:<|end|><|assistant|>'
+    Final Answer:<|end|><|assistant|>'
   params: {}
   fields:
     dataset: arc_challenge
@@ -1131,7 +1170,7 @@ prompting_techniques:
   description: Chain Of Thought for arc_challenge on mistral models
   enabled: true
   template: "<s>[INST] You are a helpful assistant.\n\n    Task: Answer the following science question by choosing A, B, C, or D. Respond with ONLY the letter of the correct answer.\n\nQuestion:\n$input\n\
-    \nLet's think step by step.\n\nYou may reason as much as needed.\nAfter reasoning, output exactly one final answer using this marker:\nFINAL_ANSWER: <your answer>\n\nReasoning:\n\nFINAL_ANSWER:[/INST]"
+    \nLet's think step by step.\n\nFinal Answer:[/INST]"
   params: {}
   fields:
     dataset: arc_challenge
@@ -1141,14 +1180,66 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for arc_challenge on smollm models
   enabled: true
-  template: "<|im_start|>system\nYou are a helpful AI assistant named SmolLM, trained by Hugging Face<|im_end|><|im_start|>user\nTask: Answer the following science question by choosing A, B, C, or D. Respond\
-    \ with ONLY the letter of the correct answer.\n\nQuestion: Which process allows plants to make their own food?\nA: Respiration\nB: Photosynthesis\nC: Digestion\nD: Fermentation\nReasoning: Plants use\
-    \ sunlight, water, and CO2 to produce glucose through photosynthesis. Respiration consumes energy, digestion breaks down food in animals, and fermentation is anaerobic. So the answer is B.\nAnswer:\
-    \ B\n\nQuestion: What is the main source of energy for Earth's climate system?\nA: The Moon\nB: The Sun\nC: Volcanoes\nD: Ocean currents\nReasoning: The Sun provides the vast majority of energy that\
-    \ drives Earth's weather and climate. The Moon affects tides, volcanoes have local effects, and ocean currents distribute heat but don't generate it. So the answer is B.\nAnswer: B\n\nQuestion: Which\
-    \ state of matter has a definite shape and volume?\nA: Liquid\nB: Gas\nC: Solid\nD: Plasma\nReasoning: Solids have particles tightly packed in fixed positions giving them definite shape and volume.\
-    \ Liquids have definite volume but take the shape of their container. Gases and plasma have neither. So the answer is C.\nAnswer: C\n\nNow solve the actual question below (not an example):\nQuestion:\
-    \ $input\n\n  You may reason as much as needed.\n  After reasoning, output exactly one final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER:<|im_end|><|im_start|>assistant"
+  template: '<|im_start|>system
+
+    You are a helpful AI assistant named SmolLM, trained by Hugging Face<|im_end|><|im_start|>user
+
+    Task: Answer the following science question by choosing A, B, C, or D. Respond with ONLY the letter of the correct answer.
+
+
+    Question: Which process allows plants to make their own food?
+
+    A: Respiration
+
+    B: Photosynthesis
+
+    C: Digestion
+
+    D: Fermentation
+
+    Reasoning: Plants use sunlight, water, and CO2 to produce glucose through photosynthesis. Respiration consumes energy, digestion breaks down food in animals, and fermentation is anaerobic. So the answer
+    is B.
+
+    Answer: B
+
+
+    Question: What is the main source of energy for Earth''s climate system?
+
+    A: The Moon
+
+    B: The Sun
+
+    C: Volcanoes
+
+    D: Ocean currents
+
+    Reasoning: The Sun provides the vast majority of energy that drives Earth''s weather and climate. The Moon affects tides, volcanoes have local effects, and ocean currents distribute heat but don''t
+    generate it. So the answer is B.
+
+    Answer: B
+
+
+    Question: Which state of matter has a definite shape and volume?
+
+    A: Liquid
+
+    B: Gas
+
+    C: Solid
+
+    D: Plasma
+
+    Reasoning: Solids have particles tightly packed in fixed positions giving them definite shape and volume. Liquids have definite volume but take the shape of their container. Gases and plasma have neither.
+    So the answer is C.
+
+    Answer: C
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Reasoning:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: arc_challenge
@@ -1158,14 +1249,66 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for arc_challenge on qwen2_5 models
   enabled: true
-  template: "<|im_start|>system\nYou are a helpful assistant.<|im_end|><|im_start|>user\nTask: Answer the following science question by choosing A, B, C, or D. Respond with ONLY the letter of the correct\
-    \ answer.\n\nQuestion: Which process allows plants to make their own food?\nA: Respiration\nB: Photosynthesis\nC: Digestion\nD: Fermentation\nReasoning: Plants use sunlight, water, and CO2 to produce\
-    \ glucose through photosynthesis. Respiration consumes energy, digestion breaks down food in animals, and fermentation is anaerobic. So the answer is B.\nAnswer: B\n\nQuestion: What is the main source\
-    \ of energy for Earth's climate system?\nA: The Moon\nB: The Sun\nC: Volcanoes\nD: Ocean currents\nReasoning: The Sun provides the vast majority of energy that drives Earth's weather and climate. The\
-    \ Moon affects tides, volcanoes have local effects, and ocean currents distribute heat but don't generate it. So the answer is B.\nAnswer: B\n\nQuestion: Which state of matter has a definite shape and\
-    \ volume?\nA: Liquid\nB: Gas\nC: Solid\nD: Plasma\nReasoning: Solids have particles tightly packed in fixed positions giving them definite shape and volume. Liquids have definite volume but take the\
-    \ shape of their container. Gases and plasma have neither. So the answer is C.\nAnswer: C\n\nNow solve the actual question below (not an example):\nQuestion: $input\n\n  You may reason as much as needed.\n\
-    \  After reasoning, output exactly one final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER:<|im_end|><|im_start|>assistant"
+  template: '<|im_start|>system
+
+    You are a helpful assistant.<|im_end|><|im_start|>user
+
+    Task: Answer the following science question by choosing A, B, C, or D. Respond with ONLY the letter of the correct answer.
+
+
+    Question: Which process allows plants to make their own food?
+
+    A: Respiration
+
+    B: Photosynthesis
+
+    C: Digestion
+
+    D: Fermentation
+
+    Reasoning: Plants use sunlight, water, and CO2 to produce glucose through photosynthesis. Respiration consumes energy, digestion breaks down food in animals, and fermentation is anaerobic. So the answer
+    is B.
+
+    Answer: B
+
+
+    Question: What is the main source of energy for Earth''s climate system?
+
+    A: The Moon
+
+    B: The Sun
+
+    C: Volcanoes
+
+    D: Ocean currents
+
+    Reasoning: The Sun provides the vast majority of energy that drives Earth''s weather and climate. The Moon affects tides, volcanoes have local effects, and ocean currents distribute heat but don''t
+    generate it. So the answer is B.
+
+    Answer: B
+
+
+    Question: Which state of matter has a definite shape and volume?
+
+    A: Liquid
+
+    B: Gas
+
+    C: Solid
+
+    D: Plasma
+
+    Reasoning: Solids have particles tightly packed in fixed positions giving them definite shape and volume. Liquids have definite volume but take the shape of their container. Gases and plasma have neither.
+    So the answer is C.
+
+    Answer: C
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Reasoning:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: arc_challenge
@@ -1175,14 +1318,66 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for arc_challenge on tinyllama models
   enabled: true
-  template: "<s>[INST] <<SYS>>\nYou are a helpful assistant.\n<</SYS>>Task: Answer the following science question by choosing A, B, C, or D. Respond with ONLY the letter of the correct answer.\n\nQuestion:\
-    \ Which process allows plants to make their own food?\nA: Respiration\nB: Photosynthesis\nC: Digestion\nD: Fermentation\nReasoning: Plants use sunlight, water, and CO2 to produce glucose through photosynthesis.\
-    \ Respiration consumes energy, digestion breaks down food in animals, and fermentation is anaerobic. So the answer is B.\nAnswer: B\n\nQuestion: What is the main source of energy for Earth's climate\
-    \ system?\nA: The Moon\nB: The Sun\nC: Volcanoes\nD: Ocean currents\nReasoning: The Sun provides the vast majority of energy that drives Earth's weather and climate. The Moon affects tides, volcanoes\
-    \ have local effects, and ocean currents distribute heat but don't generate it. So the answer is B.\nAnswer: B\n\nQuestion: Which state of matter has a definite shape and volume?\nA: Liquid\nB: Gas\n\
-    C: Solid\nD: Plasma\nReasoning: Solids have particles tightly packed in fixed positions giving them definite shape and volume. Liquids have definite volume but take the shape of their container. Gases\
-    \ and plasma have neither. So the answer is C.\nAnswer: C\n\nNow solve the actual question below (not an example):\nQuestion: $input\n\n  You may reason as much as needed.\n  After reasoning, output\
-    \ exactly one final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER: [/INST]"
+  template: '<s>[INST] <<SYS>>
+
+    You are a helpful assistant.
+
+    <</SYS>>Task: Answer the following science question by choosing A, B, C, or D. Respond with ONLY the letter of the correct answer.
+
+
+    Question: Which process allows plants to make their own food?
+
+    A: Respiration
+
+    B: Photosynthesis
+
+    C: Digestion
+
+    D: Fermentation
+
+    Reasoning: Plants use sunlight, water, and CO2 to produce glucose through photosynthesis. Respiration consumes energy, digestion breaks down food in animals, and fermentation is anaerobic. So the answer
+    is B.
+
+    Answer: B
+
+
+    Question: What is the main source of energy for Earth''s climate system?
+
+    A: The Moon
+
+    B: The Sun
+
+    C: Volcanoes
+
+    D: Ocean currents
+
+    Reasoning: The Sun provides the vast majority of energy that drives Earth''s weather and climate. The Moon affects tides, volcanoes have local effects, and ocean currents distribute heat but don''t
+    generate it. So the answer is B.
+
+    Answer: B
+
+
+    Question: Which state of matter has a definite shape and volume?
+
+    A: Liquid
+
+    B: Gas
+
+    C: Solid
+
+    D: Plasma
+
+    Reasoning: Solids have particles tightly packed in fixed positions giving them definite shape and volume. Liquids have definite volume but take the shape of their container. Gases and plasma have neither.
+    So the answer is C.
+
+    Answer: C
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Reasoning: [/INST]'
   params: {}
   fields:
     dataset: arc_challenge
@@ -1192,14 +1387,66 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for arc_challenge on phi3 models
   enabled: true
-  template: "<|system|>\nYou are a helpful assistant.<|end|><|user|>\nTask: Answer the following science question by choosing A, B, C, or D. Respond with ONLY the letter of the correct answer.\n\nQuestion:\
-    \ Which process allows plants to make their own food?\nA: Respiration\nB: Photosynthesis\nC: Digestion\nD: Fermentation\nReasoning: Plants use sunlight, water, and CO2 to produce glucose through photosynthesis.\
-    \ Respiration consumes energy, digestion breaks down food in animals, and fermentation is anaerobic. So the answer is B.\nAnswer: B\n\nQuestion: What is the main source of energy for Earth's climate\
-    \ system?\nA: The Moon\nB: The Sun\nC: Volcanoes\nD: Ocean currents\nReasoning: The Sun provides the vast majority of energy that drives Earth's weather and climate. The Moon affects tides, volcanoes\
-    \ have local effects, and ocean currents distribute heat but don't generate it. So the answer is B.\nAnswer: B\n\nQuestion: Which state of matter has a definite shape and volume?\nA: Liquid\nB: Gas\n\
-    C: Solid\nD: Plasma\nReasoning: Solids have particles tightly packed in fixed positions giving them definite shape and volume. Liquids have definite volume but take the shape of their container. Gases\
-    \ and plasma have neither. So the answer is C.\nAnswer: C\n\nNow solve the actual question below (not an example):\nQuestion: $input\n\n  You may reason as much as needed.\n  After reasoning, output\
-    \ exactly one final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER:<|end|><|assistant|>"
+  template: '<|system|>
+
+    You are a helpful assistant.<|end|><|user|>
+
+    Task: Answer the following science question by choosing A, B, C, or D. Respond with ONLY the letter of the correct answer.
+
+
+    Question: Which process allows plants to make their own food?
+
+    A: Respiration
+
+    B: Photosynthesis
+
+    C: Digestion
+
+    D: Fermentation
+
+    Reasoning: Plants use sunlight, water, and CO2 to produce glucose through photosynthesis. Respiration consumes energy, digestion breaks down food in animals, and fermentation is anaerobic. So the answer
+    is B.
+
+    Answer: B
+
+
+    Question: What is the main source of energy for Earth''s climate system?
+
+    A: The Moon
+
+    B: The Sun
+
+    C: Volcanoes
+
+    D: Ocean currents
+
+    Reasoning: The Sun provides the vast majority of energy that drives Earth''s weather and climate. The Moon affects tides, volcanoes have local effects, and ocean currents distribute heat but don''t
+    generate it. So the answer is B.
+
+    Answer: B
+
+
+    Question: Which state of matter has a definite shape and volume?
+
+    A: Liquid
+
+    B: Gas
+
+    C: Solid
+
+    D: Plasma
+
+    Reasoning: Solids have particles tightly packed in fixed positions giving them definite shape and volume. Liquids have definite volume but take the shape of their container. Gases and plasma have neither.
+    So the answer is C.
+
+    Answer: C
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Reasoning:<|end|><|assistant|>'
   params: {}
   fields:
     dataset: arc_challenge
@@ -1215,8 +1462,7 @@ prompting_techniques:
     \ The Moon\nB: The Sun\nC: Volcanoes\nD: Ocean currents\nReasoning: The Sun provides the vast majority of energy that drives Earth's weather and climate. The Moon affects tides, volcanoes have local\
     \ effects, and ocean currents distribute heat but don't generate it. So the answer is B.\nAnswer: B\n\nQuestion: Which state of matter has a definite shape and volume?\nA: Liquid\nB: Gas\nC: Solid\n\
     D: Plasma\nReasoning: Solids have particles tightly packed in fixed positions giving them definite shape and volume. Liquids have definite volume but take the shape of their container. Gases and plasma\
-    \ have neither. So the answer is C.\nAnswer: C\n\nNow solve the actual question below (not an example):\nQuestion: $input\n\n  You may reason as much as needed.\n  After reasoning, output exactly one\
-    \ final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER:[/INST]"
+    \ have neither. So the answer is C.\nAnswer: C\n\nNow solve the actual question below (not an example):\nQuestion: $input\nReasoning:[/INST]"
   params: {}
   fields:
     dataset: arc_challenge
@@ -1486,9 +1732,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer:<|im_end|><|im_start|>assistant'
+    Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: hellaswag
@@ -1548,9 +1792,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer:<|im_end|><|im_start|>assistant'
+    Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: hellaswag
@@ -1610,9 +1852,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer: [/INST]'
+    Answer: [/INST]'
   params: {}
   fields:
     dataset: hellaswag
@@ -1672,9 +1912,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer:<|end|><|assistant|>'
+    Answer:<|end|><|assistant|>'
   params: {}
   fields:
     dataset: hellaswag
@@ -1688,8 +1926,7 @@ prompting_techniques:
     \ pasta in a kitchen. He drains the noodles in the sink.\nA: He throws the noodles on the floor.\nB: He mixes the noodles with sauce.\nC: He puts the noodles back in the package.\nD: He washes the noodles\
     \ with soap.\nAnswer: B\n\nInput: A woman is planting flowers in her garden.\nA: She waters the plants after placing them in the soil.\nB: She burns the flowers with a lighter.\nC: She throws the soil\
     \ away.\nD: She eats the flowers immediately.\nAnswer: A\n\nInput: A person opens a laptop to begin working.\nA: They start typing on the keyboard.\nB: They throw the laptop into the trash.\nC: They\
-    \ fill the laptop with water.\nD: They smash the screen with a hammer.\nAnswer: A\n\nNow process the actual input below (not an example):\nInput: $input\nOutput ONLY one word label on the next line.\n\
-    Final Answer:[/INST]"
+    \ fill the laptop with water.\nD: They smash the screen with a hammer.\nAnswer: A\n\nNow process the actual input below (not an example):\nInput: $input\nAnswer:[/INST]"
   params: {}
   fields:
     dataset: hellaswag
@@ -1714,17 +1951,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER:<|im_end|><|im_start|>assistant'
+    Final Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: hellaswag
@@ -1749,17 +1976,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER:<|im_end|><|im_start|>assistant'
+    Final Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: hellaswag
@@ -1784,17 +2001,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER: [/INST]'
+    Final Answer: [/INST]'
   params: {}
   fields:
     dataset: hellaswag
@@ -1819,17 +2026,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER:<|end|><|assistant|>'
+    Final Answer:<|end|><|assistant|>'
   params: {}
   fields:
     dataset: hellaswag
@@ -1840,7 +2037,7 @@ prompting_techniques:
   description: Chain Of Thought for hellaswag on mistral models
   enabled: true
   template: "<s>[INST] You are a helpful assistant.\n\n    Task: Choose the most plausible continuation of the following context. Respond with ONLY the letter: A, B, C, or D.\n\nQuestion:\n$input\n\nLet's\
-    \ think step by step.\n\nYou may reason as much as needed.\nAfter reasoning, output exactly one final answer using this marker:\nFINAL_ANSWER: <your answer>\n\nReasoning:\n\nFINAL_ANSWER:[/INST]"
+    \ think step by step.\n\nFinal Answer:[/INST]"
   params: {}
   fields:
     dataset: hellaswag
@@ -1850,15 +2047,65 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for hellaswag on smollm models
   enabled: true
-  template: "<|im_start|>system\nYou are a helpful AI assistant named SmolLM, trained by Hugging Face<|im_end|><|im_start|>user\nTask: Choose the most plausible continuation of the following context. Respond\
-    \ with ONLY the letter: A, B, C, or D.\n\nQuestion: A man is cooking pasta in a kitchen. He drains the noodles in the sink.\nA: He throws the noodles on the floor.\nB: He mixes the noodles with sauce.\n\
-    C: He puts the noodles back in the package.\nD: He washes the noodles with soap.\nReasoning: After draining pasta, the next logical cooking step is to add sauce. Throwing food on the floor, repackaging\
-    \ cooked noodles, or washing them with soap are all nonsensical. So the answer is B.\nAnswer: B\n\nQuestion: A woman is planting flowers in her garden.\nA: She waters the plants after placing them in\
-    \ the soil.\nB: She burns the flowers with a lighter.\nC: She throws the soil away.\nD: She eats the flowers immediately.\nReasoning: Watering newly planted flowers is the standard next step in gardening.\
-    \ The other options are destructive or absurd actions that don't follow logically. So the answer is A.\nAnswer: A\n\nQuestion: A person opens a laptop to begin working.\nA: They start typing on the\
-    \ keyboard.\nB: They throw the laptop into the trash.\nC: They fill the laptop with water.\nD: They smash the screen with a hammer.\nReasoning: When someone opens a laptop to work, typing on the keyboard\
-    \ is the natural next action. The other options all involve destroying the laptop, which contradicts the intent to work. So the answer is A.\nAnswer: A\n\nNow solve the actual question below (not an\
-    \ example):\nQuestion: $input\n\n  You may reason as much as needed.\n  After reasoning, output exactly one final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER:<|im_end|><|im_start|>assistant"
+  template: '<|im_start|>system
+
+    You are a helpful AI assistant named SmolLM, trained by Hugging Face<|im_end|><|im_start|>user
+
+    Task: Choose the most plausible continuation of the following context. Respond with ONLY the letter: A, B, C, or D.
+
+
+    Question: A man is cooking pasta in a kitchen. He drains the noodles in the sink.
+
+    A: He throws the noodles on the floor.
+
+    B: He mixes the noodles with sauce.
+
+    C: He puts the noodles back in the package.
+
+    D: He washes the noodles with soap.
+
+    Reasoning: After draining pasta, the next logical cooking step is to add sauce. Throwing food on the floor, repackaging cooked noodles, or washing them with soap are all nonsensical. So the answer is
+    B.
+
+    Answer: B
+
+
+    Question: A woman is planting flowers in her garden.
+
+    A: She waters the plants after placing them in the soil.
+
+    B: She burns the flowers with a lighter.
+
+    C: She throws the soil away.
+
+    D: She eats the flowers immediately.
+
+    Reasoning: Watering newly planted flowers is the standard next step in gardening. The other options are destructive or absurd actions that don''t follow logically. So the answer is A.
+
+    Answer: A
+
+
+    Question: A person opens a laptop to begin working.
+
+    A: They start typing on the keyboard.
+
+    B: They throw the laptop into the trash.
+
+    C: They fill the laptop with water.
+
+    D: They smash the screen with a hammer.
+
+    Reasoning: When someone opens a laptop to work, typing on the keyboard is the natural next action. The other options all involve destroying the laptop, which contradicts the intent to work. So the answer
+    is A.
+
+    Answer: A
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Reasoning:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: hellaswag
@@ -1868,15 +2115,65 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for hellaswag on qwen2_5 models
   enabled: true
-  template: "<|im_start|>system\nYou are a helpful assistant.<|im_end|><|im_start|>user\nTask: Choose the most plausible continuation of the following context. Respond with ONLY the letter: A, B, C, or\
-    \ D.\n\nQuestion: A man is cooking pasta in a kitchen. He drains the noodles in the sink.\nA: He throws the noodles on the floor.\nB: He mixes the noodles with sauce.\nC: He puts the noodles back in\
-    \ the package.\nD: He washes the noodles with soap.\nReasoning: After draining pasta, the next logical cooking step is to add sauce. Throwing food on the floor, repackaging cooked noodles, or washing\
-    \ them with soap are all nonsensical. So the answer is B.\nAnswer: B\n\nQuestion: A woman is planting flowers in her garden.\nA: She waters the plants after placing them in the soil.\nB: She burns the\
-    \ flowers with a lighter.\nC: She throws the soil away.\nD: She eats the flowers immediately.\nReasoning: Watering newly planted flowers is the standard next step in gardening. The other options are\
-    \ destructive or absurd actions that don't follow logically. So the answer is A.\nAnswer: A\n\nQuestion: A person opens a laptop to begin working.\nA: They start typing on the keyboard.\nB: They throw\
-    \ the laptop into the trash.\nC: They fill the laptop with water.\nD: They smash the screen with a hammer.\nReasoning: When someone opens a laptop to work, typing on the keyboard is the natural next\
-    \ action. The other options all involve destroying the laptop, which contradicts the intent to work. So the answer is A.\nAnswer: A\n\nNow solve the actual question below (not an example):\nQuestion:\
-    \ $input\n\n  You may reason as much as needed.\n  After reasoning, output exactly one final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER:<|im_end|><|im_start|>assistant"
+  template: '<|im_start|>system
+
+    You are a helpful assistant.<|im_end|><|im_start|>user
+
+    Task: Choose the most plausible continuation of the following context. Respond with ONLY the letter: A, B, C, or D.
+
+
+    Question: A man is cooking pasta in a kitchen. He drains the noodles in the sink.
+
+    A: He throws the noodles on the floor.
+
+    B: He mixes the noodles with sauce.
+
+    C: He puts the noodles back in the package.
+
+    D: He washes the noodles with soap.
+
+    Reasoning: After draining pasta, the next logical cooking step is to add sauce. Throwing food on the floor, repackaging cooked noodles, or washing them with soap are all nonsensical. So the answer is
+    B.
+
+    Answer: B
+
+
+    Question: A woman is planting flowers in her garden.
+
+    A: She waters the plants after placing them in the soil.
+
+    B: She burns the flowers with a lighter.
+
+    C: She throws the soil away.
+
+    D: She eats the flowers immediately.
+
+    Reasoning: Watering newly planted flowers is the standard next step in gardening. The other options are destructive or absurd actions that don''t follow logically. So the answer is A.
+
+    Answer: A
+
+
+    Question: A person opens a laptop to begin working.
+
+    A: They start typing on the keyboard.
+
+    B: They throw the laptop into the trash.
+
+    C: They fill the laptop with water.
+
+    D: They smash the screen with a hammer.
+
+    Reasoning: When someone opens a laptop to work, typing on the keyboard is the natural next action. The other options all involve destroying the laptop, which contradicts the intent to work. So the answer
+    is A.
+
+    Answer: A
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Reasoning:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: hellaswag
@@ -1886,15 +2183,65 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for hellaswag on tinyllama models
   enabled: true
-  template: "<s>[INST] <<SYS>>\nYou are a helpful assistant.\n<</SYS>>Task: Choose the most plausible continuation of the following context. Respond with ONLY the letter: A, B, C, or D.\n\nQuestion: A man\
-    \ is cooking pasta in a kitchen. He drains the noodles in the sink.\nA: He throws the noodles on the floor.\nB: He mixes the noodles with sauce.\nC: He puts the noodles back in the package.\nD: He washes\
-    \ the noodles with soap.\nReasoning: After draining pasta, the next logical cooking step is to add sauce. Throwing food on the floor, repackaging cooked noodles, or washing them with soap are all nonsensical.\
-    \ So the answer is B.\nAnswer: B\n\nQuestion: A woman is planting flowers in her garden.\nA: She waters the plants after placing them in the soil.\nB: She burns the flowers with a lighter.\nC: She throws\
-    \ the soil away.\nD: She eats the flowers immediately.\nReasoning: Watering newly planted flowers is the standard next step in gardening. The other options are destructive or absurd actions that don't\
-    \ follow logically. So the answer is A.\nAnswer: A\n\nQuestion: A person opens a laptop to begin working.\nA: They start typing on the keyboard.\nB: They throw the laptop into the trash.\nC: They fill\
-    \ the laptop with water.\nD: They smash the screen with a hammer.\nReasoning: When someone opens a laptop to work, typing on the keyboard is the natural next action. The other options all involve destroying\
-    \ the laptop, which contradicts the intent to work. So the answer is A.\nAnswer: A\n\nNow solve the actual question below (not an example):\nQuestion: $input\n\n  You may reason as much as needed.\n\
-    \  After reasoning, output exactly one final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER: [/INST]"
+  template: '<s>[INST] <<SYS>>
+
+    You are a helpful assistant.
+
+    <</SYS>>Task: Choose the most plausible continuation of the following context. Respond with ONLY the letter: A, B, C, or D.
+
+
+    Question: A man is cooking pasta in a kitchen. He drains the noodles in the sink.
+
+    A: He throws the noodles on the floor.
+
+    B: He mixes the noodles with sauce.
+
+    C: He puts the noodles back in the package.
+
+    D: He washes the noodles with soap.
+
+    Reasoning: After draining pasta, the next logical cooking step is to add sauce. Throwing food on the floor, repackaging cooked noodles, or washing them with soap are all nonsensical. So the answer is
+    B.
+
+    Answer: B
+
+
+    Question: A woman is planting flowers in her garden.
+
+    A: She waters the plants after placing them in the soil.
+
+    B: She burns the flowers with a lighter.
+
+    C: She throws the soil away.
+
+    D: She eats the flowers immediately.
+
+    Reasoning: Watering newly planted flowers is the standard next step in gardening. The other options are destructive or absurd actions that don''t follow logically. So the answer is A.
+
+    Answer: A
+
+
+    Question: A person opens a laptop to begin working.
+
+    A: They start typing on the keyboard.
+
+    B: They throw the laptop into the trash.
+
+    C: They fill the laptop with water.
+
+    D: They smash the screen with a hammer.
+
+    Reasoning: When someone opens a laptop to work, typing on the keyboard is the natural next action. The other options all involve destroying the laptop, which contradicts the intent to work. So the answer
+    is A.
+
+    Answer: A
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Reasoning: [/INST]'
   params: {}
   fields:
     dataset: hellaswag
@@ -1904,15 +2251,65 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for hellaswag on phi3 models
   enabled: true
-  template: "<|system|>\nYou are a helpful assistant.<|end|><|user|>\nTask: Choose the most plausible continuation of the following context. Respond with ONLY the letter: A, B, C, or D.\n\nQuestion: A man\
-    \ is cooking pasta in a kitchen. He drains the noodles in the sink.\nA: He throws the noodles on the floor.\nB: He mixes the noodles with sauce.\nC: He puts the noodles back in the package.\nD: He washes\
-    \ the noodles with soap.\nReasoning: After draining pasta, the next logical cooking step is to add sauce. Throwing food on the floor, repackaging cooked noodles, or washing them with soap are all nonsensical.\
-    \ So the answer is B.\nAnswer: B\n\nQuestion: A woman is planting flowers in her garden.\nA: She waters the plants after placing them in the soil.\nB: She burns the flowers with a lighter.\nC: She throws\
-    \ the soil away.\nD: She eats the flowers immediately.\nReasoning: Watering newly planted flowers is the standard next step in gardening. The other options are destructive or absurd actions that don't\
-    \ follow logically. So the answer is A.\nAnswer: A\n\nQuestion: A person opens a laptop to begin working.\nA: They start typing on the keyboard.\nB: They throw the laptop into the trash.\nC: They fill\
-    \ the laptop with water.\nD: They smash the screen with a hammer.\nReasoning: When someone opens a laptop to work, typing on the keyboard is the natural next action. The other options all involve destroying\
-    \ the laptop, which contradicts the intent to work. So the answer is A.\nAnswer: A\n\nNow solve the actual question below (not an example):\nQuestion: $input\n\n  You may reason as much as needed.\n\
-    \  After reasoning, output exactly one final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER:<|end|><|assistant|>"
+  template: '<|system|>
+
+    You are a helpful assistant.<|end|><|user|>
+
+    Task: Choose the most plausible continuation of the following context. Respond with ONLY the letter: A, B, C, or D.
+
+
+    Question: A man is cooking pasta in a kitchen. He drains the noodles in the sink.
+
+    A: He throws the noodles on the floor.
+
+    B: He mixes the noodles with sauce.
+
+    C: He puts the noodles back in the package.
+
+    D: He washes the noodles with soap.
+
+    Reasoning: After draining pasta, the next logical cooking step is to add sauce. Throwing food on the floor, repackaging cooked noodles, or washing them with soap are all nonsensical. So the answer is
+    B.
+
+    Answer: B
+
+
+    Question: A woman is planting flowers in her garden.
+
+    A: She waters the plants after placing them in the soil.
+
+    B: She burns the flowers with a lighter.
+
+    C: She throws the soil away.
+
+    D: She eats the flowers immediately.
+
+    Reasoning: Watering newly planted flowers is the standard next step in gardening. The other options are destructive or absurd actions that don''t follow logically. So the answer is A.
+
+    Answer: A
+
+
+    Question: A person opens a laptop to begin working.
+
+    A: They start typing on the keyboard.
+
+    B: They throw the laptop into the trash.
+
+    C: They fill the laptop with water.
+
+    D: They smash the screen with a hammer.
+
+    Reasoning: When someone opens a laptop to work, typing on the keyboard is the natural next action. The other options all involve destroying the laptop, which contradicts the intent to work. So the answer
+    is A.
+
+    Answer: A
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Reasoning:<|end|><|assistant|>'
   params: {}
   fields:
     dataset: hellaswag
@@ -1929,8 +2326,7 @@ prompting_techniques:
     \ the soil away.\nD: She eats the flowers immediately.\nReasoning: Watering newly planted flowers is the standard next step in gardening. The other options are destructive or absurd actions that don't\
     \ follow logically. So the answer is A.\nAnswer: A\n\nQuestion: A person opens a laptop to begin working.\nA: They start typing on the keyboard.\nB: They throw the laptop into the trash.\nC: They fill\
     \ the laptop with water.\nD: They smash the screen with a hammer.\nReasoning: When someone opens a laptop to work, typing on the keyboard is the natural next action. The other options all involve destroying\
-    \ the laptop, which contradicts the intent to work. So the answer is A.\nAnswer: A\n\nNow solve the actual question below (not an example):\nQuestion: $input\n\n  You may reason as much as needed.\n\
-    \  After reasoning, output exactly one final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER:[/INST]"
+    \ the laptop, which contradicts the intent to work. So the answer is A.\nAnswer: A\n\nNow solve the actual question below (not an example):\nQuestion: $input\nReasoning:[/INST]"
   params: {}
   fields:
     dataset: hellaswag
@@ -2175,9 +2571,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer:<|im_end|><|im_start|>assistant'
+    Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: gsm8k
@@ -2213,9 +2607,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer:<|im_end|><|im_start|>assistant'
+    Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: gsm8k
@@ -2251,9 +2643,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer: [/INST]'
+    Answer: [/INST]'
   params: {}
   fields:
     dataset: gsm8k
@@ -2289,9 +2679,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer:<|end|><|assistant|>'
+    Answer:<|end|><|assistant|>'
   params: {}
   fields:
     dataset: gsm8k
@@ -2303,7 +2691,7 @@ prompting_techniques:
   enabled: true
   template: "<s>[INST] You are a helpful assistant.\n\n    Task: Solve the following math problem. Give ONLY the final numerical answer.\n\nInput: Tom has 3 bags with 4 apples in each bag. How many apples\
     \ does he have in total?\nAnswer: 12\n\nInput: A store sells pencils for $2 each. If Sarah buys 5 pencils, how much does she pay?\nAnswer: 10\n\nInput: There are 18 cookies and 6 children. If they are\
-    \ divided equally, how many cookies does each child get?\nAnswer: 3\n\nNow process the actual input below (not an example):\nInput: $input\nOutput ONLY one word label on the next line.\nFinal Answer:[/INST]"
+    \ divided equally, how many cookies does each child get?\nAnswer: 3\n\nNow process the actual input below (not an example):\nInput: $input\nAnswer:[/INST]"
   params: {}
   fields:
     dataset: gsm8k
@@ -2328,17 +2716,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER:<|im_end|><|im_start|>assistant'
+    Final Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: gsm8k
@@ -2363,17 +2741,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER:<|im_end|><|im_start|>assistant'
+    Final Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: gsm8k
@@ -2398,17 +2766,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER: [/INST]'
+    Final Answer: [/INST]'
   params: {}
   fields:
     dataset: gsm8k
@@ -2433,17 +2791,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER:<|end|><|assistant|>'
+    Final Answer:<|end|><|assistant|>'
   params: {}
   fields:
     dataset: gsm8k
@@ -2453,8 +2801,7 @@ prompting_techniques:
   type: custom
   description: Chain Of Thought for gsm8k on mistral models
   enabled: true
-  template: "<s>[INST] You are a helpful assistant.\n\n    Task: Solve the following math problem. Give ONLY the final numerical answer.\n\nQuestion:\n$input\n\nLet's think step by step.\n\nYou may reason\
-    \ as much as needed.\nAfter reasoning, output exactly one final answer using this marker:\nFINAL_ANSWER: <your answer>\n\nReasoning:\n\nFINAL_ANSWER:[/INST]"
+  template: "<s>[INST] You are a helpful assistant.\n\n    Task: Solve the following math problem. Give ONLY the final numerical answer.\n\nQuestion:\n$input\n\nLet's think step by step.\n\nFinal Answer:[/INST]"
   params: {}
   fields:
     dataset: gsm8k
@@ -2464,12 +2811,39 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for gsm8k on smollm models
   enabled: true
-  template: "<|im_start|>system\nYou are a helpful AI assistant named SmolLM, trained by Hugging Face<|im_end|><|im_start|>user\nTask: Solve the following math problem. Give ONLY the final numerical answer.\n\
-    \nQuestion: Tom has 3 bags with 4 apples in each bag. How many apples does he have in total?\nReasoning: Tom has 3 bags. Each bag has 4 apples. Total apples = 3 × 4 = 12.\nAnswer: 12\n\nQuestion: A\
-    \ store sells pencils for $2 each. If Sarah buys 5 pencils, how much does she pay?\nReasoning: Each pencil costs $2. Sarah buys 5 pencils. Total cost = 5 × $2 = $10.\nAnswer: 10\n\nQuestion: There are\
-    \ 18 cookies and 6 children. If they are divided equally, how many cookies does each child get?\nReasoning: 18 cookies divided equally among 6 children: 18 ÷ 6 = 3 cookies per child.\nAnswer: 3\n\n\
-    Now solve the actual question below (not an example):\nQuestion: $input\n\n  You may reason as much as needed.\n  After reasoning, output exactly one final answer using this marker:\n  FINAL_ANSWER:\
-    \ <your answer>\n\nReasoning:\n\n  FINAL_ANSWER:<|im_end|><|im_start|>assistant"
+  template: '<|im_start|>system
+
+    You are a helpful AI assistant named SmolLM, trained by Hugging Face<|im_end|><|im_start|>user
+
+    Task: Solve the following math problem. Give ONLY the final numerical answer.
+
+
+    Question: Tom has 3 bags with 4 apples in each bag. How many apples does he have in total?
+
+    Reasoning: Tom has 3 bags. Each bag has 4 apples. Total apples = 3 × 4 = 12.
+
+    Answer: 12
+
+
+    Question: A store sells pencils for $2 each. If Sarah buys 5 pencils, how much does she pay?
+
+    Reasoning: Each pencil costs $2. Sarah buys 5 pencils. Total cost = 5 × $2 = $10.
+
+    Answer: 10
+
+
+    Question: There are 18 cookies and 6 children. If they are divided equally, how many cookies does each child get?
+
+    Reasoning: 18 cookies divided equally among 6 children: 18 ÷ 6 = 3 cookies per child.
+
+    Answer: 3
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Reasoning:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: gsm8k
@@ -2479,12 +2853,39 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for gsm8k on qwen2_5 models
   enabled: true
-  template: "<|im_start|>system\nYou are a helpful assistant.<|im_end|><|im_start|>user\nTask: Solve the following math problem. Give ONLY the final numerical answer.\n\nQuestion: Tom has 3 bags with 4\
-    \ apples in each bag. How many apples does he have in total?\nReasoning: Tom has 3 bags. Each bag has 4 apples. Total apples = 3 × 4 = 12.\nAnswer: 12\n\nQuestion: A store sells pencils for $2 each.\
-    \ If Sarah buys 5 pencils, how much does she pay?\nReasoning: Each pencil costs $2. Sarah buys 5 pencils. Total cost = 5 × $2 = $10.\nAnswer: 10\n\nQuestion: There are 18 cookies and 6 children. If\
-    \ they are divided equally, how many cookies does each child get?\nReasoning: 18 cookies divided equally among 6 children: 18 ÷ 6 = 3 cookies per child.\nAnswer: 3\n\nNow solve the actual question below\
-    \ (not an example):\nQuestion: $input\n\n  You may reason as much as needed.\n  After reasoning, output exactly one final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n \
-    \ FINAL_ANSWER:<|im_end|><|im_start|>assistant"
+  template: '<|im_start|>system
+
+    You are a helpful assistant.<|im_end|><|im_start|>user
+
+    Task: Solve the following math problem. Give ONLY the final numerical answer.
+
+
+    Question: Tom has 3 bags with 4 apples in each bag. How many apples does he have in total?
+
+    Reasoning: Tom has 3 bags. Each bag has 4 apples. Total apples = 3 × 4 = 12.
+
+    Answer: 12
+
+
+    Question: A store sells pencils for $2 each. If Sarah buys 5 pencils, how much does she pay?
+
+    Reasoning: Each pencil costs $2. Sarah buys 5 pencils. Total cost = 5 × $2 = $10.
+
+    Answer: 10
+
+
+    Question: There are 18 cookies and 6 children. If they are divided equally, how many cookies does each child get?
+
+    Reasoning: 18 cookies divided equally among 6 children: 18 ÷ 6 = 3 cookies per child.
+
+    Answer: 3
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Reasoning:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: gsm8k
@@ -2494,11 +2895,39 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for gsm8k on tinyllama models
   enabled: true
-  template: "<s>[INST] <<SYS>>\nYou are a helpful assistant.\n<</SYS>>Task: Solve the following math problem. Give ONLY the final numerical answer.\n\nQuestion: Tom has 3 bags with 4 apples in each bag.\
-    \ How many apples does he have in total?\nReasoning: Tom has 3 bags. Each bag has 4 apples. Total apples = 3 × 4 = 12.\nAnswer: 12\n\nQuestion: A store sells pencils for $2 each. If Sarah buys 5 pencils,\
-    \ how much does she pay?\nReasoning: Each pencil costs $2. Sarah buys 5 pencils. Total cost = 5 × $2 = $10.\nAnswer: 10\n\nQuestion: There are 18 cookies and 6 children. If they are divided equally,\
-    \ how many cookies does each child get?\nReasoning: 18 cookies divided equally among 6 children: 18 ÷ 6 = 3 cookies per child.\nAnswer: 3\n\nNow solve the actual question below (not an example):\nQuestion:\
-    \ $input\n\n  You may reason as much as needed.\n  After reasoning, output exactly one final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER: [/INST]"
+  template: '<s>[INST] <<SYS>>
+
+    You are a helpful assistant.
+
+    <</SYS>>Task: Solve the following math problem. Give ONLY the final numerical answer.
+
+
+    Question: Tom has 3 bags with 4 apples in each bag. How many apples does he have in total?
+
+    Reasoning: Tom has 3 bags. Each bag has 4 apples. Total apples = 3 × 4 = 12.
+
+    Answer: 12
+
+
+    Question: A store sells pencils for $2 each. If Sarah buys 5 pencils, how much does she pay?
+
+    Reasoning: Each pencil costs $2. Sarah buys 5 pencils. Total cost = 5 × $2 = $10.
+
+    Answer: 10
+
+
+    Question: There are 18 cookies and 6 children. If they are divided equally, how many cookies does each child get?
+
+    Reasoning: 18 cookies divided equally among 6 children: 18 ÷ 6 = 3 cookies per child.
+
+    Answer: 3
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Reasoning: [/INST]'
   params: {}
   fields:
     dataset: gsm8k
@@ -2508,11 +2937,39 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for gsm8k on phi3 models
   enabled: true
-  template: "<|system|>\nYou are a helpful assistant.<|end|><|user|>\nTask: Solve the following math problem. Give ONLY the final numerical answer.\n\nQuestion: Tom has 3 bags with 4 apples in each bag.\
-    \ How many apples does he have in total?\nReasoning: Tom has 3 bags. Each bag has 4 apples. Total apples = 3 × 4 = 12.\nAnswer: 12\n\nQuestion: A store sells pencils for $2 each. If Sarah buys 5 pencils,\
-    \ how much does she pay?\nReasoning: Each pencil costs $2. Sarah buys 5 pencils. Total cost = 5 × $2 = $10.\nAnswer: 10\n\nQuestion: There are 18 cookies and 6 children. If they are divided equally,\
-    \ how many cookies does each child get?\nReasoning: 18 cookies divided equally among 6 children: 18 ÷ 6 = 3 cookies per child.\nAnswer: 3\n\nNow solve the actual question below (not an example):\nQuestion:\
-    \ $input\n\n  You may reason as much as needed.\n  After reasoning, output exactly one final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER:<|end|><|assistant|>"
+  template: '<|system|>
+
+    You are a helpful assistant.<|end|><|user|>
+
+    Task: Solve the following math problem. Give ONLY the final numerical answer.
+
+
+    Question: Tom has 3 bags with 4 apples in each bag. How many apples does he have in total?
+
+    Reasoning: Tom has 3 bags. Each bag has 4 apples. Total apples = 3 × 4 = 12.
+
+    Answer: 12
+
+
+    Question: A store sells pencils for $2 each. If Sarah buys 5 pencils, how much does she pay?
+
+    Reasoning: Each pencil costs $2. Sarah buys 5 pencils. Total cost = 5 × $2 = $10.
+
+    Answer: 10
+
+
+    Question: There are 18 cookies and 6 children. If they are divided equally, how many cookies does each child get?
+
+    Reasoning: 18 cookies divided equally among 6 children: 18 ÷ 6 = 3 cookies per child.
+
+    Answer: 3
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Reasoning:<|end|><|assistant|>'
   params: {}
   fields:
     dataset: gsm8k
@@ -2525,8 +2982,8 @@ prompting_techniques:
   template: "<s>[INST] You are a helpful assistant.\n\n    Task: Solve the following math problem. Give ONLY the final numerical answer.\n\nQuestion: Tom has 3 bags with 4 apples in each bag. How many apples\
     \ does he have in total?\nReasoning: Tom has 3 bags. Each bag has 4 apples. Total apples = 3 × 4 = 12.\nAnswer: 12\n\nQuestion: A store sells pencils for $2 each. If Sarah buys 5 pencils, how much does\
     \ she pay?\nReasoning: Each pencil costs $2. Sarah buys 5 pencils. Total cost = 5 × $2 = $10.\nAnswer: 10\n\nQuestion: There are 18 cookies and 6 children. If they are divided equally, how many cookies\
-    \ does each child get?\nReasoning: 18 cookies divided equally among 6 children: 18 ÷ 6 = 3 cookies per child.\nAnswer: 3\n\nNow solve the actual question below (not an example):\nQuestion: $input\n\n\
-    \  You may reason as much as needed.\n  After reasoning, output exactly one final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER:[/INST]"
+    \ does each child get?\nReasoning: 18 cookies divided equally among 6 children: 18 ÷ 6 = 3 cookies per child.\nAnswer: 3\n\nNow solve the actual question below (not an example):\nQuestion: $input\n\
+    Reasoning:[/INST]"
   params: {}
   fields:
     dataset: gsm8k
@@ -2795,9 +3252,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer:<|im_end|><|im_start|>assistant'
+    Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: mmlu
@@ -2857,9 +3312,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer:<|im_end|><|im_start|>assistant'
+    Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: mmlu
@@ -2919,9 +3372,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer: [/INST]'
+    Answer: [/INST]'
   params: {}
   fields:
     dataset: mmlu
@@ -2981,9 +3432,7 @@ prompting_techniques:
 
     Input: $input
 
-    Output ONLY one word label on the next line.
-
-    Final Answer:<|end|><|assistant|>'
+    Answer:<|end|><|assistant|>'
   params: {}
   fields:
     dataset: mmlu
@@ -2995,8 +3444,7 @@ prompting_techniques:
   enabled: true
   template: "<s>[INST] You are a helpful assistant.\n\n    Task: Answer the following question by choosing A, B, C, or D. Respond with ONLY the letter of the correct answer.\n\nInput: Who developed the\
     \ theory of relativity?\nA: Isaac Newton\nB: Albert Einstein\nC: Galileo Galilei\nD: Nikola Tesla\nAnswer: B\n\nInput: What is the capital of Japan?\nA: Seoul\nB: Tokyo\nC: Kyoto\nD: Beijing\nAnswer:\
-    \ B\n\nInput: Which organ pumps blood through the human body?\nA: Liver\nB: Lungs\nC: Heart\nD: Kidney\nAnswer: C\n\nNow process the actual input below (not an example):\nInput: $input\nOutput ONLY\
-    \ one word label on the next line.\nFinal Answer:[/INST]"
+    \ B\n\nInput: Which organ pumps blood through the human body?\nA: Liver\nB: Lungs\nC: Heart\nD: Kidney\nAnswer: C\n\nNow process the actual input below (not an example):\nInput: $input\nAnswer:[/INST]"
   params: {}
   fields:
     dataset: mmlu
@@ -3021,17 +3469,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER:<|im_end|><|im_start|>assistant'
+    Final Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: mmlu
@@ -3056,17 +3494,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER:<|im_end|><|im_start|>assistant'
+    Final Answer:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: mmlu
@@ -3091,17 +3519,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER: [/INST]'
+    Final Answer: [/INST]'
   params: {}
   fields:
     dataset: mmlu
@@ -3126,17 +3544,7 @@ prompting_techniques:
     Let''s think step by step.
 
 
-    You may reason as much as needed.
-
-    After reasoning, output exactly one final answer using this marker:
-
-    FINAL_ANSWER: <your answer>
-
-
-    Reasoning:
-
-
-    FINAL_ANSWER:<|end|><|assistant|>'
+    Final Answer:<|end|><|assistant|>'
   params: {}
   fields:
     dataset: mmlu
@@ -3147,7 +3555,7 @@ prompting_techniques:
   description: Chain Of Thought for mmlu on mistral models
   enabled: true
   template: "<s>[INST] You are a helpful assistant.\n\n    Task: Answer the following question by choosing A, B, C, or D. Respond with ONLY the letter of the correct answer.\n\nQuestion:\n$input\n\nLet's\
-    \ think step by step.\n\nYou may reason as much as needed.\nAfter reasoning, output exactly one final answer using this marker:\nFINAL_ANSWER: <your answer>\n\nReasoning:\n\nFINAL_ANSWER:[/INST]"
+    \ think step by step.\n\nFinal Answer:[/INST]"
   params: {}
   fields:
     dataset: mmlu
@@ -3157,14 +3565,64 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for mmlu on smollm models
   enabled: true
-  template: "<|im_start|>system\nYou are a helpful AI assistant named SmolLM, trained by Hugging Face<|im_end|><|im_start|>user\nTask: Answer the following question by choosing A, B, C, or D. Respond with\
-    \ ONLY the letter of the correct answer.\n\nQuestion: Who developed the theory of relativity?\nA: Isaac Newton\nB: Albert Einstein\nC: Galileo Galilei\nD: Nikola Tesla\nReasoning: The theory of relativity\
-    \ (both special and general) was developed by Albert Einstein. Newton formulated classical mechanics, Galileo contributed to observational astronomy, and Tesla was an electrical engineer. So the answer\
-    \ is B.\nAnswer: B\n\nQuestion: What is the capital of Japan?\nA: Seoul\nB: Tokyo\nC: Kyoto\nD: Beijing\nReasoning: Tokyo has been the capital of Japan since 1868. Seoul is the capital of South Korea,\
-    \ Kyoto is a former capital of Japan, and Beijing is the capital of China. So the answer is B.\nAnswer: B\n\nQuestion: Which organ pumps blood through the human body?\nA: Liver\nB: Lungs\nC: Heart\n\
-    D: Kidney\nReasoning: The heart is the muscular organ that pumps blood through the circulatory system. The liver processes toxins, lungs handle gas exchange, and kidneys filter waste. So the answer\
-    \ is C.\nAnswer: C\n\nNow solve the actual question below (not an example):\nQuestion: $input\n\n  You may reason as much as needed.\n  After reasoning, output exactly one final answer using this marker:\n\
-    \  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER:<|im_end|><|im_start|>assistant"
+  template: '<|im_start|>system
+
+    You are a helpful AI assistant named SmolLM, trained by Hugging Face<|im_end|><|im_start|>user
+
+    Task: Answer the following question by choosing A, B, C, or D. Respond with ONLY the letter of the correct answer.
+
+
+    Question: Who developed the theory of relativity?
+
+    A: Isaac Newton
+
+    B: Albert Einstein
+
+    C: Galileo Galilei
+
+    D: Nikola Tesla
+
+    Reasoning: The theory of relativity (both special and general) was developed by Albert Einstein. Newton formulated classical mechanics, Galileo contributed to observational astronomy, and Tesla was
+    an electrical engineer. So the answer is B.
+
+    Answer: B
+
+
+    Question: What is the capital of Japan?
+
+    A: Seoul
+
+    B: Tokyo
+
+    C: Kyoto
+
+    D: Beijing
+
+    Reasoning: Tokyo has been the capital of Japan since 1868. Seoul is the capital of South Korea, Kyoto is a former capital of Japan, and Beijing is the capital of China. So the answer is B.
+
+    Answer: B
+
+
+    Question: Which organ pumps blood through the human body?
+
+    A: Liver
+
+    B: Lungs
+
+    C: Heart
+
+    D: Kidney
+
+    Reasoning: The heart is the muscular organ that pumps blood through the circulatory system. The liver processes toxins, lungs handle gas exchange, and kidneys filter waste. So the answer is C.
+
+    Answer: C
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Reasoning:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: mmlu
@@ -3174,14 +3632,64 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for mmlu on qwen2_5 models
   enabled: true
-  template: "<|im_start|>system\nYou are a helpful assistant.<|im_end|><|im_start|>user\nTask: Answer the following question by choosing A, B, C, or D. Respond with ONLY the letter of the correct answer.\n\
-    \nQuestion: Who developed the theory of relativity?\nA: Isaac Newton\nB: Albert Einstein\nC: Galileo Galilei\nD: Nikola Tesla\nReasoning: The theory of relativity (both special and general) was developed\
-    \ by Albert Einstein. Newton formulated classical mechanics, Galileo contributed to observational astronomy, and Tesla was an electrical engineer. So the answer is B.\nAnswer: B\n\nQuestion: What is\
-    \ the capital of Japan?\nA: Seoul\nB: Tokyo\nC: Kyoto\nD: Beijing\nReasoning: Tokyo has been the capital of Japan since 1868. Seoul is the capital of South Korea, Kyoto is a former capital of Japan,\
-    \ and Beijing is the capital of China. So the answer is B.\nAnswer: B\n\nQuestion: Which organ pumps blood through the human body?\nA: Liver\nB: Lungs\nC: Heart\nD: Kidney\nReasoning: The heart is the\
-    \ muscular organ that pumps blood through the circulatory system. The liver processes toxins, lungs handle gas exchange, and kidneys filter waste. So the answer is C.\nAnswer: C\n\nNow solve the actual\
-    \ question below (not an example):\nQuestion: $input\n\n  You may reason as much as needed.\n  After reasoning, output exactly one final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\n\
-    Reasoning:\n\n  FINAL_ANSWER:<|im_end|><|im_start|>assistant"
+  template: '<|im_start|>system
+
+    You are a helpful assistant.<|im_end|><|im_start|>user
+
+    Task: Answer the following question by choosing A, B, C, or D. Respond with ONLY the letter of the correct answer.
+
+
+    Question: Who developed the theory of relativity?
+
+    A: Isaac Newton
+
+    B: Albert Einstein
+
+    C: Galileo Galilei
+
+    D: Nikola Tesla
+
+    Reasoning: The theory of relativity (both special and general) was developed by Albert Einstein. Newton formulated classical mechanics, Galileo contributed to observational astronomy, and Tesla was
+    an electrical engineer. So the answer is B.
+
+    Answer: B
+
+
+    Question: What is the capital of Japan?
+
+    A: Seoul
+
+    B: Tokyo
+
+    C: Kyoto
+
+    D: Beijing
+
+    Reasoning: Tokyo has been the capital of Japan since 1868. Seoul is the capital of South Korea, Kyoto is a former capital of Japan, and Beijing is the capital of China. So the answer is B.
+
+    Answer: B
+
+
+    Question: Which organ pumps blood through the human body?
+
+    A: Liver
+
+    B: Lungs
+
+    C: Heart
+
+    D: Kidney
+
+    Reasoning: The heart is the muscular organ that pumps blood through the circulatory system. The liver processes toxins, lungs handle gas exchange, and kidneys filter waste. So the answer is C.
+
+    Answer: C
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Reasoning:<|im_end|><|im_start|>assistant'
   params: {}
   fields:
     dataset: mmlu
@@ -3191,14 +3699,64 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for mmlu on tinyllama models
   enabled: true
-  template: "<s>[INST] <<SYS>>\nYou are a helpful assistant.\n<</SYS>>Task: Answer the following question by choosing A, B, C, or D. Respond with ONLY the letter of the correct answer.\n\nQuestion: Who\
-    \ developed the theory of relativity?\nA: Isaac Newton\nB: Albert Einstein\nC: Galileo Galilei\nD: Nikola Tesla\nReasoning: The theory of relativity (both special and general) was developed by Albert\
-    \ Einstein. Newton formulated classical mechanics, Galileo contributed to observational astronomy, and Tesla was an electrical engineer. So the answer is B.\nAnswer: B\n\nQuestion: What is the capital\
-    \ of Japan?\nA: Seoul\nB: Tokyo\nC: Kyoto\nD: Beijing\nReasoning: Tokyo has been the capital of Japan since 1868. Seoul is the capital of South Korea, Kyoto is a former capital of Japan, and Beijing\
-    \ is the capital of China. So the answer is B.\nAnswer: B\n\nQuestion: Which organ pumps blood through the human body?\nA: Liver\nB: Lungs\nC: Heart\nD: Kidney\nReasoning: The heart is the muscular\
-    \ organ that pumps blood through the circulatory system. The liver processes toxins, lungs handle gas exchange, and kidneys filter waste. So the answer is C.\nAnswer: C\n\nNow solve the actual question\
-    \ below (not an example):\nQuestion: $input\n\n  You may reason as much as needed.\n  After reasoning, output exactly one final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\
-    \n  FINAL_ANSWER: [/INST]"
+  template: '<s>[INST] <<SYS>>
+
+    You are a helpful assistant.
+
+    <</SYS>>Task: Answer the following question by choosing A, B, C, or D. Respond with ONLY the letter of the correct answer.
+
+
+    Question: Who developed the theory of relativity?
+
+    A: Isaac Newton
+
+    B: Albert Einstein
+
+    C: Galileo Galilei
+
+    D: Nikola Tesla
+
+    Reasoning: The theory of relativity (both special and general) was developed by Albert Einstein. Newton formulated classical mechanics, Galileo contributed to observational astronomy, and Tesla was
+    an electrical engineer. So the answer is B.
+
+    Answer: B
+
+
+    Question: What is the capital of Japan?
+
+    A: Seoul
+
+    B: Tokyo
+
+    C: Kyoto
+
+    D: Beijing
+
+    Reasoning: Tokyo has been the capital of Japan since 1868. Seoul is the capital of South Korea, Kyoto is a former capital of Japan, and Beijing is the capital of China. So the answer is B.
+
+    Answer: B
+
+
+    Question: Which organ pumps blood through the human body?
+
+    A: Liver
+
+    B: Lungs
+
+    C: Heart
+
+    D: Kidney
+
+    Reasoning: The heart is the muscular organ that pumps blood through the circulatory system. The liver processes toxins, lungs handle gas exchange, and kidneys filter waste. So the answer is C.
+
+    Answer: C
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Reasoning: [/INST]'
   params: {}
   fields:
     dataset: mmlu
@@ -3208,14 +3766,64 @@ prompting_techniques:
   type: custom
   description: Few Shot Cot for mmlu on phi3 models
   enabled: true
-  template: "<|system|>\nYou are a helpful assistant.<|end|><|user|>\nTask: Answer the following question by choosing A, B, C, or D. Respond with ONLY the letter of the correct answer.\n\nQuestion: Who\
-    \ developed the theory of relativity?\nA: Isaac Newton\nB: Albert Einstein\nC: Galileo Galilei\nD: Nikola Tesla\nReasoning: The theory of relativity (both special and general) was developed by Albert\
-    \ Einstein. Newton formulated classical mechanics, Galileo contributed to observational astronomy, and Tesla was an electrical engineer. So the answer is B.\nAnswer: B\n\nQuestion: What is the capital\
-    \ of Japan?\nA: Seoul\nB: Tokyo\nC: Kyoto\nD: Beijing\nReasoning: Tokyo has been the capital of Japan since 1868. Seoul is the capital of South Korea, Kyoto is a former capital of Japan, and Beijing\
-    \ is the capital of China. So the answer is B.\nAnswer: B\n\nQuestion: Which organ pumps blood through the human body?\nA: Liver\nB: Lungs\nC: Heart\nD: Kidney\nReasoning: The heart is the muscular\
-    \ organ that pumps blood through the circulatory system. The liver processes toxins, lungs handle gas exchange, and kidneys filter waste. So the answer is C.\nAnswer: C\n\nNow solve the actual question\
-    \ below (not an example):\nQuestion: $input\n\n  You may reason as much as needed.\n  After reasoning, output exactly one final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\
-    \n  FINAL_ANSWER:<|end|><|assistant|>"
+  template: '<|system|>
+
+    You are a helpful assistant.<|end|><|user|>
+
+    Task: Answer the following question by choosing A, B, C, or D. Respond with ONLY the letter of the correct answer.
+
+
+    Question: Who developed the theory of relativity?
+
+    A: Isaac Newton
+
+    B: Albert Einstein
+
+    C: Galileo Galilei
+
+    D: Nikola Tesla
+
+    Reasoning: The theory of relativity (both special and general) was developed by Albert Einstein. Newton formulated classical mechanics, Galileo contributed to observational astronomy, and Tesla was
+    an electrical engineer. So the answer is B.
+
+    Answer: B
+
+
+    Question: What is the capital of Japan?
+
+    A: Seoul
+
+    B: Tokyo
+
+    C: Kyoto
+
+    D: Beijing
+
+    Reasoning: Tokyo has been the capital of Japan since 1868. Seoul is the capital of South Korea, Kyoto is a former capital of Japan, and Beijing is the capital of China. So the answer is B.
+
+    Answer: B
+
+
+    Question: Which organ pumps blood through the human body?
+
+    A: Liver
+
+    B: Lungs
+
+    C: Heart
+
+    D: Kidney
+
+    Reasoning: The heart is the muscular organ that pumps blood through the circulatory system. The liver processes toxins, lungs handle gas exchange, and kidneys filter waste. So the answer is C.
+
+    Answer: C
+
+
+    Now solve the actual question below (not an example):
+
+    Question: $input
+
+    Reasoning:<|end|><|assistant|>'
   params: {}
   fields:
     dataset: mmlu
@@ -3231,7 +3839,7 @@ prompting_techniques:
     \ Seoul\nB: Tokyo\nC: Kyoto\nD: Beijing\nReasoning: Tokyo has been the capital of Japan since 1868. Seoul is the capital of South Korea, Kyoto is a former capital of Japan, and Beijing is the capital\
     \ of China. So the answer is B.\nAnswer: B\n\nQuestion: Which organ pumps blood through the human body?\nA: Liver\nB: Lungs\nC: Heart\nD: Kidney\nReasoning: The heart is the muscular organ that pumps\
     \ blood through the circulatory system. The liver processes toxins, lungs handle gas exchange, and kidneys filter waste. So the answer is C.\nAnswer: C\n\nNow solve the actual question below (not an\
-    \ example):\nQuestion: $input\n\n  You may reason as much as needed.\n  After reasoning, output exactly one final answer using this marker:\n  FINAL_ANSWER: <your answer>\n\nReasoning:\n\n  FINAL_ANSWER:[/INST]"
+    \ example):\nQuestion: $input\nReasoning:[/INST]"
   params: {}
   fields:
     dataset: mmlu

@@ -402,8 +402,6 @@ class LocalModelHandler:
             extracted = self._extract_classification_answer(raw_response, label_space or [])
         elif task_type == 'qa':
             extracted = self._extract_qa_answer(raw_response)
-        elif task_type == 'reasoning':
-            extracted = self._extract_reasoning_answer(raw_response)
         else:
             extracted = raw_response
         
@@ -493,22 +491,15 @@ class LocalModelHandler:
             if response.startswith(prefix):
                 response = response[len(prefix):].strip()
 
-        # If we know the valid label set, use strict parsing and avoid fuzzy
-        # "label appears anywhere" matches that can misread garbage/code output.
+        # If we know the valid label set, use stricter parsing to avoid false positives
+        # from outputs such as "positive or negative".
         if label_space:
             labels = [str(l).strip().lower() for l in label_space if str(l).strip()]
             labels = list(dict.fromkeys(labels))
             if labels:
-                # 0) CoT marker-first extraction.
-                marked = self._extract_marked_final_answer(response)
-                if marked:
-                    candidate = marked.strip().split()[0].rstrip('.,;:!?').lower()
-                    if candidate in labels:
-                        return candidate
-
                 # 1) Prefer explicit answer fields near the end of generation.
                 explicit_patterns = [
-                    r'(?:final\s*[_\-]?\s*answer|answer|sentiment|classification)\s*[:\-]\s*([a-z0-9_\-]+)',
+                    r'(?:final\s+answer|answer|sentiment|classification)\s*[:\-]\s*([a-z_\-]+)',
                     r'\b(?:is|=)\s*(positive|negative|neutral)\b',
                 ]
                 lower_response = response.lower()
@@ -528,6 +519,15 @@ class LocalModelHandler:
                     normalized_line = line.rstrip('.,;:!?')
                     if normalized_line in labels:
                         return normalized_line
+
+                # 3) If exactly one label appears anywhere, use it; if multiple appear, mark ambiguous.
+                found = []
+                for label in labels:
+                    if re.search(r'\b' + re.escape(label) + r'\b', lower_response):
+                        found.append(label)
+                unique_found = sorted(set(found))
+                if len(unique_found) == 1:
+                    return unique_found[0]
 
                 # For known label spaces, avoid falling back to arbitrary words.
                 return ''
@@ -553,10 +553,6 @@ class LocalModelHandler:
     
     def _extract_qa_answer(self, response: str) -> str:
         """Extract answer from QA task response"""
-        marked = self._extract_marked_final_answer(response)
-        if marked:
-            return marked
-
         # Remove common QA prefixes
         response = response.strip()
         prefixes_to_remove = ['Answer:', 'A:', 'The answer is:', 'The answer is']
@@ -573,39 +569,6 @@ class LocalModelHandler:
             return first_sentence
         
         return first_line
-
-    def _extract_reasoning_answer(self, response: str) -> str:
-        """Extract final answer for reasoning tasks (e.g., GSM8K)."""
-        marked = self._extract_marked_final_answer(response)
-        if marked:
-            return marked
-        return self._extract_qa_answer(response)
-
-    def _extract_marked_final_answer(self, response: str) -> str:
-        """Extract answer after explicit markers like FINAL_ANSWER: or Final Answer:."""
-        if not response:
-            return ''
-
-        marker_patterns = [
-            r'final\s*[_\-]?\s*answer\s*[:\-]\s*(.+)',
-            r'answer\s*[:\-]\s*(.+)',
-        ]
-
-        lines = [ln.strip() for ln in response.splitlines() if ln.strip()]
-        for line in reversed(lines):
-            lower_line = line.lower()
-            for pattern in marker_patterns:
-                m = re.search(pattern, lower_line)
-                if m:
-                    # Re-slice from original line to preserve case/numbers.
-                    start = m.start(1)
-                    candidate = line[start:].strip()
-                    candidate = candidate.split('```')[0].strip()
-                    candidate = candidate.rstrip('.,;:!?')
-                    if candidate:
-                        return candidate
-
-        return ''
     
     def _generate_gguf(
         self,

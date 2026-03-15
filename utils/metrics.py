@@ -3,11 +3,9 @@ Metrics Calculation Utilities
 Calculates various evaluation metrics for LLM benchmarking
 """
 
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any
 import numpy as np
 from collections import Counter
-import re
-from fractions import Fraction
 
 
 class MetricsCalculator:
@@ -167,64 +165,6 @@ class MetricsCalculator:
         
         return {
             'average_score': np.mean(scores),
-            'num_samples': len(predictions)
-        }
-
-    @staticmethod
-    def _extract_numeric_value(text: str) -> Optional[float]:
-        """Extract a final numeric value from text when possible."""
-        if text is None:
-            return None
-
-        s = str(text).strip().lower()
-        if not s:
-            return None
-
-        s = s.replace(',', '')
-        matches = re.findall(r'-?\d+(?:\.\d+)?(?:/\d+)?', s)
-        if not matches:
-            return None
-
-        token = matches[-1]
-        try:
-            if '/' in token and '.' not in token:
-                return float(Fraction(token))
-            return float(token)
-        except Exception:
-            return None
-
-    @staticmethod
-    def reasoning_metrics(predictions: List[Dict[str, Any]]) -> Dict[str, float]:
-        """Calculate metrics for reasoning tasks (e.g., GSM8K)."""
-        if not predictions:
-            return {}
-
-        exact_matches = []
-        numeric_exact_matches = []
-        abs_errors = []
-        parseable_pairs = 0
-
-        for pred_dict in predictions:
-            prediction = str(pred_dict['prediction']).strip().lower()
-            true_answer = str(pred_dict['true_label']).strip().lower()
-
-            exact_matches.append(int(prediction == true_answer))
-
-            pred_num = MetricsCalculator._extract_numeric_value(prediction)
-            true_num = MetricsCalculator._extract_numeric_value(true_answer)
-            if pred_num is not None and true_num is not None:
-                parseable_pairs += 1
-                numeric_exact = int(abs(pred_num - true_num) < 1e-6)
-                numeric_exact_matches.append(numeric_exact)
-                abs_errors.append(abs(pred_num - true_num))
-
-        parse_rate = parseable_pairs / len(predictions)
-
-        return {
-            'exact_match': float(np.mean(exact_matches)) if exact_matches else 0.0,
-            'numeric_exact_match': float(np.mean(numeric_exact_matches)) if numeric_exact_matches else 0.0,
-            'numeric_parse_rate': parse_rate,
-            'mean_absolute_error': float(np.mean(abs_errors)) if abs_errors else None,
             'num_samples': len(predictions)
         }
     
