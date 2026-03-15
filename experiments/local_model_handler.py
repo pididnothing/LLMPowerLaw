@@ -323,16 +323,14 @@ class LocalModelHandler:
         if task_type == 'classification' and max_tokens is None:
             max_tokens = 20  # Classification usually needs just 1-2 words
         
-        # Stop sequences to prevent over-generation
+        # Do NOT apply custom stop sequences by default.
+        # All benchmark models are instruction-tuned with proper EOS tokens
+        # (<|im_end|> for ChatML, </s> for Llama-format), so the tokenizer's
+        # eos_token_id already terminates generation cleanly.  Injecting extra
+        # stop token IDs (e.g. the '\n\n' token) causes premature EOS on
+        # few-shot prompts where the model's greedy first token is '\n\n'.
+        # Callers can still pass explicit stop_sequences via kwargs if needed.
         stop_sequences = kwargs.pop('stop_sequences', None)
-        if stop_sequences is None:
-            # Default stop sequences for classification and short answers
-            stop_sequences = ['\n\n', '###', 'Question:', 'Text:', '\n\nText:', 'Answer:']
-        
-        # Encode stop sequences — only include sequences that map to a single token.
-        # Multi-token sequences (e.g. '\n\n' → [newline, newline]) must NOT contribute
-        # their first token as a stop ID; doing so would stop generation on any lone '\n',
-        # which ChatML models emit right after <|im_start|>assistant, causing empty output.
         stop_token_ids = []
         if stop_sequences:
             for seq in stop_sequences:
