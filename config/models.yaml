@@ -66,6 +66,7 @@ models:
     load_in_4bit: true  # 4-bit reduces to ~1GB VRAM
     torch_dtype: auto
     trust_remote_code: false
+    chat_template_mode: hf
     local_model_path: null
     enabled: false  # ✅ ENABLED - Great for 4GB VRAM
     # Memory: ~1GB VRAM | Quality: Excellent for size
@@ -81,6 +82,7 @@ models:
     load_in_4bit: true  # 4-bit reduces to ~2GB VRAM
     torch_dtype: auto
     trust_remote_code: true  # Required for Phi models
+    chat_template_mode: hf
     local_model_path: null
     enabled: true  # ✅ ENABLED - Fits in 4GB VRAM
     # Memory: ~2GB VRAM | Quality: Very good
@@ -149,6 +151,7 @@ models:
     load_in_4bit: false
     torch_dtype: auto
     trust_remote_code: true
+    chat_template_mode: hf
     local_model_path: null
     enabled: false
     # Params: 0.5B | VRAM: ~1GB fp16 | Ungated (Apache 2.0)
@@ -164,6 +167,7 @@ models:
     load_in_4bit: false
     torch_dtype: auto
     trust_remote_code: true
+    chat_template_mode: hf
     local_model_path: null
     enabled: false
     # Params: 1.5B | VRAM: ~3GB fp16 | Ungated (Apache 2.0)
@@ -194,6 +198,7 @@ models:
     load_in_4bit: false
     torch_dtype: auto
     trust_remote_code: true
+    chat_template_mode: hf
     local_model_path: null
     enabled: false
     # Params: 3B | VRAM: ~6GB fp16 | Ungated (Apache 2.0)
@@ -209,6 +214,7 @@ models:
     load_in_4bit: true
     torch_dtype: auto
     trust_remote_code: false
+    chat_template_mode: hf
     local_model_path: null
     enabled: false
     # Params: 7.2B | VRAM: ~4GB 4-bit | Ungated (Apache 2.0)
@@ -224,6 +230,7 @@ models:
     load_in_4bit: true
     torch_dtype: auto
     trust_remote_code: true
+    chat_template_mode: hf
     local_model_path: null
     enabled: false
     # Params: 7.6B | VRAM: ~4.5GB 4-bit | Ungated (Apache 2.0)
@@ -287,6 +294,7 @@ models:
     load_in_4bit: false  # Without quantization: ~14GB VRAM
     torch_dtype: auto
     trust_remote_code: false
+    chat_template_mode: hf
     local_model_path: null
     enabled: false  # ❌ TOO BIG for 4GB VRAM without quantization
     
@@ -313,6 +321,7 @@ models:
     load_in_4bit: true
     torch_dtype: auto
     trust_remote_code: true
+    chat_template_mode: hf
     local_model_path: null
     enabled: false  # Duplicate of phi-3-mini-4bit above (kept for backwards compatibility)
   
@@ -377,6 +386,7 @@ models:
     load_in_4bit: true
     torch_dtype: auto
     trust_remote_code: true  # Qwen requires trust_remote_code
+    chat_template_mode: hf
     local_model_path: null
     enabled: false
   

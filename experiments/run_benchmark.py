@@ -9,7 +9,7 @@ import argparse
 import json
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple
 from copy import copy
 import traceback
 from tqdm import tqdm
@@ -84,6 +84,52 @@ class BenchmarkRunner:
         
         # Cache for loaded models (for local models)
         self.loaded_models = {}
+
+    def _extract_input_and_label(
+        self,
+        example: Dict[str, Any],
+        dataset_config: DatasetConfig
+    ) -> Tuple[str, Any]:
+        """Extract task input text and raw label from a dataset example."""
+        if dataset_config.type == "custom":
+            fields = dataset_config.additional_params.get('fields', {})
+            text_field = fields.get('text') or fields.get('prompt') or fields.get('question')
+            label_field = fields.get('label') or fields.get('answer') or fields.get('reference')
+
+            return example.get(text_field, ""), example.get(label_field, "")
+
+        if dataset_config.type == "huggingface":
+            fields = dataset_config.additional_params.get('fields', {})
+            text_field = fields.get('text', 'text')
+            label_field = fields.get('label', 'label')
+
+            input_text = example.get(text_field, "")
+            true_label = example.get(label_field, "")
+            if not input_text:
+                input_text = str(example.get('sentence', example.get('question', example.get('text', example))))
+            return input_text, true_label
+
+        return str(example.get('text', example.get('question', example))), example.get('label', example.get('answer', ''))
+
+    def _normalize_true_label(self, true_label: Any, dataset_config: DatasetConfig) -> Any:
+        """Normalize raw labels using dataset label maps when available."""
+        ds_instructions = self.dataset_instructions.get(dataset_config.name, {})
+        label_map = ds_instructions.get('label_map')
+        if label_map and true_label in label_map:
+            return label_map[true_label]
+        if label_map:
+            str_key = str(true_label)
+            for key, value in label_map.items():
+                if str(key) == str_key:
+                    return value
+        return true_label
+
+    def _should_use_hf_chat_template(self, model_config: ModelConfig) -> bool:
+        """Check whether this model should use tokenizer.apply_chat_template."""
+        chat_template_mode = str(
+            model_config.additional_params.get('chat_template_mode', 'manual')
+        ).lower()
+        return model_config.provider == 'huggingface_local' and chat_template_mode in {'hf', 'huggingface', 'apply_chat_template'}
         
     def load_dataset(self, dataset_config: DatasetConfig):
         """Load a dataset based on configuration"""
@@ -136,6 +182,18 @@ class BenchmarkRunner:
         
         else:
             raise ValueError(f"Unknown dataset type: {dataset_config.type}")
+
+    def _build_local_model_runtime_config(self, model_config: ModelConfig) -> Dict[str, Any]:
+        """Flatten model config so LocalModelHandler receives runtime fields directly."""
+        return {
+            'name': model_config.name,
+            'provider': model_config.provider,
+            'model_id': model_config.model_id,
+            'max_tokens': model_config.max_tokens,
+            'temperature': model_config.temperature,
+            'enabled': model_config.enabled,
+            **model_config.additional_params,
+        }
     
     def initialize_model(self, model_config: ModelConfig):
         """Initialize a model based on configuration"""
@@ -150,7 +208,7 @@ class BenchmarkRunner:
         if provider in ['huggingface_local', 'gguf', 'vllm']:
             self.logger.log_info(f"Initializing local model: {model_config.name}")
             handler = LocalModelHandler(
-                model_config=model_config.__dict__,
+                model_config=self._build_local_model_runtime_config(model_config),
                 global_settings=self.config.global_model_settings
             )
             handler.load_model()
@@ -271,61 +329,42 @@ class BenchmarkRunner:
         pbar = tqdm(enumerate(dataset), total=len(dataset), 
                    desc=f"{model_config.name} on {dataset_config.name}",
                    unit="sample")
+        use_hf_chat_template = self._should_use_hf_chat_template(model_config)
         
         # This is a simplified version - actual implementation would depend on
         # dataset structure and task type
         for i, example in pbar:
             try:
-                # Extract input based on task type
-                if dataset_config.type == "custom":
-                    fields = dataset_config.additional_params.get('fields', {})
-                    text_field = fields.get('text') or fields.get('prompt') or fields.get('question')
-                    label_field = fields.get('label') or fields.get('answer') or fields.get('reference')
-                    
-                    input_text = example.get(text_field, "")
-                    true_label = example.get(label_field, "")
-                elif dataset_config.type == "huggingface":
-                    # Use field mappings from dataset config if available
-                    fields = dataset_config.additional_params.get('fields', {})
-                    text_field = fields.get('text', 'text')  # Default to 'text' if not specified
-                    label_field = fields.get('label', 'label')  # Default to 'label' if not specified
-                    
-                    input_text = example.get(text_field, "")
-                    true_label = example.get(label_field, "")
-                    
-                    # If input_text is still empty, try common field names
-                    if not input_text:
-                        input_text = str(example.get('sentence', example.get('question', example.get('text', example))))
-                else:
-                    # Handle PromptBench or other datasets
-                    input_text = str(example.get('text', example.get('question', example)))
-                    true_label = example.get('label', example.get('answer', ''))
-                
-                # Map numeric true_label to text using dataset_instructions label_map
-                ds_instructions = self.dataset_instructions.get(dataset_config.name, {})
-                label_map = ds_instructions.get('label_map')
-                if label_map and true_label in label_map:
-                    true_label = label_map[true_label]
-                elif label_map:
-                    # Try with string key (YAML may parse ints as ints or strings)
-                    str_key = str(true_label)
-                    for k, v in label_map.items():
-                        if str(k) == str_key:
-                            true_label = v
-                            break
-                
+                input_text, true_label = self._extract_input_and_label(example, dataset_config)
+                true_label = self._normalize_true_label(true_label, dataset_config)
+
                 # Apply prompting technique if available
+                prompt_text = input_text
                 if prompt_technique and self.prompt_manager:
-                    input_text = self.prompt_manager.apply_technique(
+                    prompt_text = self.prompt_manager.apply_technique(
                         technique=prompt_technique,
                         input_text=input_text,
                         dataset_name=dataset_config.name,
                         task_type=dataset_config.task_type,
-                        examples=few_shot_examples
+                        examples=few_shot_examples,
+                        output_mode='content' if use_hf_chat_template else 'manual'
+                    )
+
+                model_input = prompt_text
+                if isinstance(model, LocalModelHandler):
+                    model_input = model.format_prompt(
+                        prompt_text,
+                        use_hf_chat_template=use_hf_chat_template
                     )
                 
                 # Get model prediction
-                prediction_result = self._get_model_prediction(model, input_text, model_config, task_type=dataset_config.task_type)
+                prediction_result = self._get_model_prediction(
+                    model,
+                    prompt_text,
+                    model_config,
+                    task_type=dataset_config.task_type,
+                    use_hf_chat_template=use_hf_chat_template
+                )
                 
                 # Handle both string predictions and dict (with raw/extracted)
                 if isinstance(prediction_result, dict):
@@ -339,14 +378,16 @@ class BenchmarkRunner:
                 # Log prediction details for first few samples
                 if i < 3:  # Log first 3 predictions
                     self.logger.log_info(f"Sample {i}:")
-                    self.logger.log_info(f"  Model input: '{input_text}'")
+                    self.logger.log_info(f"  Model input: '{model_input}'")
                     self.logger.log_info(f"  Raw prediction: '{raw_prediction}'")
                     self.logger.log_info(f"  Extracted: '{extracted_prediction}'")
                     self.logger.log_info(f"  True label: '{true_label}'")
                 
                 predictions.append({
                     'index': i,
-                    'input': input_text,
+                    'input': model_input,
+                    'prompt_text': prompt_text,
+                    'used_hf_chat_template': use_hf_chat_template,
                     'raw_prediction': raw_prediction,
                     'prediction': extracted_prediction,
                     'true_label': true_label
@@ -368,7 +409,14 @@ class BenchmarkRunner:
         pbar.close()
         return predictions
     
-    def _get_model_prediction(self, model, input_text: str, model_config: ModelConfig, task_type: str = None):
+    def _get_model_prediction(
+        self,
+        model,
+        input_text: str,
+        model_config: ModelConfig,
+        task_type: str = None,
+        use_hf_chat_template: bool = False
+    ):
         """Get prediction from model (handles different model types)
         
         Returns:
@@ -377,7 +425,11 @@ class BenchmarkRunner:
         """
         # Handle local models
         if isinstance(model, LocalModelHandler):
-            raw_response = model.generate(input_text, task_type=task_type)
+            raw_response = model.generate(
+                input_text,
+                task_type=task_type,
+                use_hf_chat_template=use_hf_chat_template
+            )
             # Extract answer based on task type
             return model.extract_answer(raw_response, task_type)
         

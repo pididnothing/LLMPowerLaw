@@ -31,6 +31,34 @@ class LocalModelHandler:
             return self._load_vllm_model()
         else:
             raise ValueError(f"Unsupported local provider: {self.provider}")
+
+    def load_tokenizer_only(self):
+        """Load only the tokenizer for previewing HF chat templates."""
+        if self.provider != 'huggingface_local':
+            return None
+        if self.tokenizer is not None:
+            return self.tokenizer
+
+        try:
+            from transformers import AutoTokenizer
+        except ImportError:
+            raise ImportError(
+                "transformers is required for local HuggingFace models. "
+                "Install with: pip install transformers"
+            )
+
+        model_id = self.model_config.get('model_id')
+        local_path = self.model_config.get('local_model_path')
+        model_path = local_path if local_path else model_id
+
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            model_path,
+            trust_remote_code=self.model_config.get('trust_remote_code', False),
+            cache_dir=self.global_settings.get('local_models', {}).get('hf_cache_dir')
+        )
+        if self.tokenizer.pad_token is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
+        return self.tokenizer
     
     def _load_huggingface_model(self):
         """Load HuggingFace model locally"""
@@ -56,17 +84,9 @@ class LocalModelHandler:
         # Load tokenizer with progress
         with tqdm(total=2, desc="Loading model components", bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt}') as pbar:
             pbar.set_description("Loading tokenizer")
-            self.tokenizer = AutoTokenizer.from_pretrained(
-                model_path,
-                trust_remote_code=self.model_config.get('trust_remote_code', False),
-                cache_dir=self.global_settings.get('local_models', {}).get('hf_cache_dir')
-            )
+            self.load_tokenizer_only()
             pbar.update(1)
-            
-            # Ensure tokenizer has padding token
-            if self.tokenizer.pad_token is None:
-                self.tokenizer.pad_token = self.tokenizer.eos_token
-            
+
             # Load model
             pbar.set_description(f"Loading model ({load_kwargs.get('load_in_4bit', False) and '4-bit' or load_kwargs.get('load_in_8bit', False) and '8-bit' or 'full precision'})")
             self.model = AutoModelForCausalLM.from_pretrained(
@@ -78,6 +98,30 @@ class LocalModelHandler:
         print(f"✓ Model loaded successfully on device: {self.model.device}")
         
         return self.model, self.tokenizer
+
+    def format_prompt(
+        self,
+        prompt: str,
+        use_hf_chat_template: bool = False,
+        chat_messages: Optional[List[Dict[str, str]]] = None
+    ) -> str:
+        """Return the exact prompt text sent to the model."""
+        if not use_hf_chat_template:
+            return prompt
+
+        tokenizer = self.load_tokenizer_only()
+        if not hasattr(tokenizer, 'apply_chat_template'):
+            return prompt
+
+        messages = chat_messages or [{'role': 'user', 'content': prompt}]
+        try:
+            return tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True
+            )
+        except Exception:
+            return prompt
     
     def _prepare_hf_load_kwargs(self) -> Dict[str, Any]:
         """Prepare kwargs for HuggingFace model loading"""
@@ -259,7 +303,15 @@ class LocalModelHandler:
         """Generate using HuggingFace model"""
         if self.model is None or self.tokenizer is None:
             raise RuntimeError("Model not loaded. Call load_model() first.")
-        
+
+        use_hf_chat_template = kwargs.pop('use_hf_chat_template', False)
+        chat_messages = kwargs.pop('chat_messages', None)
+        prompt = self.format_prompt(
+            prompt,
+            use_hf_chat_template=use_hf_chat_template,
+            chat_messages=chat_messages
+        )
+
         # Prepare inputs
         inputs = self.tokenizer(prompt, return_tensors="pt", padding=True)
         inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
@@ -277,13 +329,16 @@ class LocalModelHandler:
             # Default stop sequences for classification and short answers
             stop_sequences = ['\n\n', '###', 'Question:', 'Text:', '\n\nText:', 'Answer:']
         
-        # Encode stop sequences
+        # Encode stop sequences — only include sequences that map to a single token.
+        # Multi-token sequences (e.g. '\n\n' → [newline, newline]) must NOT contribute
+        # their first token as a stop ID; doing so would stop generation on any lone '\n',
+        # which ChatML models emit right after <|im_start|>assistant, causing empty output.
         stop_token_ids = []
         if stop_sequences:
             for seq in stop_sequences:
                 tokens = self.tokenizer.encode(seq, add_special_tokens=False)
-                if tokens:
-                    stop_token_ids.append(tokens[0])  # Use first token as stop
+                if len(tokens) == 1:
+                    stop_token_ids.append(tokens[0])
         
         # Generation parameters
         gen_kwargs = {

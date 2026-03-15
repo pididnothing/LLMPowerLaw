@@ -10,6 +10,8 @@ from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass
 from string import Template
 
+from utils.generate_prompt_templates import build_inner_prompt, load_configs
+
 
 @dataclass
 class PromptTechnique:
@@ -53,6 +55,7 @@ class PromptManager:
         self.technique_combinations: List[Dict[str, Any]] = []
         self.global_settings: Dict[str, Any] = {}
         self.example_cache: Dict[str, List] = {}
+        self.template_source_configs: Optional[Dict[str, Any]] = None
         
         if self.config_path.exists():
             self.load_config()
@@ -119,6 +122,7 @@ class PromptManager:
         dataset_name: str = None,
         task_type: str = None,
         examples: List[Dict[str, Any]] = None,
+        output_mode: str = 'manual',
         **kwargs
     ) -> str:
         """
@@ -130,6 +134,7 @@ class PromptManager:
             dataset_name: Name of the dataset (optional)
             task_type: Type of task (optional)
             examples: Few-shot examples (optional)
+            output_mode: 'manual' for full template text, 'content' for chat-body only
             **kwargs: Additional keyword arguments for template
             
         Returns:
@@ -141,7 +146,7 @@ class PromptManager:
             )
         elif technique.type == 'custom':
             return self._apply_custom_technique(
-                technique, input_text, task_type, examples, **kwargs
+                technique, input_text, task_type, examples, output_mode=output_mode, **kwargs
             )
         else:
             return input_text
@@ -211,38 +216,98 @@ class PromptManager:
         input_text: str,
         task_type: str = None,
         examples: List[Dict[str, Any]] = None,
+        output_mode: str = 'manual',
         **kwargs
     ) -> str:
         """Apply custom prompting technique"""
+        if output_mode == 'content':
+            content_template = self._get_content_template(technique)
+            if content_template:
+                return self._render_template_string(
+                    content_template,
+                    input_text,
+                    task_type=task_type,
+                    examples=examples,
+                    fields=technique.fields,
+                    **kwargs
+                )
+
         if not technique.template:
             return input_text
-        
-        # Prepare template variables
+
+        return self._render_template_string(
+            technique.template,
+            input_text,
+            task_type=task_type,
+            examples=examples,
+            fields=technique.fields,
+            **kwargs
+        )
+
+    def _render_template_string(
+        self,
+        template_string: str,
+        input_text: str,
+        task_type: str = None,
+        examples: List[Dict[str, Any]] = None,
+        fields: Optional[Dict[str, Any]] = None,
+        **kwargs
+    ) -> str:
+        """Render a template string with runtime values."""
         template_vars = {
             'input': input_text,
             'task': task_type or 'task',
-            **technique.fields,
+            **(fields or {}),
             **kwargs
         }
-        
+
         # Handle few-shot examples in custom templates
-        if examples and '{examples}' in technique.template:
-            num_examples = technique.fields.get('num_examples', 3)
+        if examples and ('$examples' in template_string or '${examples}' in template_string):
+            num_examples = (fields or {}).get('num_examples', 3)
             selected_examples = self._select_few_shot_examples(examples, num_examples)
             example_text = '\n\n'.join([
                 self._format_example(ex) for ex in selected_examples
             ])
             template_vars['examples'] = example_text
-        
+
         # Format template
         try:
-            # Use string.Template for safe substitution
-            template = Template(technique.template)
+            template = Template(template_string)
             formatted_prompt = template.safe_substitute(template_vars)
             return formatted_prompt
         except Exception as e:
             print(f"Error formatting template: {e}")
             return input_text
+
+    def _get_content_template(self, technique: PromptTechnique) -> Optional[str]:
+        """Return a chat-body-only prompt template for HF chat templating."""
+        content_template = technique.fields.get('content_template')
+        if content_template:
+            return content_template
+
+        dataset_key = technique.fields.get('dataset')
+        technique_key = technique.fields.get('technique')
+        if not dataset_key or not technique_key:
+            return None
+
+        source_cfg = self._load_template_source_configs()
+        try:
+            return build_inner_prompt(
+                technique_key=technique_key,
+                dataset_key=dataset_key,
+                technique_templates=source_cfg['technique_templates'],
+                dataset_instructions=source_cfg['dataset_instructions'],
+                few_shot_samples=source_cfg['few_shot_samples'],
+                domain_experts=source_cfg['domain_experts'],
+            )
+        except Exception:
+            return None
+
+    def _load_template_source_configs(self) -> Dict[str, Any]:
+        """Load generator source configs used to reconstruct chat-body prompts."""
+        if self.template_source_configs is None:
+            self.template_source_configs = load_configs(self.config_path.parent)
+        return self.template_source_configs
     
     def _select_few_shot_examples(
         self,
