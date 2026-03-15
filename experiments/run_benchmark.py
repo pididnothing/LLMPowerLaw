@@ -194,6 +194,25 @@ class BenchmarkRunner:
             'enabled': model_config.enabled,
             **model_config.additional_params,
         }
+
+    def _take_examples(self, dataset, count: int) -> List[Dict[str, Any]]:
+        """Return first N examples as a list of row dicts across dataset types."""
+        if count <= 0:
+            return []
+        if hasattr(dataset, 'select'):
+            upper = min(count, len(dataset))
+            return [dataset[i] for i in range(upper)]
+        return list(dataset[:count])
+
+    def _drop_examples(self, dataset, count: int):
+        """Return dataset after skipping first N examples without changing row semantics."""
+        if count <= 0:
+            return dataset
+        if hasattr(dataset, 'select'):
+            if len(dataset) <= count:
+                return dataset.select([])
+            return dataset.select(range(count, len(dataset)))
+        return dataset[count:]
     
     def initialize_model(self, model_config: ModelConfig):
         """Initialize a model based on configuration"""
@@ -322,8 +341,8 @@ class BenchmarkRunner:
                 # Use first few examples as few-shot examples (excluding them from test set)
                 num_examples = prompt_technique.params.get('num_examples', 3)
                 if len(dataset) > num_examples:
-                    few_shot_examples = dataset[:num_examples]
-                    dataset = dataset[num_examples:]  # Skip examples in test
+                    few_shot_examples = self._take_examples(dataset, num_examples)
+                    dataset = self._drop_examples(dataset, num_examples)  # Skip examples in test
         
         # Add progress bar for prediction loop
         pbar = tqdm(enumerate(dataset), total=len(dataset), 
