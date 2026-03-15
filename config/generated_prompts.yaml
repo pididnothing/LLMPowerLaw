@@ -167,6 +167,8 @@ generated_prompts:
       Answer: positive
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer:<|im_end|><|im_start|>assistant'
@@ -194,6 +196,8 @@ generated_prompts:
 
         Answer: positive
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -229,6 +233,8 @@ generated_prompts:
       Answer: positive
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer:<|im_end|><|im_start|>assistant'
@@ -258,6 +264,8 @@ generated_prompts:
 
         Answer: positive
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -293,6 +301,8 @@ generated_prompts:
       Answer: positive
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer: [/INST]'
@@ -322,6 +332,8 @@ generated_prompts:
 
         Answer: positive
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -357,6 +369,8 @@ generated_prompts:
       Answer: positive
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer:<|end|><|assistant|>'
@@ -387,6 +401,8 @@ generated_prompts:
         Answer: positive
 
 
+        Now process the actual input below (not an example):
+
         Input: $input
 
         Answer:'
@@ -396,7 +412,8 @@ generated_prompts:
     model_family: mistral
     template: "<s>[INST] You are a helpful assistant.\n\n    Task: Classify the sentiment of the following text as \"positive\" or \"negative\". Respond with ONLY one word: positive or negative.\n\nInput:\
       \ The movie had stunning visuals but the story was painfully boring.\nAnswer: negative\n\nInput: An incredibly touching story with excellent performances.\nAnswer: positive\n\nInput: The plot was\
-      \ predictable and the characters were dull.\nAnswer: negative\n\nInput: A delightful film that keeps you smiling the whole time.\nAnswer: positive\n\nInput: $input\nAnswer:[/INST]"
+      \ predictable and the characters were dull.\nAnswer: negative\n\nInput: A delightful film that keeps you smiling the whole time.\nAnswer: positive\n\nNow process the actual input below (not an example):\n\
+      Input: $input\nAnswer:[/INST]"
     messages:
     - role: system
       content: You are a helpful assistant.
@@ -423,6 +440,8 @@ generated_prompts:
 
         Answer: positive
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -630,6 +649,8 @@ generated_prompts:
       Answer: positive
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning:<|im_end|><|im_start|>assistant'
@@ -665,6 +686,8 @@ generated_prompts:
 
         Answer: positive
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 
@@ -708,6 +731,8 @@ generated_prompts:
       Answer: positive
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning:<|im_end|><|im_start|>assistant'
@@ -745,6 +770,8 @@ generated_prompts:
 
         Answer: positive
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 
@@ -788,6 +815,8 @@ generated_prompts:
       Answer: positive
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning: [/INST]'
@@ -825,6 +854,8 @@ generated_prompts:
 
         Answer: positive
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 
@@ -868,6 +899,8 @@ generated_prompts:
       Answer: positive
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning:<|end|><|assistant|>'
@@ -906,6 +939,8 @@ generated_prompts:
         Answer: positive
 
 
+        Now solve the actual question below (not an example):
+
         Question: $input
 
         Reasoning:'
@@ -918,7 +953,7 @@ generated_prompts:
       \ the overall sentiment negative.\nAnswer: negative\n\nQuestion: An incredibly touching story with excellent performances.\nReasoning: 'Incredibly touching' and 'excellent performances' are strongly\
       \ positive descriptors with no negatives present.\nAnswer: positive\n\nQuestion: The plot was predictable and the characters were dull.\nReasoning: 'Predictable' and 'dull' are both negative descriptors\
       \ criticising the plot and characters.\nAnswer: negative\n\nQuestion: A delightful film that keeps you smiling the whole time.\nReasoning: 'Delightful' and 'keeps you smiling' convey a clearly positive\
-      \ viewing experience.\nAnswer: positive\n\nQuestion: $input\nReasoning:[/INST]"
+      \ viewing experience.\nAnswer: positive\n\nNow solve the actual question below (not an example):\nQuestion: $input\nReasoning:[/INST]"
     messages:
     - role: system
       content: You are a helpful assistant.
@@ -953,6 +988,8 @@ generated_prompts:
 
         Answer: positive
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 
@@ -1311,6 +1348,8 @@ generated_prompts:
       Answer: C
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer:<|im_end|><|im_start|>assistant'
@@ -1357,6 +1396,8 @@ generated_prompts:
 
         Answer: C
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -1411,6 +1452,8 @@ generated_prompts:
       Answer: C
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer:<|im_end|><|im_start|>assistant'
@@ -1459,6 +1502,8 @@ generated_prompts:
 
         Answer: C
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -1513,6 +1558,8 @@ generated_prompts:
       Answer: C
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer: [/INST]'
@@ -1561,6 +1608,8 @@ generated_prompts:
 
         Answer: C
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -1615,6 +1664,8 @@ generated_prompts:
       Answer: C
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer:<|end|><|assistant|>'
@@ -1664,6 +1715,8 @@ generated_prompts:
         Answer: C
 
 
+        Now process the actual input below (not an example):
+
         Input: $input
 
         Answer:'
@@ -1673,8 +1726,8 @@ generated_prompts:
     model_family: mistral
     template: "<s>[INST] You are a helpful assistant.\n\n    Task: Answer the following science question by choosing A, B, C, or D. Respond with ONLY the letter of the correct answer.\n\nInput: Which process\
       \ allows plants to make their own food?\nA: Respiration\nB: Photosynthesis\nC: Digestion\nD: Fermentation\nAnswer: B\n\nInput: What is the main source of energy for Earth's climate system?\nA: The\
-      \ Moon\nB: The Sun\nC: Volcanoes\nD: Ocean currents\nAnswer: B\n\nInput: Which state of matter has a definite shape and volume?\nA: Liquid\nB: Gas\nC: Solid\nD: Plasma\nAnswer: C\n\nInput: $input\n\
-      Answer:[/INST]"
+      \ Moon\nB: The Sun\nC: Volcanoes\nD: Ocean currents\nAnswer: B\n\nInput: Which state of matter has a definite shape and volume?\nA: Liquid\nB: Gas\nC: Solid\nD: Plasma\nAnswer: C\n\nNow process the\
+      \ actual input below (not an example):\nInput: $input\nAnswer:[/INST]"
     messages:
     - role: system
       content: You are a helpful assistant.
@@ -1720,6 +1773,8 @@ generated_prompts:
 
         Answer: C
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -1947,6 +2002,8 @@ generated_prompts:
       Answer: C
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning:<|im_end|><|im_start|>assistant'
@@ -2002,6 +2059,8 @@ generated_prompts:
 
         Answer: C
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 
@@ -2065,6 +2124,8 @@ generated_prompts:
       Answer: C
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning:<|im_end|><|im_start|>assistant'
@@ -2122,6 +2183,8 @@ generated_prompts:
 
         Answer: C
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 
@@ -2185,6 +2248,8 @@ generated_prompts:
       Answer: C
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning: [/INST]'
@@ -2242,6 +2307,8 @@ generated_prompts:
 
         Answer: C
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 
@@ -2305,6 +2372,8 @@ generated_prompts:
       Answer: C
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning:<|end|><|assistant|>'
@@ -2363,6 +2432,8 @@ generated_prompts:
         Answer: C
 
 
+        Now solve the actual question below (not an example):
+
         Question: $input
 
         Reasoning:'
@@ -2376,7 +2447,7 @@ generated_prompts:
       \ system?\nA: The Moon\nB: The Sun\nC: Volcanoes\nD: Ocean currents\nReasoning: The Sun provides the vast majority of energy that drives Earth's weather and climate. The Moon affects tides, volcanoes\
       \ have local effects, and ocean currents distribute heat but don't generate it. So the answer is B.\nAnswer: B\n\nQuestion: Which state of matter has a definite shape and volume?\nA: Liquid\nB: Gas\n\
       C: Solid\nD: Plasma\nReasoning: Solids have particles tightly packed in fixed positions giving them definite shape and volume. Liquids have definite volume but take the shape of their container. Gases\
-      \ and plasma have neither. So the answer is C.\nAnswer: C\n\nQuestion: $input\nReasoning:[/INST]"
+      \ and plasma have neither. So the answer is C.\nAnswer: C\n\nNow solve the actual question below (not an example):\nQuestion: $input\nReasoning:[/INST]"
     messages:
     - role: system
       content: You are a helpful assistant.
@@ -2431,6 +2502,8 @@ generated_prompts:
 
         Answer: C
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 
@@ -2788,6 +2861,8 @@ generated_prompts:
       Answer: A
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer:<|im_end|><|im_start|>assistant'
@@ -2834,6 +2909,8 @@ generated_prompts:
 
         Answer: A
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -2888,6 +2965,8 @@ generated_prompts:
       Answer: A
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer:<|im_end|><|im_start|>assistant'
@@ -2936,6 +3015,8 @@ generated_prompts:
 
         Answer: A
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -2990,6 +3071,8 @@ generated_prompts:
       Answer: A
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer: [/INST]'
@@ -3038,6 +3121,8 @@ generated_prompts:
 
         Answer: A
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -3092,6 +3177,8 @@ generated_prompts:
       Answer: A
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer:<|end|><|assistant|>'
@@ -3141,6 +3228,8 @@ generated_prompts:
         Answer: A
 
 
+        Now process the actual input below (not an example):
+
         Input: $input
 
         Answer:'
@@ -3152,7 +3241,7 @@ generated_prompts:
       \ pasta in a kitchen. He drains the noodles in the sink.\nA: He throws the noodles on the floor.\nB: He mixes the noodles with sauce.\nC: He puts the noodles back in the package.\nD: He washes the\
       \ noodles with soap.\nAnswer: B\n\nInput: A woman is planting flowers in her garden.\nA: She waters the plants after placing them in the soil.\nB: She burns the flowers with a lighter.\nC: She throws\
       \ the soil away.\nD: She eats the flowers immediately.\nAnswer: A\n\nInput: A person opens a laptop to begin working.\nA: They start typing on the keyboard.\nB: They throw the laptop into the trash.\n\
-      C: They fill the laptop with water.\nD: They smash the screen with a hammer.\nAnswer: A\n\nInput: $input\nAnswer:[/INST]"
+      C: They fill the laptop with water.\nD: They smash the screen with a hammer.\nAnswer: A\n\nNow process the actual input below (not an example):\nInput: $input\nAnswer:[/INST]"
     messages:
     - role: system
       content: You are a helpful assistant.
@@ -3198,6 +3287,8 @@ generated_prompts:
 
         Answer: A
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -3424,6 +3515,8 @@ generated_prompts:
       Answer: A
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning:<|im_end|><|im_start|>assistant'
@@ -3478,6 +3571,8 @@ generated_prompts:
 
         Answer: A
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 
@@ -3540,6 +3635,8 @@ generated_prompts:
       Answer: A
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning:<|im_end|><|im_start|>assistant'
@@ -3596,6 +3693,8 @@ generated_prompts:
 
         Answer: A
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 
@@ -3658,6 +3757,8 @@ generated_prompts:
       Answer: A
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning: [/INST]'
@@ -3714,6 +3815,8 @@ generated_prompts:
 
         Answer: A
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 
@@ -3776,6 +3879,8 @@ generated_prompts:
       Answer: A
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning:<|end|><|assistant|>'
@@ -3833,6 +3938,8 @@ generated_prompts:
         Answer: A
 
 
+        Now solve the actual question below (not an example):
+
         Question: $input
 
         Reasoning:'
@@ -3847,7 +3954,7 @@ generated_prompts:
       \ throws the soil away.\nD: She eats the flowers immediately.\nReasoning: Watering newly planted flowers is the standard next step in gardening. The other options are destructive or absurd actions\
       \ that don't follow logically. So the answer is A.\nAnswer: A\n\nQuestion: A person opens a laptop to begin working.\nA: They start typing on the keyboard.\nB: They throw the laptop into the trash.\n\
       C: They fill the laptop with water.\nD: They smash the screen with a hammer.\nReasoning: When someone opens a laptop to work, typing on the keyboard is the natural next action. The other options all\
-      \ involve destroying the laptop, which contradicts the intent to work. So the answer is A.\nAnswer: A\n\nQuestion: $input\nReasoning:[/INST]"
+      \ involve destroying the laptop, which contradicts the intent to work. So the answer is A.\nAnswer: A\n\nNow solve the actual question below (not an example):\nQuestion: $input\nReasoning:[/INST]"
     messages:
     - role: system
       content: You are a helpful assistant.
@@ -3901,6 +4008,8 @@ generated_prompts:
 
         Answer: A
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 
@@ -4233,6 +4342,8 @@ generated_prompts:
       Answer: 3
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer:<|im_end|><|im_start|>assistant'
@@ -4255,6 +4366,8 @@ generated_prompts:
 
         Answer: 3
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -4285,6 +4398,8 @@ generated_prompts:
       Answer: 3
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer:<|im_end|><|im_start|>assistant'
@@ -4309,6 +4424,8 @@ generated_prompts:
 
         Answer: 3
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -4339,6 +4456,8 @@ generated_prompts:
       Answer: 3
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer: [/INST]'
@@ -4363,6 +4482,8 @@ generated_prompts:
 
         Answer: 3
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -4393,6 +4514,8 @@ generated_prompts:
       Answer: 3
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer:<|end|><|assistant|>'
@@ -4418,6 +4541,8 @@ generated_prompts:
         Answer: 3
 
 
+        Now process the actual input below (not an example):
+
         Input: $input
 
         Answer:'
@@ -4427,7 +4552,7 @@ generated_prompts:
     model_family: mistral
     template: "<s>[INST] You are a helpful assistant.\n\n    Task: Solve the following math problem. Give ONLY the final numerical answer.\n\nInput: Tom has 3 bags with 4 apples in each bag. How many apples\
       \ does he have in total?\nAnswer: 12\n\nInput: A store sells pencils for $2 each. If Sarah buys 5 pencils, how much does she pay?\nAnswer: 10\n\nInput: There are 18 cookies and 6 children. If they\
-      \ are divided equally, how many cookies does each child get?\nAnswer: 3\n\nInput: $input\nAnswer:[/INST]"
+      \ are divided equally, how many cookies does each child get?\nAnswer: 3\n\nNow process the actual input below (not an example):\nInput: $input\nAnswer:[/INST]"
     messages:
     - role: system
       content: You are a helpful assistant.
@@ -4449,6 +4574,8 @@ generated_prompts:
 
         Answer: 3
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -4648,6 +4775,8 @@ generated_prompts:
       Answer: 3
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning:<|im_end|><|im_start|>assistant'
@@ -4676,6 +4805,8 @@ generated_prompts:
 
         Answer: 3
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 
@@ -4712,6 +4843,8 @@ generated_prompts:
       Answer: 3
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning:<|im_end|><|im_start|>assistant'
@@ -4742,6 +4875,8 @@ generated_prompts:
 
         Answer: 3
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 
@@ -4778,6 +4913,8 @@ generated_prompts:
       Answer: 3
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning: [/INST]'
@@ -4808,6 +4945,8 @@ generated_prompts:
 
         Answer: 3
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 
@@ -4844,6 +4983,8 @@ generated_prompts:
       Answer: 3
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning:<|end|><|assistant|>'
@@ -4875,6 +5016,8 @@ generated_prompts:
         Answer: 3
 
 
+        Now solve the actual question below (not an example):
+
         Question: $input
 
         Reasoning:'
@@ -4885,7 +5028,8 @@ generated_prompts:
     template: "<s>[INST] You are a helpful assistant.\n\n    Task: Solve the following math problem. Give ONLY the final numerical answer.\n\nQuestion: Tom has 3 bags with 4 apples in each bag. How many\
       \ apples does he have in total?\nReasoning: Tom has 3 bags. Each bag has 4 apples. Total apples = 3 × 4 = 12.\nAnswer: 12\n\nQuestion: A store sells pencils for $2 each. If Sarah buys 5 pencils, how\
       \ much does she pay?\nReasoning: Each pencil costs $2. Sarah buys 5 pencils. Total cost = 5 × $2 = $10.\nAnswer: 10\n\nQuestion: There are 18 cookies and 6 children. If they are divided equally, how\
-      \ many cookies does each child get?\nReasoning: 18 cookies divided equally among 6 children: 18 ÷ 6 = 3 cookies per child.\nAnswer: 3\n\nQuestion: $input\nReasoning:[/INST]"
+      \ many cookies does each child get?\nReasoning: 18 cookies divided equally among 6 children: 18 ÷ 6 = 3 cookies per child.\nAnswer: 3\n\nNow solve the actual question below (not an example):\nQuestion:\
+      \ $input\nReasoning:[/INST]"
     messages:
     - role: system
       content: You are a helpful assistant.
@@ -4913,6 +5057,8 @@ generated_prompts:
 
         Answer: 3
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 
@@ -5269,6 +5415,8 @@ generated_prompts:
       Answer: C
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer:<|im_end|><|im_start|>assistant'
@@ -5315,6 +5463,8 @@ generated_prompts:
 
         Answer: C
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -5369,6 +5519,8 @@ generated_prompts:
       Answer: C
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer:<|im_end|><|im_start|>assistant'
@@ -5417,6 +5569,8 @@ generated_prompts:
 
         Answer: C
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -5471,6 +5625,8 @@ generated_prompts:
       Answer: C
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer: [/INST]'
@@ -5519,6 +5675,8 @@ generated_prompts:
 
         Answer: C
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -5573,6 +5731,8 @@ generated_prompts:
       Answer: C
 
 
+      Now process the actual input below (not an example):
+
       Input: $input
 
       Answer:<|end|><|assistant|>'
@@ -5622,6 +5782,8 @@ generated_prompts:
         Answer: C
 
 
+        Now process the actual input below (not an example):
+
         Input: $input
 
         Answer:'
@@ -5631,7 +5793,7 @@ generated_prompts:
     model_family: mistral
     template: "<s>[INST] You are a helpful assistant.\n\n    Task: Answer the following question by choosing A, B, C, or D. Respond with ONLY the letter of the correct answer.\n\nInput: Who developed the\
       \ theory of relativity?\nA: Isaac Newton\nB: Albert Einstein\nC: Galileo Galilei\nD: Nikola Tesla\nAnswer: B\n\nInput: What is the capital of Japan?\nA: Seoul\nB: Tokyo\nC: Kyoto\nD: Beijing\nAnswer:\
-      \ B\n\nInput: Which organ pumps blood through the human body?\nA: Liver\nB: Lungs\nC: Heart\nD: Kidney\nAnswer: C\n\nInput: $input\nAnswer:[/INST]"
+      \ B\n\nInput: Which organ pumps blood through the human body?\nA: Liver\nB: Lungs\nC: Heart\nD: Kidney\nAnswer: C\n\nNow process the actual input below (not an example):\nInput: $input\nAnswer:[/INST]"
     messages:
     - role: system
       content: You are a helpful assistant.
@@ -5677,6 +5839,8 @@ generated_prompts:
 
         Answer: C
 
+
+        Now process the actual input below (not an example):
 
         Input: $input
 
@@ -5902,6 +6066,8 @@ generated_prompts:
       Answer: C
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning:<|im_end|><|im_start|>assistant'
@@ -5955,6 +6121,8 @@ generated_prompts:
 
         Answer: C
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 
@@ -6016,6 +6184,8 @@ generated_prompts:
       Answer: C
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning:<|im_end|><|im_start|>assistant'
@@ -6071,6 +6241,8 @@ generated_prompts:
 
         Answer: C
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 
@@ -6132,6 +6304,8 @@ generated_prompts:
       Answer: C
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning: [/INST]'
@@ -6187,6 +6361,8 @@ generated_prompts:
 
         Answer: C
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 
@@ -6248,6 +6424,8 @@ generated_prompts:
       Answer: C
 
 
+      Now solve the actual question below (not an example):
+
       Question: $input
 
       Reasoning:<|end|><|assistant|>'
@@ -6304,6 +6482,8 @@ generated_prompts:
         Answer: C
 
 
+        Now solve the actual question below (not an example):
+
         Question: $input
 
         Reasoning:'
@@ -6316,7 +6496,8 @@ generated_prompts:
       \ Newton formulated classical mechanics, Galileo contributed to observational astronomy, and Tesla was an electrical engineer. So the answer is B.\nAnswer: B\n\nQuestion: What is the capital of Japan?\n\
       A: Seoul\nB: Tokyo\nC: Kyoto\nD: Beijing\nReasoning: Tokyo has been the capital of Japan since 1868. Seoul is the capital of South Korea, Kyoto is a former capital of Japan, and Beijing is the capital\
       \ of China. So the answer is B.\nAnswer: B\n\nQuestion: Which organ pumps blood through the human body?\nA: Liver\nB: Lungs\nC: Heart\nD: Kidney\nReasoning: The heart is the muscular organ that pumps\
-      \ blood through the circulatory system. The liver processes toxins, lungs handle gas exchange, and kidneys filter waste. So the answer is C.\nAnswer: C\n\nQuestion: $input\nReasoning:[/INST]"
+      \ blood through the circulatory system. The liver processes toxins, lungs handle gas exchange, and kidneys filter waste. So the answer is C.\nAnswer: C\n\nNow solve the actual question below (not\
+      \ an example):\nQuestion: $input\nReasoning:[/INST]"
     messages:
     - role: system
       content: You are a helpful assistant.
@@ -6369,6 +6550,8 @@ generated_prompts:
 
         Answer: C
 
+
+        Now solve the actual question below (not an example):
 
         Question: $input
 

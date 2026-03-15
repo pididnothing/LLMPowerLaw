@@ -21,6 +21,7 @@ prompt_techniques:
 
       {% endfor %}
 
+      Now process the actual input below (not an example):
       Input: {{input}}
       Answer:
 
@@ -49,6 +50,7 @@ prompt_techniques:
 
       {% endfor %}
 
+      Now solve the actual question below (not an example):
       Question: {{input}}
       Reasoning:
 
