@@ -138,7 +138,7 @@ experiments:
 
   # --- TinyLlama-1.1B × SST-2 ---
   - {id: p1_tinyllama_sst2_zero, model: tinyllama-test, dataset: sst2, prompting_technique: sst2_zero_shot_tinyllama, description: "TinyLlama-1.1B SST-2 zero-shot", enabled: false, num_samples: 200, max_tokens: 10}
-  - {id: p1_tinyllama_sst2_few, model: tinyllama-test, dataset: sst2, prompting_technique: sst2_few_shot_tinyllama, description: "TinyLlama-1.1B SST-2 few-shot", enabled: false, num_samples: 200, max_tokens: 10}
+  - {id: p1_tinyllama_sst2_few, model: tinyllama-test, dataset: sst2, prompting_technique: sst2_few_shot_tinyllama, description: "TinyLlama-1.1B SST-2 few-shot", enabled: true, num_samples: 200, max_tokens: 50}
   - {id: p1_tinyllama_sst2_cot, model: tinyllama-test, dataset: sst2, prompting_technique: sst2_chain_of_thought_tinyllama, description: "TinyLlama-1.1B SST-2 CoT", enabled: false, num_samples: 200, max_tokens: 150}
   - {id: p1_tinyllama_sst2_fscot, model: tinyllama-test, dataset: sst2, prompting_technique: sst2_few_shot_cot_tinyllama, description: "TinyLlama-1.1B SST-2 few-shot-CoT", enabled: false, num_samples: 200, max_tokens: 150}
   - {id: p1_tinyllama_sst2_role, model: tinyllama-test, dataset: sst2, prompting_technique: sst2_role_expert_tinyllama, description: "TinyLlama-1.1B SST-2 role-expert", enabled: false, num_samples: 200, max_tokens: 10}
