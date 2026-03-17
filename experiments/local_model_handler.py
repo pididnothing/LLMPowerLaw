@@ -179,6 +179,11 @@ class LocalModelHandler:
         
         # Trust remote code
         kwargs['trust_remote_code'] = self.model_config.get('trust_remote_code', False)
+
+        # Attention implementation (e.g. 'eager' when flash-attn is not installed)
+        attn_impl = self.model_config.get('attn_implementation')
+        if attn_impl:
+            kwargs['attn_implementation'] = attn_impl
         
         # Cache directory
         cache_dir = self.global_settings.get('local_models', {}).get('hf_cache_dir')

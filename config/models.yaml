@@ -82,6 +82,7 @@ models:
     load_in_4bit: true  # 4-bit reduces to ~2GB VRAM
     torch_dtype: auto
     trust_remote_code: true  # Required for Phi models
+    attn_implementation: eager  # Required when flash-attn is not installed
     chat_template_mode: hf
     local_model_path: null
     enabled: true  # ✅ ENABLED - Fits in 4GB VRAM
