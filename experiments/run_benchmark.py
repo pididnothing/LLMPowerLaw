@@ -143,14 +143,64 @@ class BenchmarkRunner:
             fields = dataset_config.additional_params.get('fields', {})
             text_field = fields.get('text', 'text')
             label_field = fields.get('label', 'label')
+            choices_field = fields.get('choices')
+            endings_field = fields.get('endings')
 
             input_text = example.get(text_field, "")
             true_label = example.get(label_field, "")
+
+            if choices_field and choices_field in example:
+                input_text = self._format_mcq_with_choices(str(input_text), example.get(choices_field))
+            elif endings_field and endings_field in example:
+                input_text = self._format_mcq_with_endings(str(input_text), example.get(endings_field))
+
             if not input_text:
                 input_text = str(example.get('sentence', example.get('question', example.get('text', example))))
             return input_text, true_label
 
         return str(example.get('text', example.get('question', example))), example.get('label', example.get('answer', ''))
+
+    def _format_mcq_with_choices(self, question: str, choices: Any) -> str:
+        """Format question plus labeled options for ARC/MMLU style rows."""
+        question = (question or "").strip()
+
+        option_lines: List[str] = []
+        if isinstance(choices, dict):
+            labels = choices.get('label') or []
+            texts = choices.get('text') or []
+            for label, text in zip(labels, texts):
+                clean_label = str(label).strip()
+                clean_text = str(text).strip()
+                if clean_label and clean_text:
+                    option_lines.append(f"{clean_label}: {clean_text}")
+        elif isinstance(choices, list):
+            for idx, text in enumerate(choices):
+                label = chr(ord('A') + idx)
+                clean_text = str(text).strip()
+                if clean_text:
+                    option_lines.append(f"{label}: {clean_text}")
+
+        if not option_lines:
+            return question
+
+        return f"{question}\n\nChoices:\n" + "\n".join(option_lines)
+
+    def _format_mcq_with_endings(self, context: str, endings: Any) -> str:
+        """Format HellaSwag context plus A-D endings."""
+        context = (context or "").strip()
+
+        option_lines: List[str] = []
+        if isinstance(endings, list):
+            for idx, ending in enumerate(endings):
+                label = chr(ord('A') + idx)
+                clean_ending = str(ending).strip()
+                if clean_ending:
+                    option_lines.append(f"{label}: {clean_ending}")
+
+        if not option_lines:
+            return context
+
+        return f"{context}\n\nChoices:\n" + "\n".join(option_lines)
 
     def _normalize_true_label(self, true_label: Any, dataset_config: DatasetConfig) -> Any:
         """Normalize raw labels using dataset label maps when available."""
