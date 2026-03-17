@@ -560,28 +560,51 @@ class LocalModelHandler:
             labels = [str(l).strip().lower() for l in label_space if str(l).strip()]
             labels = list(dict.fromkeys(labels))
             if labels:
+                letter_labels = [lbl for lbl in labels if len(lbl) == 1 and lbl.isalpha()]
+
+                def _normalize_candidate(candidate: str) -> str:
+                    token = (candidate or '').strip().lower().rstrip('.,;:!?)]}')
+                    if not token:
+                        return ''
+                    if token in labels:
+                        return token
+                    # Convert numeric candidates to letter labels for A/B/C/D style tasks.
+                    if token.isdigit() and letter_labels:
+                        idx = int(token)
+                        if 1 <= idx <= len(letter_labels):
+                            return letter_labels[idx - 1]
+                        if 0 <= idx < len(letter_labels):
+                            return letter_labels[idx]
+                    return ''
+
                 # 1) Prefer explicit answer fields near the end of generation.
                 explicit_patterns = [
-                    r'(?:final\s+answer|answer|sentiment|classification)\s*[:\-]\s*([a-z_\-]+)',
+                    r'(?:final\s+answer|answer|sentiment|classification)\s*[:\-]\s*([a-z0-9_\-]+)',
+                    r'(?:option|choice)\s*[:\-]?\s*([a-z0-9])\b',
+                    r'\(([a-z0-9])\)',
                     r'\b(?:is|=)\s*(positive|negative|neutral)\b',
                 ]
                 lower_response = response.lower()
                 for pattern in explicit_patterns:
                     matches = re.findall(pattern, lower_response)
                     if matches:
-                        candidate = matches[-1] if isinstance(matches[-1], str) else matches[-1][0]
-                        candidate = candidate.strip().rstrip('.,;:!?)]}').lower()
-                        if candidate in labels:
+                        raw_candidate = matches[-1] if isinstance(matches[-1], str) else matches[-1][0]
+                        candidate = _normalize_candidate(raw_candidate)
+                        if candidate:
                             return candidate
 
                 # 2) If any line is just the label, trust that.
                 lines = [ln.strip().lower() for ln in response.splitlines() if ln.strip()]
                 for line in reversed(lines):
-                    if line in labels:
-                        return line
-                    normalized_line = line.rstrip('.,;:!?')
-                    if normalized_line in labels:
-                        return normalized_line
+                    direct = _normalize_candidate(line)
+                    if direct:
+                        return direct
+                    # Accept lines like "option C" / "choice 3".
+                    m = re.search(r'(?:option|choice)?\s*([a-z0-9])\b', line)
+                    if m:
+                        candidate = _normalize_candidate(m.group(1))
+                        if candidate:
+                            return candidate
 
                 # 3) If exactly one label appears anywhere, use it; if multiple appear, mark ambiguous.
                 found = []

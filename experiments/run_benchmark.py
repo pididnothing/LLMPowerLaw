@@ -173,6 +173,14 @@ class BenchmarkRunner:
                 clean_text = str(text).strip()
                 if clean_label and clean_text:
                     option_lines.append(f"{clean_label}: {clean_text}")
+        elif isinstance(choices, list) and choices and isinstance(choices[0], dict):
+            for idx, item in enumerate(choices):
+                label = str(item.get('label', '')).strip() if isinstance(item, dict) else ''
+                text = str(item.get('text', '')).strip() if isinstance(item, dict) else ''
+                if not label:
+                    label = chr(ord('A') + idx)
+                if text:
+                    option_lines.append(f"{label}: {text}")
         elif isinstance(choices, list):
             for idx, text in enumerate(choices):
                 label = chr(ord('A') + idx)
@@ -202,18 +210,51 @@ class BenchmarkRunner:
 
         return f"{context}\n\nChoices:\n" + "\n".join(option_lines)
 
+    def _canonicalize_mcq_label(self, value: Any, label_space: List[Any]) -> Any:
+        """Map numeric/index labels to letter labels when label_space is letter-based."""
+        if not label_space:
+            return value
+
+        normalized_space = [str(x).strip().upper() for x in label_space if str(x).strip()]
+        if not normalized_space:
+            return value
+
+        # Only apply numeric-to-letter mapping for lettered MCQ spaces (A-D style).
+        if not all(len(x) == 1 and x.isalpha() for x in normalized_space):
+            return value
+
+        raw = str(value).strip().upper()
+        if raw in normalized_space:
+            return raw
+
+        if raw.isdigit():
+            idx = int(raw)
+            # Handle either 1-based (1..n) or 0-based (0..n-1)
+            if 1 <= idx <= len(normalized_space):
+                return normalized_space[idx - 1]
+            if 0 <= idx < len(normalized_space):
+                return normalized_space[idx]
+
+        return value
+
     def _normalize_true_label(self, true_label: Any, dataset_config: DatasetConfig) -> Any:
         """Normalize raw labels using dataset label maps when available."""
         ds_instructions = self.dataset_instructions.get(dataset_config.name, {})
         label_map = ds_instructions.get('label_map')
+        label_space = ds_instructions.get('label_space') or []
+
+        normalized = true_label
         if label_map and true_label in label_map:
-            return label_map[true_label]
-        if label_map:
+            normalized = label_map[true_label]
+        elif label_map:
             str_key = str(true_label)
             for key, value in label_map.items():
                 if str(key) == str_key:
-                    return value
-        return true_label
+                    normalized = value
+                    break
+
+        normalized = self._canonicalize_mcq_label(normalized, label_space)
+        return normalized
 
     def _should_use_hf_chat_template(self, model_config: ModelConfig) -> bool:
         """Check whether this model should use tokenizer.apply_chat_template."""
