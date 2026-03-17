@@ -543,6 +543,16 @@ class LocalModelHandler:
         final_answer_match = re.findall(r'final[_\s-]*answer\s*[:\-]\s*([^\n\r]+)', response, flags=re.IGNORECASE)
         if final_answer_match:
             response = final_answer_match[-1].strip()
+        else:
+            # Models like TinyLlama often write "The answer is X" or "The final answer is X"
+            # instead of the requested FINAL_ANSWER: format. Catch these conclusive patterns.
+            conclusive = re.findall(
+                r'(?:the\s+)?(?:final\s+)?answer\s+is[:\s]+([^\n\r.,;]+)',
+                response,
+                flags=re.IGNORECASE
+            )
+            if conclusive:
+                response = conclusive[-1].strip()
 
         # If we know the valid label set, use stricter parsing to avoid false positives
         # from outputs such as "positive or negative".
