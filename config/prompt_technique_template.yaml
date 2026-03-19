@@ -34,9 +34,9 @@ prompt_techniques:
       Question:
       {{input}}
 
-      Let's think step by step.
+      Let's think step by step. Give your reasoning in brief in one line and then your final answer on the last line.
 
-      Final Answer:
+      Reasoning:
 
 
   few_shot_cot:
@@ -55,12 +55,11 @@ prompt_techniques:
       Question: {{input}}
       Provide brief reasoning in one sentence.
       Reasoning:
-      Final Answer:
 
 
   role_expert:
     template: |
-      You are an expert {{domain}}.
+      You are an expert in {{domain}}.
 
       Task: {{instruction}}
 
