@@ -71,7 +71,7 @@ datasets:
     split: validation
     task_type: classification
     num_samples: 200
-    enabled: false
+    enabled: true
     fields:
       text: "ctx"
       label: "label"
@@ -85,7 +85,7 @@ datasets:
     split: test
     task_type: classification
     num_samples: 200
-    enabled: false
+    enabled: true
     fields:
       text: "question"
       label: "answer"
@@ -190,8 +190,8 @@ datasets:
     subset: main
     split: test
     task_type: reasoning
-    num_samples: 10  # Minimal for quick testing
-    enabled: false  # Disable for initial test
+    num_samples: 20 # Minimal for quick testing
+    enabled: true # Disable for initial test
 
 # Global dataset settings
 global_settings:

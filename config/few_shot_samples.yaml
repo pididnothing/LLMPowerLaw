@@ -110,8 +110,6 @@ few_shot_examples:
         answer: "3"
         reasoning: "18 cookies divided equally among 6 children: 18 ÷ 6 = 3 cookies per child."
 
-
-
   mmlu:
     task: knowledge_mcq
     format: multiple_choice
