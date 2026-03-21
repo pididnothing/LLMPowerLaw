@@ -561,6 +561,7 @@ class LocalModelHandler:
             labels = list(dict.fromkeys(labels))
             if labels:
                 letter_labels = [lbl for lbl in labels if len(lbl) == 1 and lbl.isalpha()]
+                single_letter_space = len(letter_labels) == len(labels)
 
                 def _normalize_candidate(candidate: str) -> str:
                     token = (candidate or '').strip().lower().rstrip('.,;:!?)]}')
@@ -600,13 +601,17 @@ class LocalModelHandler:
                     if direct:
                         return direct
                     # Accept lines like "option C" / "choice 3".
-                    m = re.search(r'(?:option|choice)?\s*([a-z0-9])\b', line)
+                    m = re.search(r'^(?:option|choice)\s*[:\-]?\s*([a-z0-9])\b', line)
                     if m:
                         candidate = _normalize_candidate(m.group(1))
                         if candidate:
                             return candidate
 
                 # 3) If exactly one label appears anywhere, use it; if multiple appear, mark ambiguous.
+                # For single-letter spaces (A/B/C/D), this can spuriously match articles like "a".
+                if single_letter_space:
+                    return ''
+
                 found = []
                 for label in labels:
                     if re.search(r'\b' + re.escape(label) + r'\b', lower_response):
