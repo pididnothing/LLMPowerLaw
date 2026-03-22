@@ -192,6 +192,9 @@ datasets:
     task_type: reasoning
     num_samples: 20 # Minimal for quick testing
     enabled: true # Disable for initial test
+    fields:
+      text: "question"
+      label: "answer"
 
 # Global dataset settings
 global_settings:

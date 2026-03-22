@@ -7,6 +7,7 @@ import os
 import sys
 import argparse
 import json
+import re
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Tuple
@@ -239,6 +240,9 @@ class BenchmarkRunner:
 
     def _normalize_true_label(self, true_label: Any, dataset_config: DatasetConfig) -> Any:
         """Normalize raw labels using dataset label maps when available."""
+        if dataset_config.task_type == 'reasoning':
+            return self._normalize_reasoning_label(true_label)
+
         ds_instructions = self.dataset_instructions.get(dataset_config.name, {})
         label_map = ds_instructions.get('label_map')
         label_space = ds_instructions.get('label_space') or []
@@ -255,6 +259,30 @@ class BenchmarkRunner:
 
         normalized = self._canonicalize_mcq_label(normalized, label_space)
         return normalized
+
+    def _normalize_reasoning_label(self, true_label: Any) -> str:
+        """Normalize reasoning labels (e.g., GSM8K) to a numeric answer when possible."""
+        label_text = str(true_label or '').strip()
+        if not label_text:
+            return ''
+
+        marker_match = re.findall(r'####\s*([^\n\r]+)', label_text)
+        if marker_match:
+            label_text = marker_match[-1].strip()
+
+        final_answer_match = re.findall(
+            r'final[_\s-]*answer\s*[:\-]\s*([^\n\r]+)',
+            label_text,
+            flags=re.IGNORECASE
+        )
+        if final_answer_match:
+            label_text = final_answer_match[-1].strip()
+
+        numeric_matches = re.findall(r'[-+]?\d[\d,]*(?:\.\d+)?', label_text)
+        if numeric_matches:
+            return numeric_matches[-1].replace(',', '')
+
+        return label_text.rstrip('.,;:!?')
 
     def _should_use_hf_chat_template(self, model_config: ModelConfig) -> bool:
         """Check whether this model should use tokenizer.apply_chat_template."""

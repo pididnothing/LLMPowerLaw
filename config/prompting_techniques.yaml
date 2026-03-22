@@ -419,18 +419,22 @@ prompting_techniques:
     description: "Few-shot CoT for GSM8K math"
     enabled: true
     template: |
-      Solve the math problem. Show your step-by-step work.
+      Solve each math word problem carefully.
+      Keep reasoning brief, then provide one final numeric answer.
 
+      Example 1
       Problem: Tom has 3 bags with 4 apples in each bag. How many apples does he have in total?
-      Solution: Tom has 3 bags. Each bag has 4 apples. Total apples = 3 × 4 = 12.
-      Answer: 12
+      Reasoning: Multiply bags by apples per bag: 3 * 4 = 12.
+      FINAL_ANSWER: 12
 
+      Example 2
       Problem: A store sells pencils for $2 each. If Sarah buys 5 pencils, how much does she pay?
-      Solution: Each pencil costs $2. Sarah buys 5 pencils. Total cost = 5 × $2 = $10.
-      Answer: 10
+      Reasoning: Total cost is price per pencil times quantity: 2 * 5 = 10.
+      FINAL_ANSWER: 10
 
+      Now solve the next problem.
       Problem: $input
-      Solution:
+      Reasoning:
 
   - name: scaling_few_shot_cot_mmlu
     type: custom

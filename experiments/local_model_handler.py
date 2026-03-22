@@ -450,6 +450,8 @@ class LocalModelHandler:
             extracted = self._extract_classification_answer(raw_response, label_space or [])
         elif task_type == 'qa':
             extracted = self._extract_qa_answer(raw_response)
+        elif task_type == 'reasoning':
+            extracted = self._extract_reasoning_answer(raw_response)
         else:
             extracted = raw_response
         
@@ -665,6 +667,63 @@ class LocalModelHandler:
             return first_sentence
         
         return first_line
+
+    def _extract_reasoning_answer(self, response: str) -> str:
+        """Extract final numeric answer for reasoning tasks (e.g., GSM8K)."""
+        response = (response or '').strip()
+        if not response:
+            return ''
+
+        # Highest-priority explicit output contracts.
+        final_answer_match = re.findall(
+            r'final[_\s-]*answer\s*[:\-]\s*([^\n\r]+)',
+            response,
+            flags=re.IGNORECASE
+        )
+        if final_answer_match:
+            normalized = self._normalize_numeric_answer(final_answer_match[-1])
+            if normalized:
+                return normalized
+
+        # GSM8K references often include the canonical "#### <answer>" marker.
+        gsm8k_marker = re.findall(r'####\s*([^\n\r]+)', response)
+        if gsm8k_marker:
+            normalized = self._normalize_numeric_answer(gsm8k_marker[-1])
+            if normalized:
+                return normalized
+
+        # Common concluding phrases produced by local models.
+        conclusive_patterns = [
+            r'(?:the\s+)?(?:final\s+)?answer\s+is\s*[:\-]?\s*([^\n\r]+)',
+            r'(?:thus|therefore|so)\s*(?:the\s+answer\s+is\s*)?[:\-]?\s*([^\n\r]+)',
+            r'\bboxed\{([^}]+)\}',
+        ]
+        for pattern in conclusive_patterns:
+            matches = re.findall(pattern, response, flags=re.IGNORECASE)
+            if matches:
+                normalized = self._normalize_numeric_answer(matches[-1])
+                if normalized:
+                    return normalized
+
+        # Fallback: pick the last numeric token in the full response.
+        return self._normalize_numeric_answer(response)
+
+    def _normalize_numeric_answer(self, text: str) -> str:
+        """Normalize text into a compact numeric answer string when possible."""
+        text = (text or '').strip()
+        if not text:
+            return ''
+
+        # Remove common punctuation wrappers around candidate numbers.
+        text = text.strip().strip('`"\'').rstrip('.,;:!?')
+
+        # Prefer standard integers/decimals (supports commas and signs).
+        number_matches = re.findall(r'[-+]?\d[\d,]*(?:\.\d+)?', text)
+        if number_matches:
+            return number_matches[-1].replace(',', '')
+
+        # If no numeric token found, return cleaned text as last resort.
+        return text
     
     def _generate_gguf(
         self,
