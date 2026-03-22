@@ -1016,24 +1016,6 @@ experiments:
   num_samples: 200
   max_tokens: 250
 
-- id: p4_tinyllama_gsm8k_fscot
-  model: tinyllama-test
-  dataset: gsm8k
-  prompting_technique: scaling_few_shot_cot_gsm8k
-  description: "TinyLlama-1.1B GSM8K few-shot-CoT"
-  enabled: true
-  num_samples: 20
-  max_tokens: 300
-
-- id: p4_phi3_gsm8k_fscot
-  model: phi-3-mini-4bit
-  dataset: gsm8k
-  prompting_technique: scaling_few_shot_cot_gsm8k
-  description: "Phi-3-mini GSM8K few-shot-CoT"
-  enabled: true
-  num_samples: 20
-  max_tokens: 300
-
 - id: p5_tinyllama_mmlu_fscot
   model: tinyllama-test
   dataset: mmlu
@@ -1132,42 +1114,6 @@ experiments:
   enabled: true
   num_samples: 200
   max_tokens: 250
-
-- id: p4_smollm135m_gsm8k_fscot
-  model: smollm-135m
-  dataset: gsm8k
-  prompting_technique: scaling_few_shot_cot_gsm8k
-  description: "SmolLM-135M GSM8K few-shot-CoT"
-  enabled: true
-  num_samples: 20
-  max_tokens: 300
-
-- id: p4_smollm360m_gsm8k_fscot
-  model: smollm-360m
-  dataset: gsm8k
-  prompting_technique: scaling_few_shot_cot_gsm8k
-  description: "SmolLM-360M GSM8K few-shot-CoT"
-  enabled: true
-  num_samples: 20
-  max_tokens: 300
-
-- id: p4_smollm17b_gsm8k_fscot
-  model: smollm-1.7b
-  dataset: gsm8k
-  prompting_technique: scaling_few_shot_cot_gsm8k
-  description: "SmolLM-1.7B GSM8K few-shot-CoT"
-  enabled: true
-  num_samples: 20
-  max_tokens: 300
-
-- id: p4_mistral7b_gsm8k_fscot
-  model: mistral-7b-instruct
-  dataset: gsm8k
-  prompting_technique: scaling_few_shot_cot_gsm8k
-  description: "Mistral-7B GSM8K few-shot-CoT"
-  enabled: true
-  num_samples: 20
-  max_tokens: 300
 
 - id: p5_smollm135m_mmlu_fscot
   model: smollm-135m
