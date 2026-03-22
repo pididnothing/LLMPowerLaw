@@ -1160,24 +1160,6 @@ experiments:
   num_samples: 20
   max_tokens: 300
 
-- id: p4_qwen05b_gsm8k_fscot
-  model: qwen2.5-0.5b
-  dataset: gsm8k
-  prompting_technique: scaling_few_shot_cot_gsm8k
-  description: "Qwen2.5-0.5B GSM8K few-shot-CoT"
-  enabled: true
-  num_samples: 20
-  max_tokens: 300
-
-- id: p4_qwen15b_gsm8k_fscot
-  model: qwen2.5-1.5b
-  dataset: gsm8k
-  prompting_technique: scaling_few_shot_cot_gsm8k
-  description: "Qwen2.5-1.5B GSM8K few-shot-CoT"
-  enabled: true
-  num_samples: 20
-  max_tokens: 300
-
 - id: p4_qwen3b_gsm8k_fscot
   model: qwen2.5-3b
   dataset: gsm8k
@@ -1445,6 +1427,14 @@ experiments:
   enabled: false
   num_samples: 200
   max_tokens: 512
+- id: p4_qwen05b_gsm_few
+  model: qwen2.5-0.5b
+  dataset: gsm8k
+  prompting_technique: gsm8k_few_shot_qwen2_5
+  description: Qwen2.5-0.5B GSM8K few-shot
+  enabled: false
+  num_samples: 200
+  max_tokens: 128
 - id: p4_qwen05b_gsm_fscot
   model: qwen2.5-0.5b
   dataset: gsm8k
@@ -1493,6 +1483,14 @@ experiments:
   enabled: false
   num_samples: 200
   max_tokens: 512
+- id: p4_qwen15b_gsm_few
+  model: qwen2.5-1.5b
+  dataset: gsm8k
+  prompting_technique: gsm8k_few_shot_qwen2_5
+  description: Qwen2.5-1.5B GSM8K few-shot
+  enabled: false
+  num_samples: 200
+  max_tokens: 128
 - id: p4_qwen15b_gsm_fscot
   model: qwen2.5-1.5b
   dataset: gsm8k
