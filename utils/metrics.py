@@ -167,6 +167,29 @@ class MetricsCalculator:
             'average_score': np.mean(scores),
             'num_samples': len(predictions)
         }
+
+    @staticmethod
+    def reasoning_metrics(predictions: List[Dict[str, Any]]) -> Dict[str, float]:
+        """
+        Calculate reasoning metrics for numeric-answer tasks (e.g., GSM8K).
+
+        Uses exact normalized string match on already-extracted answers.
+        """
+        if not predictions:
+            return {}
+
+        pred_labels = [str(p['prediction']).strip() for p in predictions]
+        true_labels = [str(p['true_label']).strip() for p in predictions]
+
+        correct = sum(1 for p, t in zip(pred_labels, true_labels) if p == t)
+        accuracy = correct / len(predictions)
+
+        return {
+            'accuracy': accuracy,
+            'exact_match': accuracy,
+            'num_samples': len(predictions),
+            'num_correct': correct
+        }
     
     @staticmethod
     def basic_metrics(predictions: List[Dict[str, Any]]) -> Dict[str, float]:

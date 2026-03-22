@@ -667,6 +667,8 @@ class BenchmarkRunner:
         # Calculate metrics based on task type
         if task_type == "classification":
             return self.metrics_calculator.classification_metrics(valid_predictions)
+        elif task_type == "reasoning":
+            return self.metrics_calculator.reasoning_metrics(valid_predictions)
         elif task_type == "qa":
             return self.metrics_calculator.qa_metrics(valid_predictions)
         elif task_type == "generation":
@@ -975,9 +977,9 @@ def main():
         for exp in results['experiments']:
             if exp['status'] == 'completed':
                 metrics = exp.get('metrics', {})
-                accuracy = metrics.get('accuracy', 'N/A')
+                score = metrics.get('accuracy', metrics.get('exact_match', 'N/A'))
                 prompt_tech = exp.get('prompting_technique', 'baseline')
-                print(f"  {exp['model']} on {exp['dataset']} [{prompt_tech}]: {accuracy}")
+                print(f"  {exp['model']} on {exp['dataset']} [{prompt_tech}]: {score}")
 
 
 if __name__ == "__main__":
