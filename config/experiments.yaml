@@ -1160,24 +1160,6 @@ experiments:
   num_samples: 20
   max_tokens: 300
 
-- id: p4_qwen3b_gsm8k_fscot
-  model: qwen2.5-3b
-  dataset: gsm8k
-  prompting_technique: scaling_few_shot_cot_gsm8k
-  description: "Qwen2.5-3B GSM8K few-shot-CoT"
-  enabled: true
-  num_samples: 20
-  max_tokens: 300
-
-- id: p4_qwen7b_gsm8k_fscot
-  model: qwen2.5-7b
-  dataset: gsm8k
-  prompting_technique: scaling_few_shot_cot_gsm8k
-  description: "Qwen2.5-7B GSM8K few-shot-CoT"
-  enabled: true
-  num_samples: 20
-  max_tokens: 300
-
 - id: p4_mistral7b_gsm8k_fscot
   model: mistral-7b-instruct
   dataset: gsm8k
