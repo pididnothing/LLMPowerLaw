@@ -498,7 +498,7 @@ experiments:
   dataset: arc_challenge
   prompting_technique: arc_challenge_few_shot_cot_smollm
   description: SmolLM-135M ARC few-shot-CoT
-  enabled: false
+  enabled: true
   num_samples: 200
   max_tokens: 200
 - id: p2_smollm135m_arc_role
@@ -514,7 +514,7 @@ experiments:
   dataset: arc_challenge
   prompting_technique: arc_challenge_zero_shot_smollm
   description: SmolLM-360M ARC zero-shot
-  enabled: true
+  enabled: false
   num_samples: 200
   max_tokens: 10
 - id: p2_smollm360m_arc_few
@@ -522,7 +522,7 @@ experiments:
   dataset: arc_challenge
   prompting_technique: arc_challenge_few_shot_smollm
   description: SmolLM-360M ARC few-shot
-  enabled: true
+  enabled: false
   num_samples: 200
   max_tokens: 10
 - id: p2_smollm360m_arc_cot
@@ -538,7 +538,7 @@ experiments:
   dataset: arc_challenge
   prompting_technique: arc_challenge_few_shot_cot_smollm
   description: SmolLM-360M ARC few-shot-CoT
-  enabled: false
+  enabled: true
   num_samples: 200
   max_tokens: 200
 - id: p2_smollm360m_arc_role
@@ -997,43 +997,38 @@ experiments:
   enabled: false
   num_samples: 200
   max_tokens: 10
-
 - id: p3_tinyllama_hella_fscot
   model: tinyllama-test
   dataset: hellaswag
   prompting_technique: scaling_few_shot_cot_hellaswag
-  description: "TinyLlama-1.1B HellaSwag few-shot-CoT"
-  enabled: true
+  description: TinyLlama-1.1B HellaSwag few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-
 - id: p3_phi3_hella_fscot
   model: phi-3-mini-4bit
   dataset: hellaswag
   prompting_technique: scaling_few_shot_cot_hellaswag
-  description: "Phi-3-mini HellaSwag few-shot-CoT"
-  enabled: true
+  description: Phi-3-mini HellaSwag few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-
 - id: p5_tinyllama_mmlu_fscot
   model: tinyllama-test
   dataset: mmlu
   prompting_technique: scaling_few_shot_cot_mmlu
-  description: "TinyLlama-1.1B MMLU few-shot-CoT"
-  enabled: true
+  description: TinyLlama-1.1B MMLU few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-
 - id: p5_phi3_mmlu_fscot
   model: phi-3-mini-4bit
   dataset: mmlu
   prompting_technique: scaling_few_shot_cot_mmlu
-  description: "Phi-3-mini MMLU few-shot-CoT"
-  enabled: true
+  description: Phi-3-mini MMLU few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-
 - id: p3_smollm17b_hella_few
   model: smollm-1.7b
   dataset: hellaswag
@@ -1042,151 +1037,134 @@ experiments:
   enabled: false
   num_samples: 200
   max_tokens: 10
-
 - id: p3_smollm135m_hella_fscot
   model: smollm-135m
   dataset: hellaswag
   prompting_technique: scaling_few_shot_cot_hellaswag
-  description: "SmolLM-135M HellaSwag few-shot-CoT"
-  enabled: true
+  description: SmolLM-135M HellaSwag few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-
 - id: p3_smollm360m_hella_fscot
   model: smollm-360m
   dataset: hellaswag
   prompting_technique: scaling_few_shot_cot_hellaswag
-  description: "SmolLM-360M HellaSwag few-shot-CoT"
-  enabled: true
+  description: SmolLM-360M HellaSwag few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-
 - id: p3_smollm17b_hella_fscot
   model: smollm-1.7b
   dataset: hellaswag
   prompting_technique: scaling_few_shot_cot_hellaswag
-  description: "SmolLM-1.7B HellaSwag few-shot-CoT"
-  enabled: true
+  description: SmolLM-1.7B HellaSwag few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-
 - id: p3_qwen05b_hella_fscot
   model: qwen2.5-0.5b
   dataset: hellaswag
   prompting_technique: scaling_few_shot_cot_hellaswag
-  description: "Qwen2.5-0.5B HellaSwag few-shot-CoT"
-  enabled: true
+  description: Qwen2.5-0.5B HellaSwag few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-
 - id: p3_qwen15b_hella_fscot
   model: qwen2.5-1.5b
   dataset: hellaswag
   prompting_technique: scaling_few_shot_cot_hellaswag
-  description: "Qwen2.5-1.5B HellaSwag few-shot-CoT"
-  enabled: true
+  description: Qwen2.5-1.5B HellaSwag few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-
 - id: p3_qwen3b_hella_fscot
   model: qwen2.5-3b
   dataset: hellaswag
   prompting_technique: scaling_few_shot_cot_hellaswag
-  description: "Qwen2.5-3B HellaSwag few-shot-CoT"
-  enabled: true
+  description: Qwen2.5-3B HellaSwag few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-
 - id: p3_qwen7b_hella_fscot
   model: qwen2.5-7b
   dataset: hellaswag
   prompting_technique: scaling_few_shot_cot_hellaswag
-  description: "Qwen2.5-7B HellaSwag few-shot-CoT"
-  enabled: true
+  description: Qwen2.5-7B HellaSwag few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-
 - id: p3_mistral7b_hella_fscot
   model: mistral-7b-instruct
   dataset: hellaswag
   prompting_technique: scaling_few_shot_cot_hellaswag
-  description: "Mistral-7B HellaSwag few-shot-CoT"
-  enabled: true
+  description: Mistral-7B HellaSwag few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-
 - id: p5_smollm135m_mmlu_fscot
   model: smollm-135m
   dataset: mmlu
   prompting_technique: scaling_few_shot_cot_mmlu
-  description: "SmolLM-135M MMLU few-shot-CoT"
-  enabled: true
+  description: SmolLM-135M MMLU few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-
 - id: p5_smollm360m_mmlu_fscot
   model: smollm-360m
   dataset: mmlu
   prompting_technique: scaling_few_shot_cot_mmlu
-  description: "SmolLM-360M MMLU few-shot-CoT"
-  enabled: true
+  description: SmolLM-360M MMLU few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-
 - id: p5_smollm17b_mmlu_fscot
   model: smollm-1.7b
   dataset: mmlu
   prompting_technique: scaling_few_shot_cot_mmlu
-  description: "SmolLM-1.7B MMLU few-shot-CoT"
-  enabled: true
+  description: SmolLM-1.7B MMLU few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-
 - id: p5_qwen05b_mmlu_fscot
   model: qwen2.5-0.5b
   dataset: mmlu
   prompting_technique: scaling_few_shot_cot_mmlu
-  description: "Qwen2.5-0.5B MMLU few-shot-CoT"
-  enabled: true
+  description: Qwen2.5-0.5B MMLU few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-
 - id: p5_qwen15b_mmlu_fscot
   model: qwen2.5-1.5b
   dataset: mmlu
   prompting_technique: scaling_few_shot_cot_mmlu
-  description: "Qwen2.5-1.5B MMLU few-shot-CoT"
-  enabled: true
+  description: Qwen2.5-1.5B MMLU few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-
 - id: p5_qwen3b_mmlu_fscot
   model: qwen2.5-3b
   dataset: mmlu
   prompting_technique: scaling_few_shot_cot_mmlu
-  description: "Qwen2.5-3B MMLU few-shot-CoT"
-  enabled: true
+  description: Qwen2.5-3B MMLU few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-
 - id: p5_qwen7b_mmlu_fscot
   model: qwen2.5-7b
   dataset: mmlu
   prompting_technique: scaling_few_shot_cot_mmlu
-  description: "Qwen2.5-7B MMLU few-shot-CoT"
-  enabled: true
+  description: Qwen2.5-7B MMLU few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-
 - id: p5_mistral7b_mmlu_fscot
   model: mistral-7b-instruct
   dataset: mmlu
   prompting_technique: scaling_few_shot_cot_mmlu
-  description: "Mistral-7B MMLU few-shot-CoT"
-  enabled: true
+  description: Mistral-7B MMLU few-shot-CoT
+  enabled: false
   num_samples: 200
   max_tokens: 250
-   
 - id: p3_smollm17b_hella_cot
   model: smollm-1.7b
   dataset: hellaswag

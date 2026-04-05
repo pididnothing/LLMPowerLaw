@@ -34,7 +34,8 @@ prompt_techniques:
       Question:
       {{input}}
 
-      Let's think step by step. Give your reasoning in brief in one line and then your final answer on the last line.
+      Let's think step by step. Give your reasoning in brief in one line 
+      and then your final answer on the last line.
 
       Reasoning:
 
