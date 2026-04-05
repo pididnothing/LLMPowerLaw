@@ -29,11 +29,6 @@ p1_qwen3b_sst2_few,1_sst2,qwen2.5-3b,Qwen/Qwen2.5-3B-Instruct,3,none,Qwen2.5,sst
 p1_qwen3b_sst2_cot,1_sst2,qwen2.5-3b,Qwen/Qwen2.5-3B-Instruct,3,none,Qwen2.5,sst2,sentiment_binary,scaling_cot_sst2,cot,200,0.925
 p1_qwen3b_sst2_fscot,1_sst2,qwen2.5-3b,Qwen/Qwen2.5-3B-Instruct,3,none,Qwen2.5,sst2,sentiment_binary,scaling_few_shot_cot_sst2,few_shot_cot,200,0.878
 p1_qwen3b_sst2_role,1_sst2,qwen2.5-3b,Qwen/Qwen2.5-3B-Instruct,3,none,Qwen2.5,sst2,sentiment_binary,scaling_role_expert_sst2,role_expert,200,0.905
-p1_phi3_sst2_zero,1_sst2,phi-3-mini-4bit,microsoft/Phi-3-mini-4k-instruct,3.8,none,Phi,sst2,sentiment_binary,scaling_zero_shot_sst2,zero_shot,200,
-p1_phi3_sst2_few,1_sst2,phi-3-mini-4bit,microsoft/Phi-3-mini-4k-instruct,3.8,none,Phi,sst2,sentiment_binary,scaling_few_shot_sst2,few_shot,200,
-p1_phi3_sst2_cot,1_sst2,phi-3-mini-4bit,microsoft/Phi-3-mini-4k-instruct,3.8,none,Phi,sst2,sentiment_binary,scaling_cot_sst2,cot,200,
-p1_phi3_sst2_fscot,1_sst2,phi-3-mini-4bit,microsoft/Phi-3-mini-4k-instruct,3.8,none,Phi,sst2,sentiment_binary,scaling_few_shot_cot_sst2,few_shot_cot,200,
-p1_phi3_sst2_role,1_sst2,phi-3-mini-4bit,microsoft/Phi-3-mini-4k-instruct,3.8,none,Phi,sst2,sentiment_binary,scaling_role_expert_sst2,role_expert,200,
 p1_mistral7b_sst2_zero,1_sst2,mistral-7b-instruct,mistralai/Mistral-7B-Instruct-v0.3,7.2,4bit,Mistral,sst2,sentiment_binary,scaling_zero_shot_sst2,zero_shot,200,0.93
 p1_mistral7b_sst2_few,1_sst2,mistral-7b-instruct,mistralai/Mistral-7B-Instruct-v0.3,7.2,4bit,Mistral,sst2,sentiment_binary,scaling_few_shot_sst2,few_shot,200,0.913
 p1_mistral7b_sst2_cot,1_sst2,mistral-7b-instruct,mistralai/Mistral-7B-Instruct-v0.3,7.2,4bit,Mistral,sst2,sentiment_binary,scaling_cot_sst2,cot,200,0.94
@@ -74,11 +69,6 @@ p2_qwen3b_arc_few,2_arc,qwen2.5-3b,Qwen/Qwen2.5-3B-Instruct,3,none,Qwen2.5,arc_c
 p2_qwen3b_arc_cot,2_arc,qwen2.5-3b,Qwen/Qwen2.5-3B-Instruct,3,none,Qwen2.5,arc_challenge,science_mcq,scaling_cot_arc,cot,200,0.805
 p2_qwen3b_arc_fscot,2_arc,qwen2.5-3b,Qwen/Qwen2.5-3B-Instruct,3,none,Qwen2.5,arc_challenge,science_mcq,scaling_few_shot_cot_arc,few_shot_cot,200,0.848
 p2_qwen3b_arc_role,2_arc,qwen2.5-3b,Qwen/Qwen2.5-3B-Instruct,3,none,Qwen2.5,arc_challenge,science_mcq,scaling_role_expert_arc,role_expert,200,0.835
-p2_phi3_arc_zero,2_arc,phi-3-mini-4bit,microsoft/Phi-3-mini-4k-instruct,3.8,none,Phi,arc_challenge,science_mcq,scaling_zero_shot_arc,zero_shot,200,
-p2_phi3_arc_few,2_arc,phi-3-mini-4bit,microsoft/Phi-3-mini-4k-instruct,3.8,none,Phi,arc_challenge,science_mcq,scaling_few_shot_arc,few_shot,200,
-p2_phi3_arc_cot,2_arc,phi-3-mini-4bit,microsoft/Phi-3-mini-4k-instruct,3.8,none,Phi,arc_challenge,science_mcq,scaling_cot_arc,cot,200,
-p2_phi3_arc_fscot,2_arc,phi-3-mini-4bit,microsoft/Phi-3-mini-4k-instruct,3.8,none,Phi,arc_challenge,science_mcq,scaling_few_shot_cot_arc,few_shot_cot,200,
-p2_phi3_arc_role,2_arc,phi-3-mini-4bit,microsoft/Phi-3-mini-4k-instruct,3.8,none,Phi,arc_challenge,science_mcq,scaling_role_expert_arc,role_expert,200,
 p2_mistral7b_arc_zero,2_arc,mistral-7b-instruct,mistralai/Mistral-7B-Instruct-v0.3,7.2,4bit,Mistral,arc_challenge,science_mcq,scaling_zero_shot_arc,zero_shot,200,0.76
 p2_mistral7b_arc_few,2_arc,mistral-7b-instruct,mistralai/Mistral-7B-Instruct-v0.3,7.2,4bit,Mistral,arc_challenge,science_mcq,scaling_few_shot_arc,few_shot,200,0.67
 p2_mistral7b_arc_cot,2_arc,mistral-7b-instruct,mistralai/Mistral-7B-Instruct-v0.3,7.2,4bit,Mistral,arc_challenge,science_mcq,scaling_cot_arc,cot,200,0.76
@@ -107,12 +97,6 @@ p5_smollm17b_mmlu_cot,5_mmlu,smollm-1.7b,HuggingFaceTB/SmolLM-1.7B-Instruct,1.7,
 p5_qwen3b_mmlu_zero,5_mmlu,qwen2.5-3b,Qwen/Qwen2.5-3B-Instruct,3,none,Qwen2.5,mmlu,knowledge_mcq,scaling_zero_shot_arc,zero_shot,200,0.17
 p5_qwen3b_mmlu_few,5_mmlu,qwen2.5-3b,Qwen/Qwen2.5-3B-Instruct,3,none,Qwen2.5,mmlu,knowledge_mcq,scaling_few_shot_arc,few_shot,200,0.182
 p5_qwen3b_mmlu_cot,5_mmlu,qwen2.5-3b,Qwen/Qwen2.5-3B-Instruct,3,none,Qwen2.5,mmlu,knowledge_mcq,scaling_cot_arc,cot,200,0.21
-p5_phi3_mmlu_zero,5_mmlu,phi-3-mini-4bit,microsoft/Phi-3-mini-4k-instruct,3.8,none,Phi,mmlu,knowledge_mcq,scaling_zero_shot_arc,zero_shot,200,
-p5_phi3_mmlu_few,5_mmlu,phi-3-mini-4bit,microsoft/Phi-3-mini-4k-instruct,3.8,none,Phi,mmlu,knowledge_mcq,scaling_few_shot_arc,few_shot,200,
-p5_phi3_mmlu_cot,5_mmlu,phi-3-mini-4bit,microsoft/Phi-3-mini-4k-instruct,3.8,none,Phi,mmlu,knowledge_mcq,scaling_cot_arc,cot,200,
-p5_mistral7b_mmlu_zero,5_mmlu,mistral-7b-instruct,mistralai/Mistral-7B-Instruct-v0.3,7.2,4bit,Mistral,mmlu,knowledge_mcq,scaling_zero_shot_arc,zero_shot,200,
-p5_mistral7b_mmlu_few,5_mmlu,mistral-7b-instruct,mistralai/Mistral-7B-Instruct-v0.3,7.2,4bit,Mistral,mmlu,knowledge_mcq,scaling_few_shot_arc,few_shot,200,
-p5_mistral7b_mmlu_cot,5_mmlu,mistral-7b-instruct,mistralai/Mistral-7B-Instruct-v0.3,7.2,4bit,Mistral,mmlu,knowledge_mcq,scaling_cot_arc,cot,200,
 p5_qwen7b_mmlu_zero,5_mmlu,qwen2.5-7b,Qwen/Qwen2.5-7B-Instruct,7.6,4bit,Qwen2.5,mmlu,knowledge_mcq,scaling_zero_shot_arc,zero_shot,200,0.22
 p5_qwen7b_mmlu_few,5_mmlu,qwen2.5-7b,Qwen/Qwen2.5-7B-Instruct,7.6,4bit,Qwen2.5,mmlu,knowledge_mcq,scaling_few_shot_arc,few_shot,200,0.228
 p5_qwen7b_mmlu_cot,5_mmlu,qwen2.5-7b,Qwen/Qwen2.5-7B-Instruct,7.6,4bit,Qwen2.5,mmlu,knowledge_mcq,scaling_cot_arc,cot,200,0.16
