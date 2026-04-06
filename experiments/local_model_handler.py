@@ -13,6 +13,32 @@ from tqdm import tqdm
 
 from utils.generation_controls import apply_generation_controls, resolve_generation_controls
 
+# ---------------------------------------------------------------------------
+# Module-level compatibility patch for DynamicCache
+# ---------------------------------------------------------------------------
+# transformers v5.x removed DynamicCache.from_legacy_cache, but old frozen
+# remote-code model files (e.g. the cached modeling_phi3.py) still call it.
+# We always overwrite the method here (unconditionally) so the correct
+# implementation is in place regardless of the installed transformers version.
+# This must run at import time — placing it inside a function is too late if
+# the method already exists in a broken/removed form.
+try:
+    from transformers.cache_utils import DynamicCache as _DynamicCache
+
+    @classmethod  # type: ignore[misc]
+    def _dynamic_cache_from_legacy(cls, past_key_values=None):
+        """Compatibility shim: rebuild DynamicCache from tuple-of-tuples format."""
+        cache = cls()
+        if past_key_values is not None:
+            for layer_idx, layer_past in enumerate(past_key_values):
+                cache.update(layer_past[0], layer_past[1], layer_idx)
+        return cache
+
+    _DynamicCache.from_legacy_cache = _dynamic_cache_from_legacy  # type: ignore[attr-defined]
+except Exception as _e:
+    import warnings
+    warnings.warn(f"local_model_handler: could not patch DynamicCache.from_legacy_cache: {_e}")
+
 
 class LocalModelHandler:
     """Handler for local model loading and inference"""
@@ -93,21 +119,20 @@ class LocalModelHandler:
             # Load model
             pbar.set_description(f"Loading model ({load_kwargs.get('load_in_4bit', False) and '4-bit' or load_kwargs.get('load_in_8bit', False) and '8-bit' or 'full precision'})")
             
+
             # Pre-load config to fix Phi-3 rope_scaling issue
             try:
                 config = AutoConfig.from_pretrained(
                     model_path,
-                    trust_remote_code=self.model_config.get('trust_remote_code', False),
+                    trust_remote_code=load_kwargs.get('trust_remote_code', False),
                     cache_dir=self.global_settings.get('local_models', {}).get('hf_cache_dir')
                 )
-                
-                # Fix Phi-3 rope_scaling config if incomplete or uses an
-                # unrecognised scaling type.  The cached modeling_phi3.py only
-                # accepts its own internal types (e.g. 'su', 'yarn').  Injecting
-                # 'linear' (or any other foreign type) triggers:
+
+                # The cached modeling_phi3.py only recognises its own internal
+                # RoPE scaling types (e.g. 'su', 'yarn').  Injecting 'linear'
+                # or any other foreign type triggers:
                 #   ValueError: Unknown RoPE scaling type linear
-                # The safest fix is to disable rope_scaling entirely so the
-                # model falls back to standard RoPE (no scaling).
+                # Setting rope_scaling=None makes the model use standard RoPE.
                 if hasattr(config, 'rope_scaling') and config.rope_scaling is not None:
                     rs = config.rope_scaling
                     if isinstance(rs, dict):
@@ -119,7 +144,7 @@ class LocalModelHandler:
                                 f"(type={scaling_type!r}) for Phi-3 to avoid ValueError."
                             )
                             config.rope_scaling = None
-                
+
                 # Pass fixed config to model loading
                 load_kwargs['config'] = config
             except Exception as e:
