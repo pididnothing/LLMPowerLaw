@@ -101,11 +101,24 @@ class LocalModelHandler:
                     cache_dir=self.global_settings.get('local_models', {}).get('hf_cache_dir')
                 )
                 
-                # Fix Phi-3 rope_scaling config if incomplete
+                # Fix Phi-3 rope_scaling config if incomplete or uses an
+                # unrecognised scaling type.  The cached modeling_phi3.py only
+                # accepts its own internal types (e.g. 'su', 'yarn').  Injecting
+                # 'linear' (or any other foreign type) triggers:
+                #   ValueError: Unknown RoPE scaling type linear
+                # The safest fix is to disable rope_scaling entirely so the
+                # model falls back to standard RoPE (no scaling).
                 if hasattr(config, 'rope_scaling') and config.rope_scaling is not None:
-                    if isinstance(config.rope_scaling, dict) and 'type' not in config.rope_scaling:
-                        print("Warning: Fixing incomplete rope_scaling config for Phi-3")
-                        config.rope_scaling['type'] = 'linear'  # Default RoPE scaling type
+                    rs = config.rope_scaling
+                    if isinstance(rs, dict):
+                        scaling_type = rs.get('type', '')
+                        known_phi3_types = {'su', 'yarn', 'longrope', 'linear', 'dynamic'}
+                        if not scaling_type or scaling_type not in known_phi3_types:
+                            print(
+                                f"Warning: Disabling unrecognised rope_scaling "
+                                f"(type={scaling_type!r}) for Phi-3 to avoid ValueError."
+                            )
+                            config.rope_scaling = None
                 
                 # Pass fixed config to model loading
                 load_kwargs['config'] = config
