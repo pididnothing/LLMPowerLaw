@@ -128,69 +128,65 @@ class LocalModelHandler:
 
             # Load model
             pbar.set_description(f"Loading model ({load_kwargs.get('load_in_4bit', False) and '4-bit' or load_kwargs.get('load_in_8bit', False) and '8-bit' or 'full precision'})")
-            
-
-            # Pre-load config to fix Phi-3 rope_scaling issue
-            try:
-                config = AutoConfig.from_pretrained(
-                    model_path,
-                    trust_remote_code=load_kwargs.get('trust_remote_code', False),
-                    cache_dir=self.global_settings.get('local_models', {}).get('hf_cache_dir')
-                )
-
-                # The cached modeling_phi3.py only recognises its own internal
-                # RoPE scaling types (e.g. 'su', 'yarn').  Injecting 'linear'
-                # or any other foreign type triggers:
-                #   ValueError: Unknown RoPE scaling type linear
-                # Setting rope_scaling=None makes the model use standard RoPE.
-                if hasattr(config, 'rope_scaling') and config.rope_scaling is not None:
-                    rs = config.rope_scaling
-                    if isinstance(rs, dict):
-                        scaling_type = rs.get('type', '')
-                        known_phi3_types = {'su', 'yarn', 'longrope', 'linear', 'dynamic'}
-                        if not scaling_type or scaling_type not in known_phi3_types:
-                            print(
-                                f"Warning: Disabling unrecognised rope_scaling "
-                                f"(type={scaling_type!r}) for Phi-3 to avoid ValueError."
-                            )
-                            config.rope_scaling = None
-
-                # Pass fixed config to model loading
-                load_kwargs['config'] = config
-            except Exception as e:
-                print(f"Warning: Could not preload config: {e}. Continuing without fix.")
-
-            # ----------------------------------------------------------------
-            # Phi-3 definitive fix: force trust_remote_code=False so the modern
-            # built-in transformers implementation is used instead of the stale
-            # frozen cached modeling_phi3.py which calls multiple removed APIs
-            # (from_legacy_cache, get_usable_length, …).  The built-in Phi-3
-            # support landed in transformers ~4.40 and is always up-to-date.
+            # Phi-3 model loading strategy
+            #
+            # The cached stale modeling_phi3.py (loaded via trust_remote_code=True)
+            # calls several APIs removed in transformers v5. The modern built-in
+            # implementation (transformers ≥ 4.40) is correct.  Strategy:
+            #
+            #  1. Try trust_remote_code=False (built-in).  If the built-in
+            #     handles rope_scaling itself, we do NOT touch config — just
+            #     let it load naturally.
+            #  2. Fall back to trust_remote_code=True (stale remote code), but
+            #     then apply rope_scaling=None so the stale code doesn't error.
             # ----------------------------------------------------------------
             model_id_lower = self.model_config.get('model_id', '').lower()
-            if load_kwargs.get('trust_remote_code', False) and (
-                'phi-3' in model_id_lower or 'phi3' in model_id_lower
-            ):
+            is_phi3 = 'phi-3' in model_id_lower or 'phi3' in model_id_lower
+            using_builtin = False
+
+            if is_phi3 and load_kwargs.get('trust_remote_code', False):
                 try:
-                    # Verify the built-in implementation actually exists before
-                    # switching — avoids breaking very old transformers installs.
-                    _test_cfg = AutoConfig.from_pretrained(
+                    # Can the built-in implementation load the config?
+                    AutoConfig.from_pretrained(
                         model_path,
                         trust_remote_code=False,
                         cache_dir=self.global_settings.get('local_models', {}).get('hf_cache_dir')
                     )
                     load_kwargs['trust_remote_code'] = False
+                    using_builtin = True
                     print(
                         "Info: Overriding trust_remote_code=False for Phi-3 — "
                         "using built-in transformers implementation (avoids stale cached code)."
                     )
                 except Exception:
-                    # Built-in not available; keep trust_remote_code=True and
-                    # rely on the DynamicCache shims patched above.
                     print(
                         "Warning: Could not switch Phi-3 to built-in implementation; "
                         "falling back to remote code with compatibility shims."
                     )
+
+            if not using_builtin:
+                # Stale remote-code path: pre-load config and neutralise any
+                # rope_scaling type the old cached file doesn't recognise.
+                try:
+                    config = AutoConfig.from_pretrained(
+                        model_path,
+                        trust_remote_code=load_kwargs.get('trust_remote_code', False),
+                        cache_dir=self.global_settings.get('local_models', {}).get('hf_cache_dir')
+                    )
+                    if hasattr(config, 'rope_scaling') and config.rope_scaling is not None:
+                        rs = config.rope_scaling
+                        if isinstance(rs, dict):
+                            scaling_type = rs.get('type', '')
+                            known_phi3_types = {'su', 'yarn', 'longrope', 'linear', 'dynamic'}
+                            if not scaling_type or scaling_type not in known_phi3_types:
+                                print(
+                                    f"Warning: Disabling unrecognised rope_scaling "
+                                    f"(type={scaling_type!r}) for Phi-3 to avoid ValueError."
+                                )
+                                config.rope_scaling = None
+                    load_kwargs['config'] = config
+                except Exception as e:
+                    print(f"Warning: Could not preload config: {e}. Continuing without fix.")
 
             self.model = AutoModelForCausalLM.from_pretrained(
                 model_path,
