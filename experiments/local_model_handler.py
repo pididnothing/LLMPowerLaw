@@ -34,10 +34,20 @@ try:
                 cache.update(layer_past[0], layer_past[1], layer_idx)
         return cache
 
+    def _dynamic_cache_get_usable_length(self, new_seq_length: int, layer_idx: int = 0) -> int:
+        """Compatibility shim: get_usable_length removed in transformers v5."""
+        # Return how many tokens are already cached for this layer.
+        max_length = self.get_max_length() if hasattr(self, 'get_max_length') else None
+        seq_length = self.get_seq_length(layer_idx) if hasattr(self, 'get_seq_length') else 0
+        if max_length is not None and new_seq_length > max_length:
+            return max_length - new_seq_length
+        return seq_length
+
     _DynamicCache.from_legacy_cache = _dynamic_cache_from_legacy  # type: ignore[attr-defined]
+    _DynamicCache.get_usable_length = _dynamic_cache_get_usable_length  # type: ignore[attr-defined]
 except Exception as _e:
     import warnings
-    warnings.warn(f"local_model_handler: could not patch DynamicCache.from_legacy_cache: {_e}")
+    warnings.warn(f"local_model_handler: could not patch DynamicCache: {_e}")
 
 
 class LocalModelHandler:
@@ -149,7 +159,39 @@ class LocalModelHandler:
                 load_kwargs['config'] = config
             except Exception as e:
                 print(f"Warning: Could not preload config: {e}. Continuing without fix.")
-            
+
+            # ----------------------------------------------------------------
+            # Phi-3 definitive fix: force trust_remote_code=False so the modern
+            # built-in transformers implementation is used instead of the stale
+            # frozen cached modeling_phi3.py which calls multiple removed APIs
+            # (from_legacy_cache, get_usable_length, …).  The built-in Phi-3
+            # support landed in transformers ~4.40 and is always up-to-date.
+            # ----------------------------------------------------------------
+            model_id_lower = self.model_config.get('model_id', '').lower()
+            if load_kwargs.get('trust_remote_code', False) and (
+                'phi-3' in model_id_lower or 'phi3' in model_id_lower
+            ):
+                try:
+                    # Verify the built-in implementation actually exists before
+                    # switching — avoids breaking very old transformers installs.
+                    _test_cfg = AutoConfig.from_pretrained(
+                        model_path,
+                        trust_remote_code=False,
+                        cache_dir=self.global_settings.get('local_models', {}).get('hf_cache_dir')
+                    )
+                    load_kwargs['trust_remote_code'] = False
+                    print(
+                        "Info: Overriding trust_remote_code=False for Phi-3 — "
+                        "using built-in transformers implementation (avoids stale cached code)."
+                    )
+                except Exception:
+                    # Built-in not available; keep trust_remote_code=True and
+                    # rely on the DynamicCache shims patched above.
+                    print(
+                        "Warning: Could not switch Phi-3 to built-in implementation; "
+                        "falling back to remote code with compatibility shims."
+                    )
+
             self.model = AutoModelForCausalLM.from_pretrained(
                 model_path,
                 **load_kwargs
