@@ -72,7 +72,7 @@ class DatasetConfig:
         
         return cls(
             name=data['name'],
-            type=data['type'],
+            type=data.get('type', 'huggingface'),
             task_type=data['task_type'],
             num_samples=data.get('num_samples'),
             enabled=data.get('enabled', True),

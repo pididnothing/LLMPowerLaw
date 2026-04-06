@@ -36,7 +36,7 @@ class PromptTechnique:
         """Create PromptTechnique from dictionary"""
         return cls(
             name=data['name'],
-            type=data['type'],
+            type=data.get('type', 'custom'),
             description=data.get('description', ''),
             enabled=data.get('enabled', True),
             technique=data.get('technique'),
