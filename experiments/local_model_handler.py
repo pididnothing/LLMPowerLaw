@@ -66,7 +66,7 @@ class LocalModelHandler:
     def _load_huggingface_model(self):
         """Load HuggingFace model locally"""
         try:
-            from transformers import AutoModelForCausalLM, AutoTokenizer
+            from transformers import AutoModelForCausalLM, AutoTokenizer, AutoConfig
         except ImportError:
             raise ImportError(
                 "transformers is required for local HuggingFace models. "
@@ -92,6 +92,26 @@ class LocalModelHandler:
 
             # Load model
             pbar.set_description(f"Loading model ({load_kwargs.get('load_in_4bit', False) and '4-bit' or load_kwargs.get('load_in_8bit', False) and '8-bit' or 'full precision'})")
+            
+            # Pre-load config to fix Phi-3 rope_scaling issue
+            try:
+                config = AutoConfig.from_pretrained(
+                    model_path,
+                    trust_remote_code=self.model_config.get('trust_remote_code', False),
+                    cache_dir=self.global_settings.get('local_models', {}).get('hf_cache_dir')
+                )
+                
+                # Fix Phi-3 rope_scaling config if incomplete
+                if hasattr(config, 'rope_scaling') and config.rope_scaling is not None:
+                    if isinstance(config.rope_scaling, dict) and 'type' not in config.rope_scaling:
+                        print("Warning: Fixing incomplete rope_scaling config for Phi-3")
+                        config.rope_scaling['type'] = 'linear'  # Default RoPE scaling type
+                
+                # Pass fixed config to model loading
+                load_kwargs['config'] = config
+            except Exception as e:
+                print(f"Warning: Could not preload config: {e}. Continuing without fix.")
+            
             self.model = AutoModelForCausalLM.from_pretrained(
                 model_path,
                 **load_kwargs
@@ -184,6 +204,11 @@ class LocalModelHandler:
         attn_impl = self.model_config.get('attn_implementation')
         if attn_impl:
             kwargs['attn_implementation'] = attn_impl
+        else:
+            # Default to 'eager' for Phi-3 to avoid rope_scaling issues
+            model_id = self.model_config.get('model_id', '').lower()
+            if 'phi-3' in model_id or 'phi3' in model_id:
+                kwargs['attn_implementation'] = 'eager'
         
         # Cache directory
         cache_dir = self.global_settings.get('local_models', {}).get('hf_cache_dir')
